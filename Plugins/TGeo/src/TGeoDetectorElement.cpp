@@ -19,6 +19,7 @@
 #include "Acts/Surfaces/PlanarBounds.hpp"
 #include "Acts/Surfaces/PlaneSurface.hpp"
 #include "Acts/Surfaces/RadialBounds.hpp"
+#include "Acts/Surfaces/StrawSurface.hpp"
 #include "Acts/Surfaces/TrapezoidBounds.hpp"
 
 #include <fstream>
@@ -117,6 +118,19 @@ Acts::TGeoDetectorElement::TGeoDetectorElement(
       m_bounds(tgBounds),
       m_thickness(tgThickness) {
   m_surface = Surface::makeShared<DiscSurface>(tgBounds, *this);
+}
+
+Acts::TGeoDetectorElement::TGeoDetectorElement(
+    const Identifier& identifier, const TGeoNode& tGeoNode,
+    const Transform3& tgTransform, std::shared_ptr<const LineBounds> tgBounds,
+    double tgThickness)
+    : Acts::IdentifiedDetectorElement(),
+      m_detElement(&tGeoNode),
+      m_transform(tgTransform),
+      m_identifier(identifier),
+      m_bounds(tgBounds),
+      m_thickness(tgThickness) {
+  m_surface = Surface::makeShared<StrawSurface>(tgBounds, *this);
 }
 
 Acts::TGeoDetectorElement::~TGeoDetectorElement() = default;
