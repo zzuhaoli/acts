@@ -120,6 +120,8 @@ struct TGeoDetector : public ActsExamples::IBaseDetector {
       bool itkModuleSplit = false;
       std::map<std::string, unsigned int> barrelMap;
       std::map<std::string, std::vector<std::pair<double, double>>> discMap;
+
+      bool driftChamberLayerSplit = false;
     };
 
     std::vector<Volume> volumes;

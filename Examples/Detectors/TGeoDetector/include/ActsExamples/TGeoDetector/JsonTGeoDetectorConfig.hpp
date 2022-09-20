@@ -153,6 +153,8 @@ void from_json(const nlohmann::json& j,
   } else {
     vol.itkModuleSplit = false;
   }
+
+  vol.driftChamberLayerSplit = j.at("geo-tgeo-dc-layer-split");
 }
 
 /// Write volume struct

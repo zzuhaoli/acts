@@ -20,6 +20,7 @@
 #include "Acts/Geometry/TrackingVolumeArrayCreator.hpp"
 #include "Acts/Plugins/TGeo/TGeoCylinderDiscSplitter.hpp"
 #include "Acts/Plugins/TGeo/TGeoDetectorElement.hpp"
+#include "Acts/Plugins/TGeo/TGeoDriftChamberLayerSplitter.hpp"
 #include "Acts/Plugins/TGeo/TGeoLayerBuilder.hpp"
 #include "Acts/Utilities/Logger.hpp"
 #include "ActsExamples/Framework/IContextDecorator.hpp"
@@ -124,6 +125,10 @@ std::vector<Acts::TGeoLayerBuilder::Config> makeLayerBuilderConfigs(
       itkConfig.discMap = volume.discMap;
       layerBuilderConfig.detectorElementSplitter =
           std::make_shared<ActsExamples::TGeoITkModuleSplitter>(itkConfig);
+    } else if (volume.driftChamberLayerSplit) {
+      Acts::TGeoDriftChamberLayerSplitter::Config dcConfig;
+      layerBuilderConfig.detectorElementSplitter =
+          std::make_shared<const Acts::TGeoDriftChamberLayerSplitter>(dcConfig);
     }
 
     detLayerConfigs.push_back(layerBuilderConfig);
@@ -466,6 +471,7 @@ auto TGeoDetector::finalize(
     const boost::program_options::variables_map& vm,
     std::shared_ptr<const Acts::IMaterialDecorator> mdecorator)
     -> std::pair<TrackingGeometryPtr, ContextDecorators> {
+
   Config config;
 
   config.fileName = vm["geo-tgeo-filename"].as<std::string>();
