@@ -1,0 +1,102 @@
+<lccdd>
+  <info name="STCF"
+    title="STCF"
+    author="Zhou Hang"
+    url="www.ustc.edu.cn"
+    status="development"
+    version="$Id: $">
+    <comment>
+      The compact format for the STCF
+    </comment>
+  </info>
+
+  <includes>
+    <gdmlFile ref="../../material/elements.xml"/>
+    <gdmlFile ref="../../material/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_side"          value="10*m"/>
+    <constant name="world_x"             value="world_side/2"/>
+    <constant name="world_y"             value="world_side/2"/>
+    <constant name="world_z"             value="world_side/2"/>
+
+    <constant name="BField_nominal" value="1.0*tesla"/>
+    <constant name="Cu1_th" value="0.005*mm"/>
+    <constant name="PI1_th" value="0.05*mm"/>
+    <constant name="sup_th" value="2.*mm"/>
+    <constant name="PI2_th" value="0.05*mm"/>
+    <constant name="Cu2_th" value="0.005*mm"/>
+    <constant name="Drift_Gas_th" value="3.*mm"/>
+    <constant name="Copper_th" value="0.005*mm"/>
+    <constant name="well_th" value="0.05*mm"/>
+    <constant name="DLC_th" value=" 0.0001*mm"/>
+    <constant name="base_th" value="0.11*mm"/>
+
+    <constant name="Strip_th" value="0.005*mm"/>
+    <constant name="topStrip_wid" value="0.06*mm"/>
+    <constant name="mediumStrip_wid" value="0.35*mm"/>
+    <constant name="mediumStrip_th" value="0.004*mm"/>
+
+    <constant name="end_ring_h" value="20*mm"/>
+  
+
+  </define>
+
+  <materials>
+  </materials>
+
+  <limits>
+  </limits>
+
+  <display>
+    <vis name="KaptonVis"   alpha="1.0" r="0.1" g="0.1"  b="0.1"   showDaughters="true"  visible="false"/>
+    <vis name="CuVis"   alpha="1.0" r="0.1" g="0.1"  b="0.1"   showDaughters="true"  visible="true"/>
+    <vis name="DLCVis" alpha="1.0" r="1.0" g="0.4" b="0.2"  showDaughters="true"  visible="true"/>
+    <vis name="gasVis" alpha="1.0" r="0.2" g="0.4" b="0.2"  showDaughters="true"  visible="false"/>
+    <vis name="EpoxyVis" alpha="1.0" r="0.9" g="0.4" b="0.2"  showDaughters="true"  visible="false"/>
+    <vis name="StripVis" alpha="1.0" r="1" g="0.5" b="0.3"  showDaughters="true"  visible="true"/>
+    <!--vis name="SupportVis" alpha="1.0" r="0.5" g="0.4" b="0."  showDaughters="true"  visible="true"/-->
+     <vis name="InnerVis" alpha="1.0" r="0.2" g="0.8" b="0.4"  showDaughters="true"  visible="true"/>
+  </display>
+
+
+<detectors>
+  <detector  name="InnerTracker" type="CuRwell02" vis="InnerVis" id="101" readout="InnerCollection" insideTrackingVolume="true">
+  <dimensions inner_r="58*mm" outer_r="168*mm" length="460*mm" vis="gasVis"/> 
+    <comment> Inner Tracker</comment>
+    <layer startr="60*mm" halfz="165.*mm" id="0">
+      <strip quan_top="1020" quan_medium="1" Strip_th="0.005*mm" Strip1_dr="0.06*mm" Strip2_dr="0.09*mm" mediumStrip_th="0.004*mm" topStrip_wid="0.06*mm" mediumStrip_wid="0.35*mm" material="G4_Cu"/>
+      <uRwell Cu1_th="0.005*mm" PI1_th="0.05*mm" sup_th="2.*mm" PI2_th="0.05*mm" Cu2_th="0.005*mm" Drift_Gas_th="3.*mm" Copper_th="0.005*mm" well_th="0.05*mm" DLC_th="0.0001*mm" base_th="0.11*mm" endRing_h="20*mm"
+      Cu1_ma="G4_Cu" PI1_ma="Kapton" sup_ma="honeycomb" PI2_ma="Kapton" Cu2_ma="G4_Cu" Drift_Gas_ma="Ar" Copper_ma="G4_Cu" well_ma="Kapton" DLC_ma="DLC" base_ma="Kapton" endRing_ma="Epoxy"/>
+    </layer>
+    <layer startr="95*mm" halfz="261*mm" id="1">
+      <strip quan_top="1538" quan_medium="1" Strip_th="0.005*mm" Strip1_dr="0.06*mm" Strip2_dr="0.09*mm" mediumStrip_th="0.004*mm" topStrip_wid="0.06*mm" mediumStrip_wid="0.35*mm" material="G4_Cu"/>
+      <uRwell Cu1_th="0.005*mm" PI1_th="0.05*mm" sup_th="2.*mm" PI2_th="0.05*mm" Cu2_th="0.005*mm" Drift_Gas_th="3.*mm" Copper_th="0.005*mm" well_th="0.05*mm" DLC_th="0.0001*mm" base_th="0.11*mm" endRing_h="20*mm"
+      Cu1_ma="G4_Cu" PI1_ma="Kapton" sup_ma="honeycomb" PI2_ma="Kapton" Cu2_ma="G4_Cu" Drift_Gas_ma="Ar" Copper_ma="G4_Cu" well_ma="Kapton" DLC_ma="DLC" base_ma="Kapton" endRing_ma="Epoxy"/>
+    </layer>
+    <layer startr="125*mm" halfz="344*mm" id="2">
+      <strip quan_top="2024" quan_medium="1" Strip_th="0.005*mm" Strip1_dr="0.06*mm" Strip2_dr="0.09*mm" mediumStrip_th="0.004*mm" topStrip_wid="0.06*mm" mediumStrip_wid="0.35*mm" material="G4_Cu"/>
+      <uRwell Cu1_th="0.005*mm" PI1_th="0.05*mm" sup_th="2.*mm" PI2_th="0.05*mm" Cu2_th="0.005*mm" Drift_Gas_th="3.*mm" Copper_th="0.005*mm" well_th="0.05*mm" DLC_th="0.0001*mm" base_th="0.11*mm" endRing_h="20*mm"
+      Cu1_ma="G4_Cu" PI1_ma="Kapton" sup_ma="honeycomb" PI2_ma="Kapton" Cu2_ma="G4_Cu" Drift_Gas_ma="Ar" Copper_ma="G4_Cu" well_ma="Kapton" DLC_ma="DLC" base_ma="Kapton" endRing_ma="Epoxy"/>
+    </layer>
+    <layer startr="160*mm" halfz="440*mm" id="3">
+      <strip quan_top="2592" quan_medium="1" Strip_th="0.005*mm" Strip1_dr="0.06*mm" Strip2_dr="0.09*mm" mediumStrip_th="0.004*mm" topStrip_wid="0.06*mm" mediumStrip_wid="0.35*mm" material="G4_Cu"/>
+      <uRwell Cu1_th="0.005*mm" PI1_th="0.05*mm" sup_th="2.*mm" PI2_th="0.05*mm" Cu2_th="0.005*mm" Drift_Gas_th="3.*mm" Copper_th="0.005*mm" well_th="0.05*mm" DLC_th="0.0001*mm" base_th="0.11*mm" endRing_h="20*mm"
+      Cu1_ma="G4_Cu" PI1_ma="Kapton" sup_ma="honeycomb" PI2_ma="Kapton" Cu2_ma="G4_Cu" Drift_Gas_ma="Ar" Copper_ma="G4_Cu" well_ma="Kapton" DLC_ma="DLC" base_ma="Kapton" endRing_ma="Epoxy"/>
+    </layer>
+  </detector>
+</detectors>
+<readouts>
+    <readout name="InnerCollection">
+      <id>system:5,side:2,layer:4,module:8,sensor:4</id>
+    </readout>
+  </readouts>
+
+  <plugins>
+  </plugins>
+
+  <fields>
+  </fields>
+
+</lccdd>

@@ -1,0 +1,691 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="Simple_ILD"
+       title="ILD Detector like example detector model"
+       author="F. Gaede"
+       url="http://ilcsoft.desy.de"
+       status="development"
+       version="$Id: $">
+        <comment>
+           A very simple ILD like detector
+           so far only RICH and (pixel) SIT ...
+	</comment>        
+    </info>
+
+    <!-- Debug flags for processing the compact xml file  -->
+    <debug>
+      <type name="isotopes"     value="1"/>
+      <type name="elements"     value="1"/>
+      <type name="materials"    value="0"/>
+      <type name="visattr"      value="0"/>
+      <type name="regions"      value="0"/>
+      <type name="readout"      value="0"/>
+      <type name="limits"       value="0"/>
+      <type name="segmentation" value="0"/>
+    </debug>
+    <geometry>
+      
+    </geometry>
+ 
+ 
+    <define>
+
+        <constant name="tracker_region_rmax" value="2.0*m"/>
+        <constant name="tracker_region_zmax"   value="2.0*m"/>
+
+	<constant name="SolenoidField_zMax" value="4.0*m"/>
+	<constant name="SolenoidField_outer_radius" value="4.0*m"/>
+
+	<constant name="BField_nominal" value="3.5*tesla"/>
+      </define>
+
+  <properties>
+    <matrix name="RINDEX_air" coldim="2" values="0.4*eV 1.0 6.02*eV 1.0"/>
+    <matrix name="RINDEX_quartz" coldim="2" values="
+                        7.74875*eV	1.64896
+			7.70062*eV	1.64463
+			7.65309*eV	1.64047
+			7.60613*eV	1.63646
+			7.55976*eV	1.63261
+			7.51394*eV	1.62889
+			7.46867*eV	1.62531
+			7.42395*eV	1.62186
+			7.37976*eV	1.61853
+			7.33609*eV	1.61531
+			7.29294*eV	1.61219
+			7.25029*eV	1.60918
+			7.20814*eV	1.60627
+			7.16647*eV	1.60345
+			7.12529*eV	1.60071
+			7.08457*eV	1.59807
+			7.04432*eV	1.5955
+			7.00452*eV	1.593
+			6.96517*eV	1.59059
+			6.92626*eV	1.58824
+			6.88778*eV	1.58596
+			6.84972*eV	1.58374
+			6.81209*eV	1.58159
+			6.77486*eV	1.57949
+			6.73804*eV	1.5745
+			6.70162*eV	1.57547
+			6.66559*eV	1.57354
+			6.62995*eV	1.57165
+			6.59468*eV	1.56982
+			6.55979*eV	1.56803
+			6.52526*eV	1.5629
+			6.4911*eV	1.56459
+			6.42383*eV	1.56132
+			6.39072*eV	1.55974
+			6.35795*eV	1.5582
+			6.32551*eV	1.55669
+			6.2934*eV	1.5552
+			6.16816*eV	1.54967
+			6.13762*eV	1.54836
+			6.10739*eV	1.54708
+			6.07745*eV	1.54582
+			6.0478*eV	1.54459
+			6.01845*eV	1.54339
+			5.98937*eV	1.54221
+			5.96058*eV	1.54106
+			5.93206*eV	1.53993
+			5.90381*eV	1.53882
+			5.87583*eV	1.53774
+			5.84811*eV	1.53667
+			5.82066*eV	1.53563
+			5.79346*eV	1.53461
+			5.76651*eV	1.53361
+			5.73981*eV	1.53263
+			5.71336*eV	1.53167
+			5.68716*eV	1.53072
+			5.66119*eV	1.5298
+			5.50777*eV	1.52408
+			5.32103*eV	1.51804
+			5.14013*eV	1.51257
+			4.96516*eV	1.50761
+			4.79613*eV	1.5031
+			4.63303*eV	1.499
+			4.47581*eV	1.49526
+			4.32287*eV	1.49182
+			4.17582*eV	1.48868
+			4.03318*eV	1.48579
+			3.89629*eV	1.48315
+			3.76381*eV	1.48071
+			3.63578*eV	1.47847
+			3.51218*eV	1.4764
+			3.39207*eV	1.47447
+			3.27729*eV	1.4727
+			3.16518*eV	1.47105
+			3.05746*eV	1.46953
+			2.95401*eV	1.46812
+			2.85339*eV	1.4668
+			2.75634*eV	1.46558
+			2.66223*eV	1.46444
+			2.57167*eV	1.46337
+			2.48407*eV	1.46238
+			2.39946*eV	1.46144
+			2.31782*eV	1.46057
+			2.23912*eV	1.45976
+			2.16294*eV	1.45899
+			2.08932*eV	1.45826
+			2.01823*eV	1.45758
+			1.94937*eV	1.45693
+			1.88305*eV	1.45631
+			1.81896*eV	1.45572
+			1.75709*eV	1.45517
+			1.69719*eV	1.45463
+			1.63951*eV	1.45412
+			1.5836*eV	1.45362
+			1.52986*eV	1.45314
+			1.47771*eV	1.45267
+			1.42735*eV	1.45221
+			1.37878*eV	1.45177
+			1.33197*eV	1.45132
+			1.28663*eV	1.45089
+			1.24278*eV	1.45045
+			1.20019*eV	1.45001
+			1.15978*eV	1.44957
+			1.11996*eV	1.44912
+			1.08185*eV	1.44867
+			1.04536*eV	1.44821
+			1.00961*eV	1.44773
+			0.975452*eV	1.44725
+			0.942097*eV	1.44674
+			0.910279*eV	1.44621
+			0.879291*eV	1.44566
+			0.849178*eV	1.44509
+			0.819974*eV	1.44448
+			0.792204*eV	1.44384
+			0.765309*eV	1.44317
+			0.739296*eV	1.44246
+			0.714171*eV	1.44171
+			0.689928*eV	1.44091
+			0.666201*eV	1.44005
+			0.643718*eV	1.43915
+			0.621765*eV	1.43817
+			0.600678*eV	1.43713
+			0.580159*eV	1.43601
+			0.560488*eV	1.43482
+			0.541397*eV	1.43353
+			0.522902*eV	1.43214
+			0.505216*eV	1.43065
+			0.487918*eV	1.42903
+			0.471407*eV	1.4273
+			0.455307*eV	1.4254
+			0.439801*eV	1.42336
+			0.42488*eV	1.42115
+			0.410394*eV	1.41875
+			0.396355*eV	1.41612
+			0.382891*eV	1.41327
+			0.369869*eV	1.41017
+			0.357291*eV	1.40678
+			0.345156*eV	1.40307
+			0.333369*eV	1.39898
+			0.322026*eV	1.3945
+			0.311039*eV	1.38956
+			0.300485*eV	1.38412
+			0.290283*eV	1.3781
+			0.280371*eV	1.37137
+			0.270817*eV	1.36388
+			0.261616*eV	1.35553
+			0.252711*eV	1.34612"/>
+    <matrix name="ABSLENGTH_quartz" coldim="2" values="
+	  	8.00232*eV	0.095566*cm
+			7.75408*eV	0.19497*cm
+			7.51758*eV	0.771922*cm
+			7.29809*eV	1.95055*cm
+			7.087*eV	2.63982*cm
+			6.89161*eV	3.0205*cm
+			6.70742*eV	3.29532*cm
+			6.52767*eV	3.33339*cm
+			6.36219*eV	3.43479*cm
+			6.20055*eV	3.575*cm
+			6.04987*eV	4.04964*cm
+			5.90381*eV	4.5246*cm
+			5.76839*eV	4.42168*cm
+			5.63545*eV	4.74561*cm
+			5.51194*eV	4.74561*cm "/>
+    <matrix name="C6F14_RINDEX" coldim="2" values="7.74875*eV	1.31046
+				7.70062*eV	1.30964
+				7.65309*eV	1.30882
+				7.60613*eV	1.30801
+				7.55976*eV	1.30721
+				7.51394*eV	1.30642
+				7.46867*eV	1.30564
+				7.42395*eV	1.30487
+				7.37976*eV	1.30411
+				7.33609*eV	1.30336
+				7.29294*eV	1.30261
+				7.25029*eV	1.30188
+				7.20814*eV	1.30115
+				7.16647*eV	1.30044
+				7.12529*eV	1.29973
+				7.08457*eV	1.29902
+				7.04432*eV	1.29833
+				7.00452*eV	1.29765
+				6.96517*eV	1.29697
+				6.92626*eV	1.2963
+				6.88778*eV	1.29564
+				6.84972*eV	1.29498
+				6.81209*eV	1.29433
+				6.77486*eV	1.29369
+				6.73804*eV	1.29306
+				6.70162*eV	1.29243
+				6.66559*eV	1.29181
+				6.62995*eV	1.29119
+				6.59468*eV	1.29059
+				6.55979*eV	1.28999
+				6.52526*eV	1.28939
+				6.4911*eV	1.2888
+				6.45729*eV	1.28822
+				6.42383*eV	1.28764
+				6.39072*eV	1.28707
+				6.35795*eV	1.28651
+				6.32551*eV	1.28595
+				6.2934*eV	1.2854
+				6.26162*eV	1.28485
+				6.23015*eV	1.28431
+				6.199*eV	1.28377
+				6.16816*eV	1.28324
+				6.13762*eV	1.28271
+				6.10739*eV	1.28219
+				6.07745*eV	1.28168
+				6.0478*eV	1.28117
+				6.01845*eV	1.28066
+				5.98937*eV	1.28016
+				5.96058*eV	1.27966
+				5.93206*eV	1.27917
+				5.90381*eV	1.27869
+				5.87583*eV	1.27821
+				5.84811*eV	1.27773
+				5.82066*eV	1.27726
+				5.79346*eV	1.27679
+				5.76651*eV	1.27632
+				5.73981*eV	1.27586
+				5.71336*eV	1.27541
+				5.68716*eV	1.27496
+				5.66119*eV	1.27451" />
+      
+	<matrix name="C6F14_ABS" coldim="2" values="7.74633*eV	0.307577*cm
+				7.51622*eV	0.490808*cm
+				7.29938*eV	2.0926*cm
+				7.07891*eV	8.75833*cm
+				6.88854*eV	14.7896*cm
+				6.71069*eV	21.8726*cm
+				6.52389*eV	42.2879*cm
+				6.3802*eV	120.127*cm
+				6.199*eV	324.175*cm
+				6.04987*eV	1298.2*cm
+				5.90916*eV	332.833*cm
+				5.76303*eV	332.833*cm
+				5.63545*eV	1298.2*cm
+				5.51194*eV	1298.2*cm
+				5.39043*eV	1298.2*cm" />
+    <matrix name="ArGasMix_RINDEX" coldim="2" values="
+			8.83048*eV	1.0004
+			8.56807*eV	1.00038
+			8.32639*eV	1.00038
+			8.09269*eV	1.00037
+			7.87175*eV	1.00036
+			7.66255*eV	1.00035
+			7.46867*eV	1.00035
+			7.28009*eV	1.00034
+			7.1008*eV	1.00034
+			6.93013*eV	1.00034
+			6.77116*eV	1.00033
+			6.6158*eV	1.00033
+			6.4674*eV	1.00033
+			6.32874*eV	1.00032
+			6.19281*eV	1.00032
+			6.06259*eV	1.00032
+			5.93774*eV	1.00032
+			5.82066*eV	1.00032
+			5.70548*eV	1.00031
+			5.59477*eV	1.00031
+			5.48827*eV	1.00031
+			5.38809*eV	1.00031
+			5.28925*eV	1.00031
+			5.19397*eV	1.00031
+			5.10206*eV	1.00031
+			5.01537*eV	1.0003
+			4.92962*eV	1.0003
+			4.84676*eV	1.0003
+			4.76846*eV	1.0003
+			4.69088*eV	1.0003
+			4.61579*eV	1.0003
+			4.54306*eV	1.0003
+			4.4742*eV	1.0003
+			4.40583*eV	1.0003
+			4.33952*eV	1.0003
+			4.27517*eV	1.0003
+			4.21414*eV	1.0003
+			4.15343*eV	1.0003
+			4.09445*eV	1.00029
+			4.03844*eV	1.00029
+			3.98265*eV	1.00029
+			3.92839*eV	1.00029
+			3.87559*eV	1.00029
+			3.82536*eV	1.00029
+			3.77527*eV	1.00029
+			3.72648*eV	1.00029
+			3.67893*eV	1.00029
+			3.63365*eV	1.00029
+			3.58842*eV	1.00029
+			3.54431*eV	1.00029
+			3.50127*eV	1.00029
+			3.46023*eV	1.00029
+			3.41919*eV	1.00029
+			3.37912*eV	1.00029
+			3.34088*eV	1.00029
+			3.30261*eV	1.00029
+			3.26521*eV	1.00029
+			3.22865*eV	1.00029
+			3.19371*eV	1.00029
+			3.15873*eV	1.00029
+			3.1245*eV	1.00029
+			3.091*eV	1.00029
+			3.05897*eV	1.00029
+			3.02686*eV	1.00029
+			2.99541*eV	1.00029
+			2.96532*eV	1.00029
+			2.93513*eV	1.00029
+			2.90555*eV	1.00029
+			2.87657*eV	1.00029
+			2.84881*eV	1.00029
+			2.82093*eV	1.00029
+			2.7936*eV	1.00029
+			2.76679*eV	1.00028
+			2.7411*eV	1.00028
+			2.71529*eV	1.00028
+			2.68995*eV	1.00028
+			2.66566*eV	1.00028
+			2.64124*eV	1.00028
+			2.61727*eV	1.00028
+			2.59372*eV	1.00028
+			2.57113*eV	1.00028
+			2.54841*eV	1.00028
+			2.52608*eV	1.00028
+			2.50414*eV	1.00028
+			2.48308*eV	1.00028
+			2.46187*eV	1.00028
+			2.44103*eV	1.00028
+			2.42054*eV	1.00028
+			2.40085*eV	1.00028
+			2.38103*eV	1.00028
+			2.36152*eV	1.00028
+			2.34278*eV	1.00028
+			2.3239*eV	1.00028
+			2.30532*eV	1.00028
+			2.28703*eV	1.00028
+			2.26945*eV	1.00028
+			2.25173*eV	1.00028
+			2.23428*eV	1.00028
+			2.2171*eV	1.00028
+			2.20057*eV	1.00028
+			2.1839*eV	1.00028
+			2.14017*eV	1.00028
+			2.083*eV	1.00028
+			2.0288*eV	1.00028
+			1.97735*eV	1.00028
+			1.92845*eV	1.00028
+			1.88191*eV	1.00028
+			1.83756*eV	1.00028
+			1.79525*eV	1.00028
+			1.75485*eV	1.00028
+			1.71622*eV	1.00028
+			1.67926*eV	1.00028
+			1.64386*eV	1.00028
+			1.60971*eV	1.00028
+			1.57715*eV	1.00028
+			1.54589*eV	1.00028
+			1.51583*eV	1.00028
+			1.48693*eV	1.00028
+			1.4591*eV	1.00028
+			1.4323*eV	1.00028
+			1.40647*eV	1.00028
+			1.38155*eV	1.00028
+			1.35749*eV	1.00028
+			1.33427*eV	1.00028
+			1.31182*eV	1.00028
+			1.29011*eV	1.00028
+			1.26899*eV	1.00028
+			1.24867*eV	1.00028
+			1.22874*eV	1.00028
+			1.20956*eV	1.00028
+			1.19097*eV	1.00028
+			1.17405*eV	1.00028
+			1.15653*eV	1.00028
+			1.13952*eV	1.00028
+			1.12301*eV	1.00028
+			1.10696*eV	1.00028
+			1.09137*eV	1.00028
+			1.07622*eV	1.00028
+			1.06147*eV	1.00028
+			1.04713*eV	1.00028
+			1.03317*eV	1.00028
+			1.01957*eV	1.00028
+			1.00715*eV	1.00028
+			0.994226*eV	1.00028
+			0.981631*eV	1.00028
+			0.969351*eV	1.00028
+			0.957375*eV	1.00028
+			0.94569*eV	1.00028
+			0.934288*eV	1.00028
+			0.923157*eV	1.00028
+			0.912288*eV	1.00028
+			0.901673*eV	1.00028
+			0.891301*eV	1.00028
+			0.881792*eV	1.00028
+			0.871871*eV	1.00028
+			0.86217*eV	1.00028
+			0.852682*eV	1.00028
+			0.843401*eV	1.00028
+			0.83432*eV	1.00028
+			0.825433*eV	1.00028
+			0.816733*eV	1.00028
+			0.808214*eV	1.00028
+			0.799871*eV	1.00028
+			0.791699*eV	1.00028
+			0.784187*eV	1.00028
+			0.776331*eV	1.00028
+			0.76863*eV	1.00028
+			0.76108*eV	1.00028
+			0.753678*eV	1.00028
+			0.746418*eV	1.00028
+			0.739296*eV	1.00028
+			0.73231*eV	1.00028
+			0.725453*eV	1.00028
+			0.718725*eV	1.00028
+			0.712119*eV	1.00028
+			0.706036*eV	1.00028
+			0.699661*eV	1.00028
+			0.6934*eV	1.00028
+			0.687251*eV	1.00028
+			0.681209*eV	1.00028
+			0.675272*eV	1.00028
+			0.669438*eV	1.00028
+			0.663704*eV	1.00028
+			0.658068*eV	1.00028
+			0.652526*eV	1.00028
+			0.647077*eV	1.00028
+			0.642051*eV	1.00028
+			0.636775*eV	1.00028
+			0.631584*eV	1.00028
+			0.626478*eV	1.00028
+			0.621454*eV	1.00028
+			0.616509*eV	1.00028
+			0.611643*eV	1.00028
+			0.606853*eV	1.00028
+			0.602137*eV	1.00028" />
+    <matrix name="ArGasMix_ABS" coldim="2" values="
+			9.53692*eV	203.833*cm
+			9.46412*eV	212.819*cm
+			9.39242*eV	222.563*cm
+			9.3218*eV	228.675*cm
+			9.25224*eV	234.712*cm
+			9.1837*eV	228.753*cm
+			9.11618*eV	229.673*cm
+			9.04964*eV	215.099*cm
+			8.98406*eV	206.65*cm
+			8.91942*eV	199.616*cm
+			8.85571*eV	200.305*cm
+			8.79291*eV	192.419*cm
+			8.73099*eV	197.464*cm
+			8.66993*eV	213.772*cm
+			8.60972*eV	223.231*cm
+			8.55034*eV	230.344*cm
+			8.49178*eV	233.892*cm
+			8.43401*eV	235.052*cm
+			8.37703*eV	239.542*cm
+			8.32081*eV	248.61*cm
+			8.26533*eV	258.032*cm
+			8.2106*eV	269.504*cm
+			8.15658*eV	283.654*cm
+			8.10327*eV	297.101*cm
+			8.05065*eV	302.042*cm
+			7.99871*eV	294.74*cm
+			7.94744*eV	284.194*cm
+			7.89682*eV	276.292*cm
+			7.84684*eV	273.382*cm
+			7.79748*eV	274.708*cm
+			7.74875*eV	283.789*cm
+			7.70062*eV	302.984*cm
+			7.65309*eV	306.12*cm
+			7.60613*eV	305.374*cm
+			7.55976*eV	312.627*cm
+			7.51394*eV	317.855*cm
+			7.46867*eV	324.475*cm
+			7.42395*eV	336.114*cm
+			7.37976*eV	346.693*cm
+			7.33609*eV	357.653*cm
+			7.29294*eV	379.281*cm
+			7.25029*eV	406.287*cm
+			7.20814*eV	436.231*cm
+			7.16647*eV	480.625*cm
+			7.12529*eV	543.673*cm
+			7.08457*eV	619.253*cm
+			7.04432*eV	712.617*cm
+			7.00452*eV	841.178*cm
+			6.96517*eV	1067.26*cm
+			6.92626*eV	1272.51*cm
+			6.88778*eV	1485.17*cm
+			6.84972*eV	1992.33*cm
+			6.81209*eV	2506.08*cm
+			6.77486*eV	3293.28*cm
+			6.73804*eV	4111.12*cm
+			6.70162*eV	4488.31*cm
+			6.66559*eV	5709.86*cm
+			6.62995*eV	5000*cm
+			6.59468*eV	5000*cm
+			6.55979*eV	5000*cm
+			6.52526*eV	5000*cm
+			6.4911*eV	5000*cm
+			6.45729*eV	5000*cm
+			6.42383*eV	5000*cm
+			6.39072*eV	5000*cm
+			6.35795*eV	5000*cm
+			6.32551*eV	5000*cm
+			6.2934*eV	5000*cm
+			6.26162*eV	5000*cm
+			6.23015*eV	5000*cm
+			6.199*eV	5000*cm
+			6.16816*eV	5000*cm
+			6.13762*eV	5000*cm
+			6.10739*eV	5000*cm
+			6.07745*eV	5000*cm
+			6.0478*eV	5000*cm
+			6.01845*eV	5000*cm
+			5.98937*eV	5000*cm
+			5.96058*eV	5000*cm
+			5.93206*eV	5000*cm
+			5.90381*eV	5000*cm
+			5.87583*eV	5000*cm
+			5.84811*eV	5000*cm
+			5.82066*eV	5000*cm
+			5.79346*eV	5000*cm
+			5.76651*eV	5000*cm
+			5.73981*eV	5000*cm
+			5.71336*eV	5000*cm
+			5.68716*eV	5000*cm
+			5.66119*eV	5000*cm
+			5.63545*eV	5000*cm
+			5.60995*eV	5000*cm
+			5.58468*eV	5000*cm
+			5.55964*eV	5000*cm
+			5.53482*eV	5000*cm
+			5.51022*eV	5000*cm
+			5.48584*eV	5000*cm
+			5.46167*eV	5000*cm
+			5.43772*eV	5000*cm
+			5.41397*eV	5000*cm" />
+      </properties>
+
+
+
+
+<materials>   
+	<material formula="Opt_Ar" name="Opt_Ar">
+		<D unit="g/cm3" value="0.0017841" />
+		<composite n="1" ref="Argon" />
+		<property name="RINDEX" ref="ArGasMix_RINDEX" />
+		<property name="ABSLENGTH" ref="ArGasMix_ABS" />
+	</material>
+
+  <material formula="Opt_C6F14" name="Opt_C6F14">
+		<D unit="g/cm3" value="1.669" />
+		<composite n="6" ref="C" />
+		<composite n="14" ref="F"/>
+		<property name="RINDEX" ref="C6F14_RINDEX" />
+		<property name="ABSLENGTH" ref="C6F14_ABS" />	
+</material>
+  
+  <material name="OptQuartz" state="solid">
+      <D value="2.2" unit="g/cm3"/>
+     <composite n="1" ref="Si"/>
+      <composite n="2" ref="O"/>
+   <property name="RINDEX" ref="RINDEX_quartz"/>
+      <property name="ABSLENGTH" ref="ABSLENGTH_quartz"/>
+     </material>
+    
+
+</materials>  
+
+ 
+    <limits>
+      <limitset name="RICH_limits">
+        <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+      </limitset>
+    </limits>
+    
+    <display>
+      <vis name="RICHVis"   alpha="1.0" r="0.8" g=".5"  b=".5"   showDaughters="true"  visible="true"/>
+      <vis name="RICHAlVis"   alpha="0.8" r="192./256." g="192./256."  b="192./256."   showDaughters="true"  visible="true"/>
+      <vis name="RICHQuartzVis"   alpha="1.0" r="0.8" g=".8"  b=".2"   showDaughters="true"  visible="true"/>
+      <vis name="RICHGasVis"   alpha="0.5" r="255./256." g="251./256."  b="250./256."   showDaughters="true"  visible="true"/>     
+      <vis name="RICHLayerVis"   alpha="1.0" r="0." g=".5"  b=".5"   showDaughters="true"  visible="true"/>
+      <vis name="RICHSupportVis" alpha="1.0" r="0.2" g="0.5" b="0.7"  showDaughters="true"  visible="true"/>
+    </display>
+
+    <detectors>
+      <comment>Trackers</comment>
+      
+     <!--detector name="RICH" type="BarrelDIRC" vis="RICHVis" id="302" limits="RICH_limits" readout="RICHCollection" insideTrackingVolume="true" interval="312.5*mm" initial="-1400*mm"-->
+     <detector name="RICH" type="BarrelDIRC" vis="RICHVis" id="302" limits="RICH_limits" readout="RICHCollection" insideTrackingVolume="true" interval="10*mm" initial = "1205*mm" >
+        <comment> RICH </comment>
+        <!--width might need to be correct  -->
+       
+         <layer nLadders="12" phi0="0.000000000*rad" id="0">
+           <!--AL shell -->
+          <!--ladder distance="8.56600000e+02*mm" thickness="112.300000000*mm" width="4.56000000e+02*mm" length="1.20000000e+03*mm" offset="0.000000000*mm"  initial = "-1200 * mm"  material="G4_Al" vis="RICHAlVis" id="2"/>
+        <radiator>
+          <ladder distance="8.59600000e+02*mm" thickness="16.00000000*mm" width="4.48000000e+02*mm" length="1.19200000e+03*mm" offset="0.000000000*mm"   initial = "-1196 * mm" material="Opt_quartz" vis="RICHQuartzVis" id="3"/>
+         <ladder distance="8.626000000e+02*mm" thickness="1.000000000e+01*mm" width="4.40000000e+02*mm" length="1.1840000e+03*mm" offset="0.000000000*mm"  initial = "-1192 * mm"     material="Opt_C6F14" vis="RICHSupportVis" id="4"/-->
+       <!--AL shell -->
+          <ladder distance="850*mm" thickness="2*mm"   width="446*mm" length="2396*mm" offset="0*mm"     initial = "0*mm"      material="G4_Al" vis="RICHAlVis" id="1"/>
+           <!-- -->
+          <ladder distance="850*mm" thickness="130*mm" width="446*mm" length="2*mm"    offset="0*mm"     initial = "-1199*mm"  material="G4_Al" vis="RICHAlVis" id="2"/>
+					<ladder distance="850*mm" thickness="130*mm" width="446*mm" length="2*mm"    offset="0*mm"     initial = "1199*mm"   material="G4_Al" vis="RICHAlVis" id="3"/>
+          <ladder distance="850*mm" thickness="130*mm" width="2*mm"   length="2400*mm" offset="224*mm"   initial = "0*mm"      material="G4_Al" vis="RICHAlVis" id="4"/>
+          <ladder distance="850*mm" thickness="130*mm" width="2*mm"   length="2400*mm" offset="-224*mm"  initial = "0*mm"      material="G4_Al" vis="RICHAlVis" id="5"/>
+          <ladder distance="978*mm" thickness="2*mm"   width="446*mm" length="2396*mm" offset="0*mm"     initial = "0*mm"      material="G4_Al" vis="RICHAlVis" id="6"/>
+					<!--Quartz shell -->
+
+          <ladder distance="852*mm" thickness="3*mm"  width="440*mm" length="2390*mm" offset="0*mm"      initial="0*mm"        material="OptQuartz" vis="RICHQuartzVis" id="7"/>
+          <ladder distance="852*mm" thickness="16*mm" width="440*mm" length="3*mm"    offset="0*mm"      initial="-1196.5*mm"  material="OptQuartz" vis="RICHQuartzVis" id="8"/>
+          <ladder distance="852*mm" thickness="16*mm" width="440*mm" length="3*mm"    offset="0*mm"      initial="1196.5*mm"   material="OptQuartz" vis="RICHQuartzVis" id="9"/>
+          <ladder distance="852*mm" thickness="16*mm" width="3*mm"   length="2396*mm" offset="221.5*mm"  initial="0*mm"        material="OptQuartz" vis="RICHQuartzVis" id="10"/>
+          <ladder distance="852*mm" thickness="16*mm" width="3*mm"   length="2396*mm" offset="-221.5*mm" initial="0*mm"        material="OptQuartz" vis="RICHQuartzVis" id="11"/>
+          <ladder distance="865*mm" thickness="3*mm"  width="440*mm" length="2390*mm" offset="0*mm"      initial="0*mm"        material="OptQuartz" vis="RICHQuartzVis" id="12"/>
+					<!--radiator-->
+					<ladder distance="855*mm" thickness="10*mm" width="440*mm" length="2390*mm" offset="0*mm"      initial="0*mm"        material="Opt_C6F14" vis="RICHSupportVis" id="13"/>
+					<!--gas-->
+					<ladder distance="868*mm" thickness="109*mm" width="446*mm" length="2396*mm" offset="0*mm"  initial = "0*mm"  material="Opt_Ar" vis="RICHGasVis" id="14"/>
+					<!--read out-->
+					<sensitive distance="977*mm" thickness="1*mm" width="446*mm" length="2396*mm" offset="0*mm" initial= "0*mm" material="FR4" vis="RICHLayerVis" id="1"/>
+        </layer>
+          
+      </detector>
+
+   </detectors>
+
+    <readouts>
+        <readout name="RICHCollection">
+            <id>system:5,side:2,layer:9,module:8,sensor:8</id>
+        </readout>
+    </readouts>
+
+
+    <!--plugins>
+      <plugin name="InstallSurfaceManager"/>
+    </plugins-->
+
+
+ <!--fields>
+  < <field type="solenoid" name="GlobalSolenoid" inner_field="BField_nominal"
+	  outer_field="-1.5*tesla" zmax="SolenoidField_zMax"
+	  inner_radius="SolenoidField_outer_radius"
+	  outer_radius="world_side" />
+ </fields> --> 
+
+</lccdd>

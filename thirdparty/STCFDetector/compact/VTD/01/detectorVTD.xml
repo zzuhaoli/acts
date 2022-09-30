@@ -1,0 +1,70 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  <info name="STCF"
+    title="STCF"
+    author="Dong LIU"
+    url="www.ustc.edu.cn"
+    status="development"
+    version="$Id: $">
+    <comment>
+      The compact format for the STCF
+    </comment>
+  </info>
+
+  <includes>
+    <gdmlFile ref="../../material/elements.xml"/>
+    <gdmlFile ref="../../material/materials.xml"/>
+    <!--gdmlFile ref="DIRC.xml"/-->
+    <!--gdmlFile ref="STCFECAL.xml"/-->
+  </includes>
+  <define>
+    <constant name="world_side"          value="10*m"/>
+    <constant name="world_x"             value="world_side/2"/>
+    <constant name="world_y"             value="world_side/2"/>
+    <constant name="world_z"             value="world_side/2"/>
+  </define>
+
+  <materials>
+  </materials>
+
+  <limits>
+  </limits>
+
+  <display>
+    <vis name="VXDLayerVis"   alpha="1.0" r="0.8" g=".8"  b=".8"   showDaughters="true"  visible="true"/>
+    <!--vis name="VXDSupportVis" alpha="1.0" r="0.2" g="0.2" b="0.4"  showDaughters="true"  visible="true"/-->
+    <vis name="VXDSupportVis" alpha="1.0" r="0.2" g="0.4" b="0.2"  showDaughters="true"  visible="true"/>
+  </display>
+
+
+<detectors>
+  <detector  name="VXD" type="InnerPlanarTracker" vis="VXDVis" id="101" readout="VXDCollection" insideTrackingVolume="true">
+    <comment> Inner Tracker</comment>
+    <layer nLadders="12" phi0="-1.570796327e+00*rad" id="0">
+      <ladder distance="30.025*mm" thickness="0.95*mm" width="24.0*mm" length="100.0*mm" offset="-11*mm"    material="CarbonFiber" vis="VXDSupportVis" />
+      <sensitive distance="30.*mm" thickness="0.05*mm" width="20.0*mm" length="82.50*mm" offset="-10*mm" material="G4_Si" vis="VXDLayerVis"/>
+    </layer>
+    <layer nLadders="10" phi0="-1.570796327e+00*rad" id="1">
+      <ladder distance="70.025*mm" thickness="0.95*mm" width="54.0*mm" length="200.0*mm" offset="-11*mm"    material="CarbonFiber"  vis="VXDSupportVis" />
+      <sensitive distance="70.0*mm" thickness="0.05*mm" width="50.0*mm" length="192.0*mm" offset="-10*mm" material="G4_Si" vis="VXDLayerVis"/>
+    </layer>
+    <layer nLadders="14" phi0="-1.570796327e+00*rad" id="2">
+      <ladder distance="120.025*mm" thickness="0.95*mm" width="64.0*mm" length="350.0*mm" offset="-11*mm"    material="CarbonFiber"  vis="VXDSupportVis" />
+      <sensitive distance="120.0*mm" thickness="0.05*mm" width="60.0*mm" length="330.0*mm" offset="-10*mm" material="G4_Si" vis="VXDLayerVis"/>
+    </layer>
+  </detector>
+</detectors>
+<readouts>
+    <readout name="VXDCollection">
+      <id>system:5,side:2,layer:3,module:8,sensor:8</id>
+    </readout>
+  </readouts>
+
+  <plugins>
+  </plugins>
+
+  <fields>
+  </fields>
+
+</lccdd>

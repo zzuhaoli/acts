@@ -1,0 +1,274 @@
+<lccdd>
+  <info name="detectorMUC"
+        title="Muon Detector model"
+        author="Xiaocong Ai"
+	url=""
+	status="development"
+	version="$Id: 2022-9-2$">
+    <comment>test</comment>
+  </info>
+
+  <materials></materials>
+
+  <limits>
+    <limitset name="Tracker_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+
+  <display>
+    <vis name="MuonVis" alpha="0.1" r="0.0" g="0.5" b="1.0" showDaughters="true" visible="true"/>
+    <vis name="IronVis" alpha="0.9" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="MuonVisNone" alpha="1.0" r="0.7" g="0.7" b="0.9" showDaughters="false" visible="false"/>
+  </display>
+
+  <detectors>
+    <detector name="DetectorMUC" type="DetectorMUC_02" id="6" vis="MuonVis" limits="Tracker_limits" readout="MUCCollection">
+
+      <constant rmin="1850*mm" zhalf="2400*mm" angle="0.3490658504" numsides="8"></constant>
+
+      <barrel name="Barrel" vis="MuonVis">
+
+        <!-- <slice name="InnerReadout" material="Copper" thickness="0.1*mm" number="-1" vis="MuonVis"> -->
+        <!--   <strip nmodules="10" gap="1*mm" type="x"/> -->
+        <!-- </slice> -->
+        <!-- <slice name="InnerGraphite" material="G4_GRAPHITE" thickness="1*mm" number="-1" vis="MuonVis"/> -->
+        <!-- <slice name="InnerResistance" material="Bakelite" thickness="3*mm" number="-1" vis="MuonVis"/> -->
+        <!-- <slice name="WorkGas" material="Argon" thickness="2*mm" number="-1" vis="MuonVis"/> -->
+        <!-- <slice name="OuterResistance" material="Bakelite" thickness="3*mm" number="-1" vis="MuonVis"/> -->
+        <!-- <slice name="OuterGraphite" material="G4_GRAPHITE" thickness="1*mm" number="-1" vis="MuonVis"/> -->
+        <!-- <slice name="OuterReadout" material="Copper" thickness="0.1*mm" number="-1" vis="MuonVis"> -->
+        <!--   <strip nmodules="10" gap="1*mm" type="y"/> -->
+        <!-- </slice> -->
+        <!-- <slice name="Gap" material="Air" thickness="69.8*mm" number="-1" vis="MuonVis"/><!-\-comment-\-> -->
+
+        <!-- <slice name="InnerReadout" material="Copper" thickness="0.1*mm" number="0" vis="MuonVis"> -->
+        <!--   <strip nmodules="10" gap="1*mm" type="x"/> -->
+        <!-- </slice> -->
+        <!-- <slice name="InnerGraphite" material="G4_GRAPHITE" thickness="1*mm" number="0" vis="MuonVis"/> -->
+        <!-- <slice name="InnerResistance" material="Bakelite" thickness="3*mm" number="0" vis="MuonVis"/> -->
+        <!-- <slice name="WorkGas" material="Argon" thickness="2*mm" number="0" vis="MuonVis"/> -->
+        <!-- <slice name="OuterResistance" material="Bakelite" thickness="3*mm" number="0" vis="MuonVis"/> -->
+        <!-- <slice name="OuterGraphite" material="G4_GRAPHITE" thickness="1*mm" number="0" vis="MuonVis"/> -->
+        <!-- <slice name="OuterReadout" material="Copper" thickness="0.1*mm" number="0" vis="MuonVis"> -->
+        <!--   <strip nmodules="10" gap="1*mm" type="y"/> -->
+	<!-- </slice> -->
+	<!-- <slice name="Gap" material="Air" thickness="69.8*mm" number="0" vis="MuonVis"/><!-\-comment-\-> -->
+
+
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" number="1" vis="MuonVis">
+          <strip nmodules="120" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="28*mm" number="1" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="40*mm" number="1" vis="IronVis"/>
+
+
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" number="2" vis="MuonVis">
+          <strip nmodules="120" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="28*mm" number="2" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="40*mm" number="2" vis="IronVis"/>
+
+
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" number="3" vis="MuonVis">
+          <strip nmodules="120" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="28*mm" number="3" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="45*mm" number="3" vis="IronVis"/>
+
+
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" number="4" vis="MuonVis">
+          <strip nmodules="120" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="30*mm" number="4" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="60*mm" number="4" vis="IronVis"/>
+
+
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" number="5" vis="MuonVis">
+          <strip nmodules="120" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="30*mm" number="5" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="60*mm" number="5" vis="IronVis"/>
+
+        
+	<slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" number="6" vis="MuonVis">
+          <strip nmodules="120" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="30*mm" number="6" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="60*mm" number="6" vis="IronVis"/>
+
+
+	<slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" number="7" vis="MuonVis">
+          <strip nmodules="120" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="30*mm" number="7" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="60*mm" number="7" vis="IronVis"/>
+
+
+
+
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" number="8" vis="MuonVis">
+          <strip nmodules="120" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="30*mm" number="8" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="80*mm" number="8" vis="IronVis"/>
+
+
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" number="9" vis="MuonVis">
+          <strip nmodules="120" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="30*mm" number="9" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="80*mm" number="9" vis="IronVis"/>
+
+
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" number="10" vis="MuonVis">
+          <strip nmodules="120" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="30*mm" number="10" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="150*mm" number="10" vis="IronVis"/>
+      </barrel>
+
+
+      <endcap name="Endcap" vis="MuonVis">
+
+        <slice name="Absorber" material="Iron" thickness="40*mm" number="0" vis="IronVis"/>
+
+
+        <slice name="PSX" material="G4_POLYSTYRENE" thickness="10*mm" number="1" vis="MuonVis">
+          <strip nmodules="60" gap="0*mm" type="x" sensitive="yes"/>
+        </slice>
+        <slice name="PSY" material="G4_POLYSTYRENE" thickness="10*mm" number="1" vis="MuonVis">
+          <strip nmodules="48" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="18*mm" number="1" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="40*mm" number="1" vis="IronVis"/>
+
+
+        <slice name="PSX" material="G4_POLYSTYRENE" thickness="10*mm" number="2" vis="MuonVis">
+          <strip nmodules="60" gap="0*mm" type="x" sensitive="yes"/>
+        </slice>
+        <slice name="PSY" material="G4_POLYSTYRENE" thickness="10*mm" number="2" vis="MuonVis">
+          <strip nmodules="47" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="18*mm" number="2" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="40*mm" number="2" vis="IronVis"/>
+
+
+        <slice name="PSX" material="G4_POLYSTYRENE" thickness="10*mm" number="3" vis="MuonVis">
+          <strip nmodules="60" gap="0*mm" type="x" sensitive="yes"/>
+        </slice>
+        <slice name="PSY" material="G4_POLYSTYRENE" thickness="10*mm" number="3" vis="MuonVis">
+          <strip nmodules="47" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="18*mm" number="3" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="45*mm" number="3" vis="IronVis"/>
+
+
+        <slice name="PSX" material="G4_POLYSTYRENE" thickness="10*mm" number="4" vis="MuonVis">
+          <strip nmodules="60" gap="0*mm" type="x" sensitive="yes"/>
+        </slice>
+        <slice name="PSY" material="G4_POLYSTYRENE" thickness="10*mm" number="4" vis="MuonVis">
+          <strip nmodules="46" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="20*mm" number="4" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="60*mm" number="4" vis="IronVis"/>
+
+
+        <slice name="PSX" material="G4_POLYSTYRENE" thickness="10*mm" number="5" vis="MuonVis">
+          <strip nmodules="60" gap="0*mm" type="x" sensitive="yes"/>
+        </slice>
+        <slice name="PSY" material="G4_POLYSTYRENE" thickness="10*mm" number="5" vis="MuonVis">
+          <strip nmodules="46" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="20*mm" number="5" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="60*mm" number="5" vis="IronVis"/>
+
+
+	<slice name="PSX" material="G4_POLYSTYRENE" thickness="10*mm" number="6" vis="MuonVis">
+          <strip nmodules="60" gap="0*mm" type="x" sensitive="yes"/>
+        </slice>
+        <slice name="PSY" material="G4_POLYSTYRENE" thickness="10*mm" number="6" vis="MuonVis">
+          <strip nmodules="46" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="20*mm" number="6" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="60*mm" number="6" vis="IronVis"/>
+
+
+        <slice name="PSX" material="G4_POLYSTYRENE" thickness="10*mm" number="7" vis="MuonVis">
+          <strip nmodules="60" gap="0*mm" type="x" sensitive="yes"/>
+        </slice>
+        <slice name="PSY" material="G4_POLYSTYRENE" thickness="10*mm" number="7" vis="MuonVis">
+          <strip nmodules="46" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="20*mm" number="7" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="60*mm" number="7" vis="IronVis"/>
+
+
+
+        <slice name="PSX" material="G4_POLYSTYRENE" thickness="10*mm" number="8" vis="MuonVis">
+          <strip nmodules="60" gap="0*mm" type="x" sensitive="yes"/>
+        </slice>
+        <slice name="PSY" material="G4_POLYSTYRENE" thickness="10*mm" number="8" vis="MuonVis">
+          <strip nmodules="45" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="20*mm" number="8" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="80*mm" number="8" vis="IronVis"/>
+
+
+        <slice name="PSX" material="G4_POLYSTYRENE" thickness="10*mm" number="9" vis="MuonVis">
+          <strip nmodules="60" gap="0*mm" type="x" sensitive="yes"/>
+        </slice>
+        <slice name="PSY" material="G4_POLYSTYRENE" thickness="10*mm" number="9" vis="MuonVis">
+          <strip nmodules="44" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="20*mm" number="9" vis="MuonVis"/>
+
+        <slice name="Absorber" material="Iron" thickness="80*mm" number="9" vis="IronVis"/>
+
+
+        <slice name="PSX" material="G4_POLYSTYRENE" thickness="10*mm" number="10" vis="MuonVis">
+          <strip nmodules="60" gap="0*mm" type="x" sensitive="yes"/>
+        </slice>
+        <slice name="PSY" material="G4_POLYSTYRENE" thickness="10*mm" number="10" vis="MuonVis">
+          <strip nmodules="43" gap="0*mm" type="y" sensitive="yes"/>
+        </slice>
+        <slice name="Gap" material="Air" thickness="20*mm" number="10" vis="MuonVis"/>
+
+        <slice name="Absorber" material="G4_POLYETHYLENE" thickness="100*mm" number="10" vis="IronVis"/>
+
+
+
+        <slice name="Absorber" material="Lead" thickness="50*mm" number="11" vis="IronVis"/>
+      </endcap>
+
+    </detector>
+  </detectors>
+
+  <readouts>
+    <readout name="MUCCollection">
+      <id>system:4,part:2,sector:3,layer:4,sublayer:2,direction:1,strip:6</id>
+    </readout>
+  </readouts>
+
+  <plugins></plugins>
+
+  <fields></fields>
+</lccdd>

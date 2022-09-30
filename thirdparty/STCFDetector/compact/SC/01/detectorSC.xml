@@ -1,0 +1,53 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  <info name="STCF"
+    title="STCF"
+    author="B.Qi"
+    url="www.ustc.edu.cn"
+    status="development"
+    version="$Id: $">
+    <comment>
+      The compact format for the STCF
+    </comment>
+  </info>
+
+  <materials>
+    <material name="Niticu">
+    <D type="density" value="10.9" unit="g/cm3"/>
+    <fraction n="0.25" ref="Nb"/>
+    <fraction n="0.25" ref="Ti"/>
+    <fraction n="0.5"  ref="Cu"/>
+    </material>
+  </materials>
+
+  <limits>
+  </limits>
+
+  <display>
+  <vis name="SCSupVis"       alpha="1.0" r="0.6" g="0.8"  b="0.8"   showDaughters="true"  visible="true"/>
+  <vis name="SCVis"          alpha="1.0" r="0.6" g="0.4"  b="0.4"   showDaughters="true"  visible="true"/>
+  </display>
+
+  <detectors>
+   
+	   <detector name="SCShell" type="SCTube" vis="SCSupVis" id="501" limits="Tracker_limits" insideTrackingVolume="true">
+	   <dimensions rmin="1585.*mm" rmax="1600.*mm" zhalf="2.200000e+03*mm"  material="G4_Al"  vis="SCSupVis"/>
+	   </detector>
+
+	   <detector name="Sonoid" type="SCTube" vis="SCVIS" id="502" limits="Tracker_limits" insideTrackingVolume="true">
+	   <dimensions rmin="1601.*mm" rmax="1605.*mm" zhalf="2.200000e+03*mm"  material="Niticu" vis="SCVis"/>
+       </detector>
+  
+  </detectors>
+
+  <readouts>
+  </readouts>
+
+  <plugins>
+  </plugins>
+
+  <fields>
+  </fields>
+
+</lccdd>

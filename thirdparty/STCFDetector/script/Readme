@@ -1,0 +1,16 @@
+Start a visulization
+Note: if not work, please source xx.sh first.
+
+set environment DD4hepExamplesInstall
+export DD4hepExamplesInstall=path-to-installed-examples
+
+run ROOT script
+
+$ root -l iniAClick.C
+[] .x CLICSiDAClick.C+
+
+then go into geant comment lines in a window
+Session: > /vis/open OGL
+Session: > /vis/drawVolume
+Session: > /run/beamOn 1
+

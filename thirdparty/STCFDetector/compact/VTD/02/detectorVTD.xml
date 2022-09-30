@@ -1,0 +1,108 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  <info name="STCF"
+    title="STCF"
+    author="Zhou Hang"
+    url="www.ustc.edu.cn"
+    status="development"
+    version="$Id: $">
+    <comment>
+      The compact format for the STCF
+    </comment>
+  </info>
+
+  <includes>
+    <gdmlFile ref="../../material/elements.xml"/>
+    <gdmlFile ref="../../material/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_side"          value="10*m"/>
+    <constant name="world_x"             value="world_side/2"/>
+    <constant name="world_y"             value="world_side/2"/>
+    <constant name="world_z"             value="world_side/2"/>
+
+    <constant name="BField_nominal" value="1.0*tesla"/>
+    <constant name="Cathode_Kapton_th" value="0.05*mm"/>
+    <constant name="Cathode_DLC_th" value="0.0001*mm"/>
+    <constant name="Drift_Gas_th" value="3.*mm"/>
+    <constant name="PCB_DLC1_th" value="0.0001*mm"/>
+    <constant name="PCB_Well_Kapton_th" value="0.05*mm"/>
+    <constant name="PCB_DLC2_th" value=" 0.0001*mm"/>
+    <constant name="PCB_Epoxy1_th" value="0.01*mm"/>
+    <constant name="PCB_Prepreg_th" value="0.05*mm"/>
+    <constant name="PCB_Kapton1_th" value="0.012*mm"/>
+    <constant name="PCB_topEpoxy_th" value="0.007*mm"/>
+    <constant name="PCB_Kapton2_th" value="0.025*mm"/>
+    <constant name="PCB_mediumEpoxy_th" value="0.007*mm"/>
+    <constant name="PCB_Kapton3_th" value="0.2*mm"/>
+
+    <constant name="Strip_th" value="0.005*mm"/>
+    <constant name="topStrip_wid" value="0.06*mm"/>
+    <constant name="mediumStrip_wid" value="0.35*mm"/>
+    <constant name="glue_th" value="0.001*mm"/>
+
+  </define>
+
+  <materials>
+  </materials>
+
+  <limits>
+  </limits>
+
+  <display>
+    <vis name="KaptonVis"   alpha="1.0" r="0.1" g="0.1"  b="0.1"   showDaughters="true"  visible="true"/>
+    <vis name="DLCVis" alpha="1.0" r="1.0" g="0.4" b="0.2"  showDaughters="true"  visible="true"/>
+    <vis name="gasVis" alpha="1.0" r="0.2" g="0.4" b="0.2"  showDaughters="true"  visible="false"/>
+    <vis name="EpoxyVis" alpha="1.0" r="0.2" g="0.4" b="0.2"  showDaughters="true"  visible="true"/>
+    <vis name="StripVis" alpha="1.0" r="1" g="0.5" b="0.3"  showDaughters="true"  visible="true"/>
+    <vis name="PrepregVis" alpha="1.0" r="0.5" g="0.4" b="0."  showDaughters="true"  visible="true"/>
+     <vis name="InnerVis" alpha="1.0" r="0.2" g="0.8" b="0.4"  showDaughters="true"  visible="true"/>
+  </display>
+
+
+<detectors>
+  <detector  name="InnerTracker" type="CuRwell" vis="InnerVis" id="101" readout="InnerCollection" insideTrackingVolume="true">
+  <dimensions inner_r="48*mm" outer_r="166*mm" length="456.5*mm" vis="gasVis"/> 
+    <comment> Inner Tracker</comment>
+    <layer startr="50*mm" halfz="137.5*mm" id="0">
+      <strip quan_top="832" quan_medium="702" Strip_th="0.005*mm" topStrip_wid="0.06*mm" mediumStrip_wid="0.35*mm" glue_th="0.001*mm" material="Al"/>
+      <uRwell Cathode_Kapton_th="0.05*mm" Cathode_DLC_th="0.0001*mm" Drift_Gas_th="3.*mm" PCB_DLC1_th="0.0001*mm" PCB_Well_Kapton_th="0.05*mm" PCB_DLC2_th=" 0.0001*mm" PCB_Epoxy1_th="0.01*mm" PCB_Prepreg_th="0.05*mm" PCB_Kapton1_th="0.012*mm" PCB_topEpoxy_th="0.007*mm" PCB_Kapton2_th="0.025*mm" PCB_mediumEpoxy_th="0.007*mm" PCB_Kapton3_th="0.2*mm"
+      Cathode_Kapton_ma="Kapton" Cathode_DLC_ma="DLC" Drift_Gas_ma="Ar/CO2(70/30)" PCB_DLC1_ma="DLC" PCB_Well_Kapton_ma="Kapton" PCB_DLC2_ma="DLC" PCB_Epoxy1_ma="Epoxy" PCB_Prepreg_ma="prepreg" PCB_Kapton1_ma="Kapton" PCB_topEpoxy_ma="Epoxy" PCB_Kapton2_ma="Kapton" PCB_mediumEpoxy_ma="Epoxy" PCB_Kapton3_ma="Kapton"/>
+    </layer>
+    <layer startr="80*mm" halfz="220*mm" id="1">
+      <strip quan_top="1344" quan_medium="1152" Strip_th="0.005*mm" topStrip_wid="0.06*mm" mediumStrip_wid="0.35*mm" glue_th="0.001*mm" material="Al"/>
+      <uRwell Cathode_Kapton_th="0.05*mm" Cathode_DLC_th="0.0001*mm" Drift_Gas_th="3.*mm" PCB_DLC1_th="0.0001*mm" PCB_Well_Kapton_th="0.05*mm" PCB_DLC2_th=" 0.0001*mm" PCB_Epoxy1_th="0.01*mm" PCB_Prepreg_th="0.05*mm" PCB_Kapton1_th="0.012*mm" PCB_topEpoxy_th="0.007*mm" PCB_Kapton2_th="0.025*mm" PCB_mediumEpoxy_th="0.007*mm" PCB_Kapton3_th="0.2*mm"
+      Cathode_Kapton_ma="Kapton" Cathode_DLC_ma="DLC" Drift_Gas_ma="Ar/CO2(70/30)" PCB_DLC1_ma="DLC" PCB_Well_Kapton_ma="Kapton" PCB_DLC2_ma="DLC" PCB_Epoxy1_ma="Epoxy" PCB_Prepreg_ma="prepreg" PCB_Kapton1_ma="Kapton" PCB_topEpoxy_ma="Epoxy" PCB_Kapton2_ma="Kapton" PCB_mediumEpoxy_ma="Epoxy" PCB_Kapton3_ma="Kapton"/>
+    </layer>
+      <layer startr="120*mm" halfz="330*mm" id="2">
+      <strip quan_top="1984" quan_medium="1664" Strip_th="0.005*mm" topStrip_wid="0.06*mm" mediumStrip_wid="0.35*mm" glue_th="0.001*mm" material="Al"/>
+      <uRwell Cathode_Kapton_th="0.05*mm" Cathode_DLC_th="0.0001*mm" Drift_Gas_th="3.*mm" PCB_DLC1_th="0.0001*mm" PCB_Well_Kapton_th="0.05*mm" PCB_DLC2_th=" 0.0001*mm" PCB_Epoxy1_th="0.01*mm" PCB_Prepreg_th="0.05*mm" PCB_Kapton1_th="0.012*mm" PCB_topEpoxy_th="0.007*mm" PCB_Kapton2_th="0.025*mm" PCB_mediumEpoxy_th="0.007*mm" PCB_Kapton3_th="0.2*mm"
+      Cathode_Kapton_ma="Kapton" Cathode_DLC_ma="DLC" Drift_Gas_ma="Ar/CO2(70/30)" PCB_DLC1_ma="DLC" PCB_Well_Kapton_ma="Kapton" PCB_DLC2_ma="DLC" PCB_Epoxy1_ma="Epoxy" PCB_Prepreg_ma="prepreg" PCB_Kapton1_ma="Kapton" PCB_topEpoxy_ma="Epoxy" PCB_Kapton2_ma="Kapton" PCB_mediumEpoxy_ma="Epoxy" PCB_Kapton3_ma="Kapton"/>
+    </layer>
+      <layer startr="160*mm" halfz="440*mm" id="3">
+      <strip quan_top="2560" quan_medium="2240" Strip_th="0.005*mm" topStrip_wid="0.06*mm" mediumStrip_wid="0.35*mm" glue_th="0.001*mm" material="Al"/>
+      <uRwell Cathode_Kapton_th="0.05*mm" Cathode_DLC_th="0.0001*mm" Drift_Gas_th="3.*mm" PCB_DLC1_th="0.0001*mm" PCB_Well_Kapton_th="0.05*mm" PCB_DLC2_th=" 0.0001*mm" PCB_Epoxy1_th="0.01*mm" PCB_Prepreg_th="0.05*mm" PCB_Kapton1_th="0.012*mm" PCB_topEpoxy_th="0.007*mm" PCB_Kapton2_th="0.025*mm" PCB_mediumEpoxy_th="0.007*mm" PCB_Kapton3_th="0.2*mm"
+      Cathode_Kapton_ma="Kapton" Cathode_DLC_ma="DLC" Drift_Gas_ma="Ar/CO2(70/30)" PCB_DLC1_ma="DLC" PCB_Well_Kapton_ma="Kapton" PCB_DLC2_ma="DLC" PCB_Epoxy1_ma="Epoxy" PCB_Prepreg_ma="prepreg" PCB_Kapton1_ma="Kapton" PCB_topEpoxy_ma="Epoxy" PCB_Kapton2_ma="Kapton" PCB_mediumEpoxy_ma="Epoxy" PCB_Kapton3_ma="Kapton"/>
+    </layer>
+     <inWall rmin="48*mm"  thickness="1*mm" halfz="134.75*mm" material="CarbonFiber">
+    </inWall>
+    <endcap rmin="48*mm" rmax="165*mm"  thickness="1*mm" halfz="160.875*mm" zpos="295.625*mm" material="Al">
+    </endcap>
+  
+  </detector>
+</detectors>
+<readouts>
+    <readout name="InnerCollection">
+      <id>system:5,side:2,layer:4,module:8,sensor:4</id>
+    </readout>
+  </readouts>
+
+  <plugins>
+  </plugins>
+
+  <fields>
+  </fields>
+
+</lccdd>

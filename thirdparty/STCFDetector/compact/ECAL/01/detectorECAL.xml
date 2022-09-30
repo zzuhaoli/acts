@@ -1,0 +1,85 @@
+<lccdd>
+  <info name="STCF_ECAL"
+    title="STCF ECAL"
+    author="Z.Jia"
+    url="www.ustc.edu.cn"
+    status="development"
+    version="$Id: $">
+    <comment>
+      The compact format for the STCF ECAL Detector
+    </comment>
+  </info>
+
+  <includes>
+    <gdmlFile ref="../../material/elements.xml"/>
+    <gdmlFile ref="../../material/materials.xml"/>
+  </includes>
+  <define>
+    <constant name="world_side"          value="10*m"/>
+    <constant name="world_x"             value="world_side/2"/>
+    <constant name="world_y"             value="world_side/2"/>
+    <constant name="world_z"             value="world_side/2"/>
+    <constant name="ecal_rmin"		 value="106*cm"/>
+    <constant name="ecal_zmax"		 value="3*m"/>
+    <constant name="size_eta"		 value="3*3.1415926/180"/>
+    <constant name="min_eta"		 value="35*3.1415926/180"/>
+  </define>
+
+  <limits>
+    <limitset name="ECAL_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm"/>
+    </limitset>
+  </limits>
+
+  <display>
+   <vis name="ECALVis" alpha="0" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="ECALStaveVis" alpha="0" r="0.8" g="0.8" b="0.2" showDaughters="true" visible="true"/>
+    <vis name="ECALCrystalVis" alpha="0.7" r="0.1" g="0.1" b="0.6" drawingStyle="solid" showDaughters="true" visible="ture"/>
+    <vis name="ECALWrappingVis" alpha="0" r="1" g="1" b="1" drawingStyle="solid" showDaughters="true" visible="true"/>
+    <vis name="ECALCarbonVis" alpha="0" r="0.1" g="0.1" b="0.1" drawingStyle="solid" showDaughters="true" visible="true"/>
+    <vis name="ECALAPDVis" alpha="1" r="0.1" g="0.1" b="0.1" drawingStyle="solid" showDaughters="true" visible="true"/>
+</display>
+
+   <detectors>
+     <detector name="STCFBEMC" type="STCFBEMC" readout="ECALBarrelHits" vis="ECALVis" id="4" calorimeterType="EM BARREL">
+	    <comment> EM Calorimeter Barrel </comment>
+	    <dimensions rmin = "ecal_rmin" nsides="132" number = "51" z="160*cm"/>
+	    <staves thickness="35*cm" vis="EcalStaveVis"/>
+	    <layer thickness="28*cm" angle="3" vis="ECALStaveVis">
+		    <module material="CarbonFiber" id="1" thickness="0.2*mm" vis="ECALCarbonVis"/>
+		    <module material="G4_Al" id="2" thickness="0.075*mm" vis="ECALWrappingVis"/>
+		    <module material="G4_POLYETHYLENE"  id="3" thickness="0.075*mm" vis="ECALWrappingVis"/>
+		    <module material="TEFLON" id="4" thickness="0.15*mm" vis="ECALWrappingVis"/>
+      <module material="CsI_ECAL" id="5" thickness="1*mm" sensitive="yes" vis="ECALCrystalVis" limits="ECAL_limits"/>
+      <module material="G4_Si" id="6" thickness="0.05*mm" sensitive="yes" vis="ECALAPDVis" limits="ECAL_limits"/>
+	    </layer>
+   </detector>
+   <detector name="STCFEEMC" type="STCFEEMC" readout="ECALBarrelHits" vis="ECALVis" id="5" calorimeterType="EM Endcap">
+	    <comment> EM Calorimeter EndCap </comment>
+	    <dimensions rmin = "140*cm" nsides="120" number = "35" z="160*cm"/>
+	    <staves thickness="35*cm" vis="EcalStaveVis"/>
+	    <layer thickness="28*cm" angle="3" vis="ECALStaveVis">
+		    <module material="CarbonFiber" id="1" thickness="0.2*mm" vis="ECALCarbonVis"/>
+		    <module material="G4_Al" id="2" thickness="0.075*mm" vis="ECALWrappingVis"/>
+		    <module material="G4_POLYETHYLENE"  id="3" thickness="0.075*mm" vis="ECALWrappingVis"/>
+		    <module material="TEFLON" id="4" thickness="0.15*mm" vis="ECALWrappingVis"/>
+      <module material="CsI_ECAL" id="5" thickness="1*mm" sensitive="yes" vis="ECALCrystalVis" limits="ECAL_limits"/>
+      <module material="G4_Si" id="6" thickness="0.05*mm" sensitive="yes" vis="ECALAPDVis" limits="ECAL_limits"/>
+      </layer>
+   </detector>-->
+  </detectors>
+
+  <readouts>
+	  <readout name="ECALBarrelHits">
+		  <segmentation type="GridPhiEta" grid_size_eta="size_eta" phi_bins="(int)120" offset_eta="min_eta"/>
+		  <id>system:4,barrel:1,module:3,stave:7,row:6,x:32:-16,y:-16</id>
+    </readout>
+  </readouts>
+
+  <plugins>
+  </plugins>
+
+  <fields>
+  </fields>
+
+</lccdd>

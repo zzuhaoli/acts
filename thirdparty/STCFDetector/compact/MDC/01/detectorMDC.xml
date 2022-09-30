@@ -1,0 +1,260 @@
+<lccdd>
+  
+  <info name="stcf_mdc" 
+    title="STCF tracker CDR" 
+    author="Dong Liu" 
+    url=""
+	status="development" 
+    version="$Id: 0.0.0 compact.xml 2018-11-18 Dong Liu $"> 
+    <comment> a test version for the Drift chamber of STCF </comment>
+  </info>
+  
+  <!--includes> </includes-->
+  <includes>
+    <gdmlFile  ref="../../material/elements.xml"/>
+    <gdmlFile  ref="../../material/materials.xml"/>
+  </includes>
+  
+  <define> 
+    <constant name="world_side"             value="10*m"/>
+    <constant name="world_x"                value="world_side/2"/>
+    <constant name="world_y"                value="world_side/2"/>
+    <constant name="world_z"                value="world_side/2"/>
+    
+	<constant name="initial_length"         value="100*cm"/>
+	<!-- the real radius for signal and field wire>
+	<constant name="rsignal"         value="0.0125*mm"/>
+	<constant name="rfield"          value="0.0550*mm"/>
+	<-->
+	<!-- a test version-->
+	<constant name="rsignal"         value="0.225*mm"/>
+	<constant name="rfield"          value="0.150*mm"/>
+
+	<rotation name="WireRotation"   unit="radian" x="0" y="0" z="0"/>
+
+	<constant name="SolenoidField_outer_radius" value="world_x"/>
+	<constant name="SolenoidField_zMax" value="initial_length*0.6"/>
+	<constant name="BField_nominal" value="3.5*tesla"/>
+  </define>
+ 
+  <display>
+    <vis name="WireVisField"    alpha="1.0" r="0.9" g="0.9"  b="0.9"   showDaughters="true"  visible="true"/>
+    <vis name="WireVisSignal"   alpha="1.0" r="0.9" g="0.9"  b="0."   showDaughters="true"  visible="true"/>
+    <vis name="WireVisFieldm"    alpha="1.0" r="0.9" g="0.1"  b="0.9"   showDaughters="true"  visible="true"/>
+    <vis name="WireVisSignalm"   alpha="1.0" r="0.9" g="0.1"  b="0."   showDaughters="true"  visible="true"/>
+    <vis name="WireVisFieldp"    alpha="1.0" r="0.1" g="0.9"  b="0.9"   showDaughters="true"  visible="true"/>
+    <vis name="WireVisSignalp"   alpha="1.0" r="0.1" g="0.9"  b="0."   showDaughters="true"  visible="true"/>
+    <vis name="SupportVis"       alpha="1.0" r="0." g="0.5"  b="0.5"   showDaughters="true"  visible="true"/>
+    <!--vis name="SupportVis"       alpha="1.0" r="0.2" g="0.2"  b="0.4"   showDaughters="true"  visible="true"/-->
+    <vis name="GasVis"       alpha="0.2" r="0.2" g="0.2"  b="0.2"   showDaughters="true"  visible="true"/>
+  </display>
+
+
+<detectors>
+  <detector name="MultiLayerDriftChamber" type="DriftChamber" vis="WireVis" id="201" limits="Tracker_limits" insideTrackingVolume="true" readout="MDCCollection">
+	  <comment> Drift chamber </comment>
+	  <dimensions inner_r="185*mm" outer_r="840*mm" rcnt="390*mm" length="2338*mm" z1="550*mm" z2="1090*mm" vis="GasVis"/>
+	  
+	  <layer name="MDCAxialLayer9" nwire="152" id="9" position="189.00*mm" dpos="8.1*mm" length="1092.0*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer9FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer9SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	 <layer name="MDCAxialLayer10" nwire="152" id="10" position="205.20*mm" dpos="8.1*mm" length="1092.0*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer10FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer10SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	 <layer name="MDCAxialLayer11" nwire="176" id="11" position="0.00*mm" dpos="8.1*mm" length="1282*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer11FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer11SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	 <layer name="MDCAxialLayer12" nwire="176" id="12" position="0.00*mm" dpos="8.1*mm" length="1282*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer12FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer12SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  
+	  </layer>
+	 <layer name="MDCAxialLayer13" nwire="200" id="13" position="0.00*mm" dpos="8.1*mm" length="1462*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer13FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer13SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	 <layer name="MDCAxialLayer14" nwire="200" id="14" position="0.00*mm" dpos="8.1*mm" length="1462*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer14FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer14SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	 <layer name="MDCAxialLayer15" nwire="224" id="15" position="0.00*mm" dpos="8.1*mm" length="1642*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer15FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer15SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	 <layer name="MDCAxialLayer16" nwire="224" id="16" position="0.0*mm" dpos="8.1*mm" length="1642*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer16FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer16SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	 </layer>
+	 <layer name="MDCAxialLayer17" nwire="256" id="17" position="0.0*mm" dpos="8.1*mm" length="1822*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer17FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer17SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	 <layer name="MDCAxialLayer18" nwire="256" id="18" position="0.0*mm" dpos="8.1*mm" length="1822*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer18FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer18SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	 <layer name="MDCAxialLayer19" nwire="280" id="19" position="0.0*mm" dpos="8.1*mm" length="1972*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer19FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer19SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	 <layer name="MDCAxialLayer20" nwire="280" id="20" position="0.0*mm" dpos="8.1*mm" length="1972*mm" dlen="0*mm"> 
+	    <field  name="MDCAxialLayer20FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer20SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	    <field2 name="MDCAxialLayer20FieldWire2" phi0="0*rad" id="0" radius="rfield"  length="1972*mm" position="383.40*mm" rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	  </layer>
+	  
+	  <layer name="MDCStereoLayer21" nwire="320" id="21" position="391.50*mm" dpos="8.1*mm" length="2174*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer21FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="2.0" material="G4_Al" vis="WireVisFieldp" /> 
+	    <signal name="MDCStereoLayer21SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="2.1" material="G4_W" vis="WireVisSignalp" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer22" nwire="320" id="22" position="0.0*mm" dpos="8.1*mm" length="2180*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer22FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="2.1" material="G4_Al" vis="WireVisFieldp" /> 
+	    <signal name="MDCStereoLayer22SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="2.1" material="G4_W" vis="WireVisSignalp" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer23" nwire="320" id="23" position="0.0*mm" dpos="8.1*mm" length="2186*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer23FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="2.2" material="G4_Al" vis="WireVisFieldp" /> 
+	    <signal name="MDCStereoLayer23SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="2.2" material="G4_W" vis="WireVisSignalp" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer24" nwire="320" id="24" position="0.0*mm" dpos="8.1*mm" length="2192*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer24FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="2.3" material="G4_Al" vis="WireVisFieldp" /> 
+	    <signal name="MDCStereoLayer24SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="2.3" material="G4_W" vis="WireVisSignalp" sensitive="yes"/> 
+	  </layer>
+	  
+	  <layer name="MDCStereoLayer25" nwire="384" id="25" position="0.0*mm" dpos="8.1*mm" length="2198*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer25FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="-2.1" material="G4_Al" vis="WireVisFieldm" /> 
+	    <signal name="MDCStereoLayer25SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="-2.2" material="G4_W" vis="WireVisSignalm" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer26" nwire="384" id="26" position="0.0*mm" dpos="8.1*mm" length="2204*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer26FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="-2.2" material="G4_Al" vis="WireVisFieldm" /> 
+	    <signal name="MDCStereoLayer26SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="-2.2" material="G4_W" vis="WireVisSignalm" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer27" nwire="384" id="27" position="0.0*mm" dpos="8.1*mm" length="2210*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer27FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="-2.3" material="G4_Al" vis="WireVisFieldm" /> 
+	    <signal name="MDCStereoLayer27SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="-2.3" material="G4_W" vis="WireVisSignalm" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer28" nwire="384" id="28" position="0.0*mm" dpos="8.1*mm" length="2216*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer28FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="-2.3" material="G4_Al" vis="WireVisFieldm" /> 
+	    <signal name="MDCStereoLayer28SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="-2.4" material="G4_W" vis="WireVisSignalm" sensitive="yes"/> 
+	  </layer>
+	 
+	  <layer name="MDCStereoLayer29" nwire="416" id="29" position="0.0*mm" dpos="8.1*mm" length="2222*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer29FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="2.4" material="G4_Al" vis="WireVisFieldp" /> 
+	    <signal name="MDCStereoLayer29SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="2.5" material="G4_W" vis="WireVisSignalp" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer30" nwire="416" id="30" position="0.0*mm" dpos="8.1*mm" length="2228*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer30FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="2.5" material="G4_Al" vis="WireVisFieldp" /> 
+	    <signal name="MDCStereoLayer30SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="2.5" material="G4_W" vis="WireVisSignalp" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer31" nwire="416" id="31" position="0.0*mm" dpos="8.1*mm" length="2234*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer31FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="2.6" material="G4_Al" vis="WireVisFieldp" /> 
+	    <signal name="MDCStereoLayer31SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="2.6" material="G4_W" vis="WireVisSignalp" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer32" nwire="416" id="32" position="0.0*mm" dpos="8.1*mm" length="2240*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer32FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="2.6" material="G4_Al" vis="WireVisFieldp" /> 
+	    <signal name="MDCStereoLayer32SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="2.7" material="G4_W" vis="WireVisSignalp" sensitive="yes"/> 
+	  </layer>
+
+	  <layer name="MDCStereoLayer33" nwire="480" id="33" position="0.0*mm" dpos="8.1*mm" length="2246*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer33FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="-2.5" material="G4_Al" vis="WireVisFieldm" /> 
+	    <signal name="MDCStereoLayer33SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="-2.6" material="G4_W" vis="WireVisSignalm" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer34" nwire="480" id="34" position="0.0*mm" dpos="8.1*mm" length="2252*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer34FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="-2.6" material="G4_Al" vis="WireVisFieldm" /> 
+	    <signal name="MDCStereoLayer34SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="-2.6" material="G4_W" vis="WireVisSignalm" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer35" nwire="480" id="35" position="0.0*mm" dpos="8.1*mm" length="2258*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer35FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="-2.7" material="G4_Al" vis="WireVisFieldm" /> 
+	    <signal name="MDCStereoLayer35SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="-2.7" material="G4_W" vis="WireVisSignalm" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCStereoLayer36" nwire="480" id="36" position="0.0*mm" dpos="8.1*mm" length="2264*mm" dlen="0*mm"> 
+	    <field  name="MDCStereoLayer36FieldWire"  phi0="0*rad" id="0" radius="rfield"  rotation="-2.7" material="G4_Al" vis="WireVisFieldm" /> 
+	    <signal name="MDCStereoLayer36SignalWire" phi0="0*rad" id="0" radius="rsignal" rotation="-2.8" material="G4_W" vis="WireVisSignalm" sensitive="yes"/> 
+	    <field2 name="MDCStereoLayer36FieldWire2" phi0="0*rad" id="0" radius="rfield"  length="2270*mm" position="650.70*mm" rotation="-2.8" material="G4_Al" vis="WireVisFieldm" /> 
+	  </layer>
+
+	  <layer name="MDCAxialLayer37" nwire="512" id="37" position="658.80*mm" dpos="8.1*mm" length="2270*mm" dlen="6*mm"> 
+	    <field  name="MDCAxialLayer37FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer37SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCAxialLayer38" nwire="512" id="38" position="0.0*mm" dpos="8.1*mm" length="2276*mm" dlen="6*mm"> 
+	    <field  name="MDCAxialLayer38FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer38SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCAxialLayer39" nwire="512" id="39" position="0.0*mm" dpos="8.1*mm" length="2282*mm" dlen="6*mm"> 
+	    <field  name="MDCAxialLayer39FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer39SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCAxialLayer40" nwire="512" id="40" position="0.0*mm" dpos="8.1*mm" length="2288*mm" dlen="6*mm"> 
+	    <field  name="MDCAxialLayer40FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer40SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCAxialLayer41" nwire="576" id="41" position="0.0*mm" dpos="8.1*mm" length="2294*mm" dlen="6*mm"> 
+	    <field  name="MDCAxialLayer41FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer41SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCAxialLayer42" nwire="576" id="42" position="0.0*mm" dpos="8.1*mm" length="2300*mm" dlen="6*mm"> 
+	    <field  name="MDCAxialLayer42FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer42SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	  
+	  <layer name="MDCAxialLayer43" nwire="576" id="43" position="0.0*mm" dpos="8.1*mm" length="2306*mm" dlen="6*mm"> 
+	    <field  name="MDCAxialLayer43FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer43SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCAxialLayer44" nwire="576" id="44" position="0.0*mm" dpos="8.1*mm" length="2312*mm" dlen="6*mm"> 
+	    <field  name="MDCAxialLayer44FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer44SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCAxialLayer45" nwire="576" id="45" position="0.0*mm" dpos="8.1*mm" length="2318*mm" dlen="6*mm"> 
+	    <field  name="MDCAxialLayer45FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer45SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCAxialLayer46" nwire="576" id="46" position="0.0*mm" dpos="8.1*mm" length="2324*mm" dlen="6*mm"> 
+	    <field  name="MDCAxialLayer46FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer46SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	  </layer>
+	  <layer name="MDCAxialLayer47" nwire="576" id="46" position="0.0*mm" dpos="8.1*mm" length="2330*mm" dlen="6*mm"> 
+	    <field  name="MDCAxialLayer47FieldWire"  phi0="0*rad" id="0" radius="rfield"   rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	    <signal name="MDCAxialLayer47SignalWire" phi0="0*rad" id="0" radius="rsignal"  rotation="0.0" material="G4_W" vis="WireVisSignal" sensitive="yes"/> 
+	    <field2 name="MDCAxialLayer47FieldWire2" phi0="0*rad" id="0" radius="rfield"  length="2330*mm" position="836.80*mm" rotation="0.0" material="G4_Al" vis="WireVisField" /> 
+	  </layer>
+	</detector>
+
+
+    <detector name="MDCSupport" type="MDCSupport" vis="SupportVis" id="202" material="CarbonFiber">
+	  <comment> MDC support </comment>
+	  <endcap> 
+	  <!-->
+	  <innercone positionmin="494.5*mm" z="705.5*mm" r1_min="180*mm" r1_max="181*mm" r2_min="470.*mm" r2_max="474.27*mm" />
+	  <outertube position="1195*mm" length="5*mm" rmin="475.*mm" rmax="8*mm" />
+	  <-->
+	    <innercone positionmin="550*mm" z="540*mm" r1_min="180*mm" r1_max="181*mm" r2_min="385.*mm" r2_max="390*mm" />
+	    <outercone positionmin="1090*mm" z="80*mm" r1_min="385*mm" r1_max="390*mm" r2_min="830.*mm" r2_max="840*mm" />
+	  </endcap>
+	  <barrel> 
+	    <innertube rmin="180*mm" rmax="181*mm" length="1100*mm" />
+	    <outertube rmin="840.*mm" rmax="850*mm" length="2338*mm" />
+	  </barrel>
+  </detector>
+
+</detectors>
+  
+  <readouts>
+    <readout name="MDCCollection"> 
+      <id>system:10,layer:8,sub:2,wire:10</id>
+	  <!--sub=2 are signal wires, sub=0,3 are field wire, sub=1 are field wires in signal layer-->
+    </readout>
+  </readouts>
+   
+  <fields> 
+    <field type="solenoid" name="GlobalSolenoid" inner_field="BField_nominal"
+    outer_field="-1.5*tesla" zmax="SolenoidField_zMax"
+    inner_radius="SolenoidField_outer_radius"
+    outer_radius="world_side" />
+  </fields>
+ 
+
+</lccdd>

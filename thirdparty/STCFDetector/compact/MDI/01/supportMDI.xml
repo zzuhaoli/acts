@@ -1,0 +1,99 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  <info name="STCF"
+    title="STCF"
+    author="Dong Liu"
+    url="www.ustc.edu.cn"
+    status="development"
+    version="$Id: $">
+    <comment>
+      The compact format for the STCF
+    </comment>
+  </info>
+  
+
+  <limits>
+  </limits>
+
+  <display>
+  <vis name="MDISupVis"       alpha="1.0" r="0.6" g="0.8"  b="0.8"   showDaughters="true"  visible="false"/>
+  <vis name="MDIVis"          alpha="1.0" r="0.6" g="0.4"  b="0.4"   showDaughters="true"  visible="true"/>
+  <vis name="MDIS1Vis"        alpha="1.0" r="0.8" g="0.8"  b="0.8"   showDaughters="true"  visible="false"/>
+  <vis name="MDIS2Vis"        alpha="1.0" r="1.0" g="1.0"  b="0.0"   showDaughters="true"  visible="false"/>
+  <vis name="MDIS3Vis"        alpha="1.0" r="1.0" g="0.0"  b="0.0"   showDaughters="true"  visible="false"/>
+  <vis name="MDIS4Vis"        alpha="1.0" r="1.0" g="0.0"  b="1.0"   showDaughters="true"  visible="false"/>
+  <vis name="MDIS5Vis"        alpha="1.0" r="0.0" g="1.0"  b="0.0"   showDaughters="true"  visible="true"/>
+  </display>
+
+  <detectors>
+          <detector name="MDI" type="supportMDI01" vis="MDISupVis" id="001" limits="Tracker_limits" insideTrackingVolume="true">
+	   <type_flags type="DetType_TRACKER + DetType_BEAMPIPE" />	  
+	      <sector name="InnerPipe"  type="Tube" rmin="30*mm" rmax="31*mm" zmin="0.0*mm" zmax="220*mm" material="Be"  vis="MDIVis"  />
+              <sector name="InnerPipeAu"  type="Tube" rmin="31*mm" rmax="31.01*mm" zmin="0.0*mm" zmax="220*mm" material="Au"  vis="MDIS2Vis"  />
+              <sector name="YPipeFront" type="Tube" rmin="30*mm" rmax="37*mm" zmin="220*mm" zmax="500*mm" material="Cu"  vis="MDIVis"  />
+              <sector name="YPipeBack"  type="CrossTube" rmin="14*mm" rmax="22*mm" centerDistance="30*mm" zmin="500.8*mm" zmax="632.5*mm" angle="30*mrad" material="Cu"  vis="MDIVis"  />
+              <sector name="OuterPipe1"  type="CrossTube" rmin="14*mm" rmax="19*mm" centerDistance="0*mm" zmin="635*mm" zmax="1200*mm" angle="30*mrad" material="Cu"  vis="MDIVis"  />
+              <sector name="OuterPipe2"  type="CrossTube" rmin="15*mm" rmax="20*mm" centerDistance="0*mm" zmin="1200*mm" zmax="1800*mm" angle="30*mrad" material="Cu"  vis="MDIVis" />
+              <sector name="TungstenSheld1"  type="Polycone" material="W"  vis="MDIS1Vis">
+	        <node z="654*mm"   rmin="70*mm"   rmax="85*mm" />
+	        <node z="854*mm"   rmin="75*mm"   rmax="90*mm" />
+	        <node z="855*mm"   rmin="100*mm"  rmax="120*mm" />
+	        <node z="999*mm"   rmin="100*mm"  rmax="120*mm" />
+	        <node z="1000*mm"  rmin="100*mm"  rmax="150*mm" />
+	        <node z="1600*mm"  rmin="100*mm"  rmax="150*mm" />
+	      </sector>
+              <sector name="SheildSteel"  type="Polycone"  material="Fe"  vis="MDIS2Vis">
+	        <node z="589*mm"  rmin="40*mm"  rmax="152*mm" />
+	        <node z="599*mm"  rmin="142*mm" rmax="154*mm" />
+	        <node z="1093*mm" rmin="270*mm" rmax="280*mm" />
+	        <node z="1675*mm" rmin="270*mm" rmax="280*mm" />
+	        <node z="1685*mm" rmin="70*mm"  rmax="280*mm" />
+	      </sector>
+	      <sector name="SheildCopper"  type="Polycone"  material="Cu"  vis="MDIS3Vis">
+	        <node z="634*mm"  rmin="40*mm"  rmax="100*mm" />
+	        <node z="644*mm"  rmin="90*mm"  rmax="102.3*mm" />
+	        <node z="1000*mm" rmin="170*mm" rmax="180*mm" />
+	        <node z="1624*mm" rmin="180*mm" rmax="190*mm" />
+	        <node z="1625*mm" rmin="70*mm"  rmax="190*mm" />
+	      </sector>
+	      <sector name="Magnet" type="UnionSolid" material="Fe" vis="MDIS5Vis" transx="0" transy="0" transz="754*mm">
+	        <block name="Mag1" type="SubtractionSolid" angle="0*mrad" transx="0" transy="0" transz="0*mm">
+		  <mother   type="Trd" x1="55*mm" x2="60*mm" y1="35*mm" y2="35*mm" z="100*mm"/>
+		  <daughter type="Trd" x1="40*mm" x2="46*mm" y1="20*mm" y2="20*mm" z="101*mm"/>
+		</block>
+	        <block name="Mag2" type="SubtractionSolid" angle="0*mrad" transx="0" transy="0" transz="250*mm">
+		  <mother   type="Trd" x1="77.5*mm" x2="80*mm" y1="35*mm" y2="35*mm" z="100*mm"/>
+		  <daughter type="Trd" x1="62.5*mm" x2="65*mm" y1="20*mm" y2="20*mm" z="101*mm"/>
+		</block>
+	        <block name="Mag3" type="SubtractionSolid" angle="30*mrad" transy="0" transx="35.28*mm" transz="420*mm">
+		  <mother   type="Box" x="35*mm" y="35*mm" z="50*mm"/>
+		  <daughter type="Tube" rmin="0*mm" rmax="22*mm" zmin="-51*mm" zmax="51*mm"/>
+		</block>
+	        <block name="Mag4" type="SubtractionSolid" angle="-30*mrad" transy="0" transx="-35.28*mm" transz="420*mm">
+		  <mother   type="Box" x="35*mm" y="35*mm" z="50*mm"/>
+		  <daughter type="Tube" rmin="0*mm" rmax="22*mm" zmin="-51*mm" zmax="51*mm"/>
+		</block>
+	        <block name="Mag5" type="SubtractionSolid" angle="30*mrad" transy="0" transx="45.19*mm" transz="750*mm">
+		  <mother   type="Box" x="35*mm" y="35*mm" z="100*mm"/>
+		  <daughter type="Tube" rmin="0*mm" rmax="22*mm" zmin="-101*mm" zmax="101*mm"/>
+		</block>
+	        <block name="Mag6" type="SubtractionSolid" angle="-30*mrad" transy="0" transx="-45.19*mm" transz="750*mm">
+		  <mother   type="Box" x="35*mm" y="35*mm" z="100*mm"/>
+		  <daughter type="Tube" rmin="0*mm" rmax="22*mm" zmin="-101*mm" zmax="101*mm"/>
+		</block>
+	      </sector>
+	   </detector>
+  
+  </detectors>
+
+  <readouts>
+  </readouts>
+
+  <plugins>
+  </plugins>
+
+  <fields>
+  </fields>
+
+</lccdd>

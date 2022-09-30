@@ -1,0 +1,128 @@
+<lccdd>
+  <info name="detectorMUC"
+        title="Muon Detector model"
+        author="Yulin Liu"
+	url=""
+	status="development"
+	version="$Id: 2019-3-23$">
+	<comment>test</comment>
+  </info>
+
+  <includes>
+    <gdmlFile ref="../../material/elements.xml"/>
+    <gdmlFile ref="../../material/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="10*m"></constant>
+    <constant name="world_x" value="world_size"></constant>
+    <constant name="world_y" value="world_size"></constant>
+    <constant name="world_z" value="world_size"></constant>
+  </define>
+
+  <materials></materials>
+
+  <limits>
+    <limitset name="Tracker_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+
+  <display>
+    <vis name="MuonVis" alpha="1.0" r="0.7" g="0.7" b="0.9" showDaughters="true" visible="true"/>
+    <vis name="MuonVisNone" alpha="1.0" r="0.7" g="0.7" b="0.9" showDaughters="false" visible="false"/>
+  </display>
+
+  <detectors>
+    <detector name="DetectorMUC" type="DetectorMUC" id="1" vis="MuonVis" limits="Tracker_limits" readout="MuonCollection">
+
+      <constant rmin="1850*mm" zhalf="2400*mm" angle="0.3490658504" numsides="8"></constant>
+
+      <module name="RPC">
+        <slice name="InnerReadout" material="G4_Si" thickness="2*mm"/>
+        <slice name="InnerGraphite" material="G4_GRAPHITE" thickness="3*mm"/>
+        <slice name="InnerGlass" material="g10" thickness="7*mm"/>
+        <slice name="Air" material="Air" thickness="2*mm"/>
+        <slice name="OuterGlass" material="g10" thickness="7*mm"/>
+        <slice name="OuterGraphite" material="G4_GRAPHITE" thickness="3*mm"/>
+        <slice name="OuterReadout" material="G4_Si" thickness="2*mm"/>
+      </module>
+
+      <barrel name="Barrel">
+        <slice name="RPC" vis="MuonVis">
+          <stripX number="1" gap="1*mm"/>
+          <stripY number="1" gap="1*mm"/>
+        </slice>
+        <slice name="Iron" material="Iron" thickness="40*mm" vis="MuonVis"/>
+        <slice name="RPC" vis="MuonVis">
+          <stripX number="1" gap="1*mm"/>
+          <stripY number="1" gap="1*mm"/>
+        </slice>
+        <slice name="Iron" material="Iron" thickness="40*mm" vis="MuonVis"/>
+        <slice name="RPC" vis="MuonVis">
+          <stripX number="1" gap="1*mm"/>
+          <stripY number="1" gap="1*mm"/>
+        </slice>
+        <slice name="Iron" material="Iron" thickness="45*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="45*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="60*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="60*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="60*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="80*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="80*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="150*mm" vis="MuonVis"/>
+      </barrel>
+
+      <endcap name="Endcap">
+        <slice name="RPC" vis="MuonVis">
+          <stripX number="1" gap="1*mm"/>
+          <stripY number="1" gap="1*mm"/>
+        </slice>
+        <slice name="Iron" material="Iron" thickness="40*mm" vis="MuonVis"/>
+        <slice name="RPC" vis="MuonVis">
+          <stripX number="1" gap="1*mm"/>
+          <stripY number="1" gap="1*mm"/>
+        </slice>
+        <slice name="Iron" material="Iron" thickness="40*mm" vis="MuonVis"/>
+        <slice name="RPC" vis="MuonVis">
+          <stripX number="1" gap="1*mm"/>
+          <stripY number="1" gap="1*mm"/>
+        </slice>
+        <slice name="Iron" material="Iron" thickness="45*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="45*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="60*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="60*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="60*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="80*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Iron" thickness="80*mm" vis="MuonVis"/>
+        <slice name="PS" material="G4_POLYSTYRENE" thickness="10*mm" vis="MuonVis"/>
+        <slice name="Iron" material="G4_POLYETHYLENE" thickness="100*mm" vis="MuonVis"/>
+        <slice name="Iron" material="Lead" thickness="50*mm" vis="MuonVis"/>
+      </endcap>
+
+    </detector>
+  </detectors>
+
+  <readouts>
+    <readout name="MuonCollection">
+      <id>system:1,Barrel:1,Endcap:1,Iron:1,RPC:1,strip:1</id>
+    </readout>
+  </readouts>
+
+  <plugins></plugins>
+
+  <fields></fields>
+</lccdd>

@@ -1,0 +1,75 @@
+
+<!DOCTYPE xml
+[
+<!ENTITY MDI_version  "01" >
+<!ENTITY MDC_version  "03" >
+<!ENTITY VTD_version  "03" >
+<!ENTITY SC_version   "01" >
+<!ENTITY FTOF_version "01" >
+<!ENTITY RICH_version "01" >
+<!ENTITY ECAL_version "03" >
+<!ENTITY MUC_version  "02" >
+]>
+
+
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  <info name="STCF"
+    title="STCF"
+    author="B.Qi"
+    url="www.ustc.edu.cn"
+    status="development"
+    version="$Id: $">
+    <comment>
+      The compact format for the STCF
+    </comment>
+  </info>
+  
+  
+
+  <includes>
+    <gdmlFile ref="./material/elements.xml"/>
+    <gdmlFile ref="./material/materials.xml"/>
+    <!--gdmlFile ref="DIRC.xml"/-->
+    <!--gdmlFile ref="STCFECAL.xml"/-->
+  </includes>
+  <define>
+    <constant name="world_side"          value="10*m"/>
+    <constant name="world_x"             value="world_side/2"/>
+    <constant name="world_y"             value="world_side/2"/>
+    <constant name="world_z"             value="world_side/2"/>
+    <include ref="${DD4hepINSTALL}/DDDetectors/compact/detector_types.xml"/> 
+  </define>
+
+  <materials>
+  </materials>
+
+  <limits>
+  </limits>
+
+  <display>
+  </display>
+
+  <detectors>
+    <include ref="./MDC/&MDC_version;/detectorMDC.xml"/>
+    <!--include ref="./MUC/02/detectorMUC.xml"/-->
+
+    <!--include ref="./FTOF/&FTOF_version;/detectorFTOF.xml"/-->
+
+  </detectors>
+
+  <readouts>
+  </readouts>
+
+  <plugins>
+  </plugins>
+
+  <fields>
+     <field type="solenoid" name="GlobalSolenoid" inner_field="1.0*tesla"
+            outer_field="1.0*tesla" zmax="2200.0*mm"
+	    inner_radius="0.0*mm"
+	    outer_radius="1600.0*mm" />
+  </fields>
+
+</lccdd>

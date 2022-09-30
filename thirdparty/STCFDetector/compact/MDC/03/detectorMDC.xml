@@ -1,0 +1,374 @@
+<lccdd>
+  
+  <info name="stcf_mdc" 
+    title="STCF tracker CDR" 
+    author="Hang Zhou" 
+    url=""
+	status="development" 
+    version="$Id: 0.0.0 compact.xml 2019-09-01 Hang Zhou $"> 
+    <comment> a test version for the Drift chamber of STCF </comment>
+  </info>
+  
+  <includes>
+    <gdmlFile ref="../../material/elements.xml"/>
+    <gdmlFile ref="../../material/materials.xml"/>
+  </includes>
+  
+  <define> 
+    <constant name="world_side"             value="10*m"/>
+    <constant name="world_x"                value="world_side/2"/>
+    <constant name="world_y"                value="world_side/2"/>
+    <constant name="world_z"                value="world_side/2"/>
+    
+   <constant name="world_r"                value="860*mm"/>
+
+	<constant name="rsense"         value="0.01*mm"/>
+   <constant name="signal_clth"      value="0.0005*mm"/>
+	<constant name="rfield"          value="0.05*mm"/>
+   <constant name="field_clth"       value="0.0005*mm"/>
+	<constant name="BField_nominal" value="1.0*tesla"/>
+  </define>
+ 
+  <display>
+    <vis name="WireVisField"    alpha="1.0" r="0.9" g="0.9"  b="0.9"   showDaughters="true"  visible="true"/>
+    <vis name="WireVisSignal"   alpha="1.0" r="0.9" g="0.9"  b="0."   showDaughters="true"  visible="true"/>
+    <vis name="WireVisFieldm"    alpha="1.0" r="0.9" g="0.1"  b="0.9"   showDaughters="true"  visible="true"/>
+    <vis name="WireVisSignalm"   alpha="1.0" r="0.9" g="0.1"  b="0."   showDaughters="true"  visible="true"/>
+    <vis name="WireVisFieldp"    alpha="1.0" r="0.1" g="0.9"  b="0.9"   showDaughters="true"  visible="true"/>
+    <vis name="WireVisSignalp"   alpha="1.0" r="0.1" g="0.9"  b="0."   showDaughters="true"  visible="true"/>
+    <vis name="GasVis"       alpha="1.0" r="0." g="0.5"  b="0.5"   showDaughters="true"  visible="True"/>
+    <vis name="LayerVis"       alpha="1.0" r="0." g="0.5"  b="0.5"   showDaughters="true"  visible="true"/>
+    <vis name="SupportVis"       alpha="1.0" r="0.2" g="0.2"  b="0.4"   showDaughters="true"  visible="false"/>
+    <vis name="CellVis"       alpha="1.0" r="0." g="0.5"  b="0.5"   showDaughters="true"  visible="true"/>
+    <vis name="barrelVis"       alpha="1.0" r="0." g="0.5"  b="0.5"   showDaughters="true"  visible="true"/>
+    <vis name="endcapVis"       alpha="1.0" r="0." g="0.5"  b="0.5"   showDaughters="true"  visible="true"/>
+    <vis name="boardVis"       alpha="1.0" r="0." g="0.5"  b="0.5"   showDaughters="true"  visible="true"/>
+  </display>
+
+<regions>
+    <region name="MDCVolume">
+    </region>
+</regions>
+
+<detectors>
+  <detector name="MultiLayerDriftChamber02" type="DriftChamber02" id="201" limits="Tracker_limits" insideTrackingVolume="true" readout="MDCCollection" region="MDCVolume">
+	  <type_flags type="DetType_TRACKER"/> 
+	  <comment> Drift chamber </comment>
+	  <dimensions inner_r="195*mm" outer_r="850.1*mm" length="2800*mm" gas="He/C3H8(60/40)"/>
+          <cell vis="CellVis">
+          <layer name="MDCLayer0" ncell="128" radius="200*mm" id="0" dr="9.8*mm" length="1150*mm" twisted="0" edge="1" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer0FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer0SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer1" ncell="128" radius="209.8*mm" id="1" dr="10.3*mm" length="1206*mm" twisted="0" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer1FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer1SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer2" ncell="128" radius="220.1*mm" id="2" dr="10.8*mm" length="1266*mm" twisted="0" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer2FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer2SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer3" ncell="128" radius="230.9*mm" id="3" dr="11.3*mm" length="1328*mm" twisted="0" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer3FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer3SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer4" ncell="128" radius="242.2*mm" id="4" dr="11.9*mm" length="1394*mm" twisted="0" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer4FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer4SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer5" ncell="128" radius="254.1*mm" id="5" dr="12.5*mm" length="1462*mm" twisted="0" edge="-1" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer5FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer5SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer6" ncell="160" radius="271.6*mm" id="6" dr="10.7*mm" length="1536*mm" twisted="9" edge="1" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer6FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer6SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer7" ncell="160" radius="282.3*mm" id="7" dr="11.1*mm" length="1600*mm" twisted="9" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer7FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer7SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer8" ncell="160" radius="293.4*mm" id="8" dr="11.5*mm" length="1664*mm" twisted="9" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer8FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer8SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer9" ncell="160" radius="304.9*mm" id="9" dr="12*mm" length="1730*mm" twisted="9" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer9FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer9SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer10" ncell="160" radius="316.9*mm" id="10" dr="12.4*mm" length="1798*mm" twisted="9" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer10FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer10SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer11" ncell="160" radius="329.3*mm" id="11" dr="12.9*mm" length="1860*mm" twisted="9" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer11FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer11SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer12" ncell="192" radius="342.2*mm" id="12" dr="11.2*mm" length="1928*mm" twisted="-9" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer12FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer12SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer13" ncell="192" radius="353.4*mm" id="13" dr="11.6*mm" length="1994*mm" twisted="-9" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer13FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer13SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer14" ncell="192" radius="365*mm" id="14" dr="11.9*mm" length="2060*mm" twisted="-9" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer14FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer14SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer15" ncell="192" radius="376.9*mm" id="15" dr="12.4*mm" length="2128*mm" twisted="-9" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer15FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer15SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer16" ncell="192" radius="389.3*mm" id="16" dr="12.7*mm" length="2194*mm" twisted="-9" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer16FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer16SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer17" ncell="192" radius="402*mm" id="17" dr="13.2*mm" length="2270*mm" twisted="-9" edge="-1" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer17FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer17SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer18" ncell="224" radius="419.2*mm" id="18" dr="11.7*mm" length="2374*mm" twisted="0" edge="1" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer18FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer18SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer19" ncell="224" radius="430.9*mm" id="19" dr="12.1*mm" length="2380*mm" twisted="0" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer19FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer19SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer20" ncell="224" radius="443*mm" id="20" dr="12.4*mm" length="2386*mm" twisted="0" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer20FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer20SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer21" ncell="224" radius="455.4*mm" id="21" dr="12.8*mm" length="2392*mm" twisted="0" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer21FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer21SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer22" ncell="224" radius="468.2*mm" id="22" dr="13.1*mm" length="2398*mm" twisted="0" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer22FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer22SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer23" ncell="224" radius="481.3*mm" id="23" dr="13.5*mm" length="2404*mm" twisted="0" edge="-1" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer23FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer23SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer24" ncell="256" radius="499.8*mm" id="24" dr="12.3*mm" length="2410*mm" twisted="10" edge="1" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer24FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer24SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer25" ncell="256" radius="512.1*mm" id="25" dr="12.6*mm" length="2416*mm" twisted="10" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer25FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer25SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer26" ncell="256" radius="524.7*mm" id="26" dr="12.9*mm" length="2422*mm" twisted="10" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer26FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer26SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer27" ncell="256" radius="537.6*mm" id="27" dr="13.2*mm" length="2428*mm" twisted="10" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer27FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer27SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer28" ncell="256" radius="550.8*mm" id="28" dr="13.5*mm" length="2434*mm" twisted="10" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer28FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer28SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer29" ncell="256" radius="564.3*mm" id="29" dr="13.8*mm" length="2440*mm" twisted="10" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer29FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer29SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer30" ncell="288" radius="578.1*mm" id="30" dr="12.6*mm" length="2446*mm" twisted="-10" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer30FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer30SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer31" ncell="288" radius="590.7*mm" id="31" dr="12.9*mm" length="2452*mm" twisted="-10" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer31FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer31SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer32" ncell="288" radius="603.6*mm" id="32" dr="13.2*mm" length="2458*mm" twisted="-10" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer32FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer32SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer33" ncell="288" radius="616.8*mm" id="33" dr="13.5*mm" length="2464*mm" twisted="-10" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer33FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer33SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer34" ncell="288" radius="630.3*mm" id="34" dr="13.7*mm" length="2470*mm" twisted="-10" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer34FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer34SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer35" ncell="288" radius="644*mm" id="35" dr="14*mm" length="2476*mm" twisted="-10" edge="-1" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer35FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer35SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer36" ncell="320" radius="662*mm" id="36" dr="13*mm" length="2482*mm" twisted="0" edge="1" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer36FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer36SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer37" ncell="320" radius="675*mm" id="37" dr="13.3*mm" length="2488*mm" twisted="0" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer37FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer37SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer38" ncell="320" radius="688.3*mm" id="38" dr="13.5*mm" length="2494*mm" twisted="0" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer38FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer38SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer39" ncell="320" radius="701.8*mm" id="39" dr="13.8*mm" length="2500*mm" twisted="0" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer39FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer39SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer40" ncell="320" radius="715.6*mm" id="40" dr="14.1*mm" length="2506*mm" twisted="0" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer40FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer40SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer41" ncell="320" radius="729.7*mm" id="41" dr="14.3*mm" length="2512*mm" twisted="0" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer41FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer41SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer42" ncell="352" radius="744*mm" id="42" dr="13.3*mm" length="2518*mm" twisted="0" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer42FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer42SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer43" ncell="352" radius="757.3*mm" id="43" dr="13.5*mm" length="2524*mm" twisted="0" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer43FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer43SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer44" ncell="352" radius="770.8*mm" id="44" dr="13.7*mm" length="2530*mm" twisted="0" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer44FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer44SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer45" ncell="352" radius="784.5*mm" id="45" dr="14*mm" length="2536*mm" twisted="0" edge="0" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer45FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer45SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer46" ncell="352" radius="798.5*mm" id="46" dr="14.3*mm" length="2542*mm" twisted="0" edge="0" uvflag="0" vis="LayerVis">
+            <field name="MDCLayer46FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer46SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+          <layer name="MDCLayer47" ncell="352" radius="812.8*mm" id="47" dr="14.5*mm" length="2548*mm" twisted="0" edge="-1" uvflag="1" vis="LayerVis">
+            <field name="MDCLayer47FieldWire" radius="rfield" material="G4_Al" clad="G4_Ag" cladthick="field_clth" vis="WireVisField"/> 
+            <sense name="MDCLayer47SenseWire" radius="rsense" material="G4_W" clad="G4_Au" cladthick="signal_clth" vis="WireVisSignal" sensitive="yes"/> 
+          </layer>
+         </cell>
+      <endcap vis="endcapVis"> 
+	    <cone1 material="G4_Al" vis="endcapVis">
+<layer rmin="196*mm" rmax="200.2*mm" th="12*mm" zpos="581*mm"/>
+<layer rmin="200.2*mm" rmax="204.2*mm" th="34*mm" zpos="592*mm"/>
+<layer rmin="204.2*mm" rmax="208.2*mm" th="18*mm" zpos="611*mm"/>
+<layer rmin="208.2*mm" rmax="212.2*mm" th="18*mm" zpos="622*mm"/>
+<layer rmin="212.2*mm" rmax="216.2*mm" th="18*mm" zpos="633*mm"/>
+<layer rmin="216.2*mm" rmax="220.2*mm" th="18*mm" zpos="644*mm"/>
+<layer rmin="220.2*mm" rmax="224.2*mm" th="18*mm" zpos="655*mm"/>
+<layer rmin="224.2*mm" rmax="228.2*mm" th="18*mm" zpos="666*mm"/>
+<layer rmin="228.2*mm" rmax="232.2*mm" th="18*mm" zpos="677*mm"/>
+<layer rmin="232.2*mm" rmax="236.2*mm" th="18*mm" zpos="688*mm"/>
+<layer rmin="236.2*mm" rmax="240.2*mm" th="18*mm" zpos="699*mm"/>
+<layer rmin="240.2*mm" rmax="244.2*mm" th="18*mm" zpos="710*mm"/>
+<layer rmin="244.2*mm" rmax="248.2*mm" th="18*mm" zpos="721*mm"/>
+<layer rmin="248.2*mm" rmax="252.2*mm" th="18*mm" zpos="732*mm"/>
+<layer rmin="252.2*mm" rmax="256.2*mm" th="18*mm" zpos="743*mm"/>
+<layer rmin="256.2*mm" rmax="260.2*mm" th="18*mm" zpos="754*mm"/>
+<layer rmin="260.2*mm" rmax="264.2*mm" th="18*mm" zpos="765*mm"/>
+<layer rmin="264.2*mm" rmax="268.2*mm" th="18*mm" zpos="776*mm"/>
+<layer rmin="268.2*mm" rmax="272.2*mm" th="18*mm" zpos="787*mm"/>
+<layer rmin="272.2*mm" rmax="276.2*mm" th="18*mm" zpos="798*mm"/>
+<layer rmin="276.2*mm" rmax="280.2*mm" th="18*mm" zpos="809*mm"/>
+<layer rmin="280.2*mm" rmax="284.2*mm" th="18*mm" zpos="820*mm"/>
+<layer rmin="284.2*mm" rmax="288.2*mm" th="18*mm" zpos="831*mm"/>
+<layer rmin="288.2*mm" rmax="292.2*mm" th="18*mm" zpos="842*mm"/>
+<layer rmin="292.2*mm" rmax="296.2*mm" th="18*mm" zpos="853*mm"/>
+<layer rmin="296.2*mm" rmax="300.2*mm" th="18*mm" zpos="864*mm"/>
+<layer rmin="300.2*mm" rmax="304.2*mm" th="18*mm" zpos="875*mm"/>
+<layer rmin="304.2*mm" rmax="308.2*mm" th="18*mm" zpos="886*mm"/>
+<layer rmin="308.2*mm" rmax="312.2*mm" th="18*mm" zpos="897*mm"/>
+<layer rmin="312.2*mm" rmax="316.2*mm" th="18*mm" zpos="908*mm"/>
+<layer rmin="316.2*mm" rmax="320.2*mm" th="18*mm" zpos="919*mm"/>
+<layer rmin="320.2*mm" rmax="324.2*mm" th="18*mm" zpos="930*mm"/>
+<layer rmin="324.2*mm" rmax="328.2*mm" th="18*mm" zpos="941*mm"/>
+<layer rmin="328.2*mm" rmax="332.2*mm" th="18*mm" zpos="952*mm"/>
+<layer rmin="332.2*mm" rmax="336.2*mm" th="18*mm" zpos="963*mm"/>
+<layer rmin="336.2*mm" rmax="340.2*mm" th="18*mm" zpos="974*mm"/>
+<layer rmin="340.2*mm" rmax="344.2*mm" th="18*mm" zpos="985*mm"/>
+<layer rmin="344.2*mm" rmax="348.2*mm" th="18*mm" zpos="996*mm"/>
+<layer rmin="348.2*mm" rmax="352.2*mm" th="18*mm" zpos="1007*mm"/>
+<layer rmin="352.2*mm" rmax="356.2*mm" th="18*mm" zpos="1018*mm"/>
+<layer rmin="356.2*mm" rmax="360.2*mm" th="18*mm" zpos="1029*mm"/>
+<layer rmin="360.2*mm" rmax="364.2*mm" th="18*mm" zpos="1040*mm"/>
+<layer rmin="364.2*mm" rmax="368.2*mm" th="18*mm" zpos="1051*mm"/>
+<layer rmin="368.2*mm" rmax="372.2*mm" th="18*mm" zpos="1062*mm"/>
+<layer rmin="372.2*mm" rmax="376.2*mm" th="18*mm" zpos="1073*mm"/>
+<layer rmin="376.2*mm" rmax="380.2*mm" th="18*mm" zpos="1084*mm"/>
+<layer rmin="380.2*mm" rmax="384.2*mm" th="18*mm" zpos="1095*mm"/>
+<layer rmin="384.2*mm" rmax="388.2*mm" th="18*mm" zpos="1106*mm"/>
+<layer rmin="388.2*mm" rmax="392.2*mm" th="18*mm" zpos="1117*mm"/>
+<layer rmin="392.2*mm" rmax="396.2*mm" th="18*mm" zpos="1128*mm"/>
+<layer rmin="396.2*mm" rmax="400.2*mm" th="18*mm" zpos="1139*mm"/>
+<layer rmin="400.2*mm" rmax="404.2*mm" th="18*mm" zpos="1150*mm"/>
+<layer rmin="404.2*mm" rmax="408.2*mm" th="18*mm" zpos="1161*mm"/>
+<layer rmin="408.2*mm" rmax="412.2*mm" th="18*mm" zpos="1172*mm"/>
+<layer rmin="412.2*mm" rmax="416.2*mm" th="31*mm" zpos="1186.5*mm"/>
+</cone1>
+       <!--tube2 rmin="409*mm" rmax="413*mm" z_length="643*mm" zpos="1200.5*mm" cap_ma="G4_Al"/-->
+       <end3 material="G4_Al" vis="endcapVis">
+          <layer rmin="416.2*mm" rmax="428.9*mm" th="15*mm" zpos="1194.5*mm"/>
+<layer rmin="428.9*mm" rmax="441*mm" th="15*mm" zpos="1197.5*mm"/>
+<layer rmin="441*mm" rmax="453.4*mm" th="15*mm" zpos="1200.5*mm"/>
+<layer rmin="453.4*mm" rmax="466.2*mm" th="15*mm" zpos="1203.5*mm"/>
+<layer rmin="466.2*mm" rmax="479.3*mm" th="15*mm" zpos="1206.5*mm"/>
+<layer rmin="479.3*mm" rmax="497.8*mm" th="15*mm" zpos="1209.5*mm"/>
+<layer rmin="497.8*mm" rmax="510.1*mm" th="15*mm" zpos="1212.5*mm"/>
+<layer rmin="510.1*mm" rmax="522.7*mm" th="15*mm" zpos="1215.5*mm"/>
+<layer rmin="522.7*mm" rmax="535.6*mm" th="15*mm" zpos="1218.5*mm"/>
+<layer rmin="535.6*mm" rmax="548.8*mm" th="15*mm" zpos="1221.5*mm"/>
+<layer rmin="548.8*mm" rmax="562.3*mm" th="15*mm" zpos="1224.5*mm"/>
+<layer rmin="562.3*mm" rmax="576.1*mm" th="15*mm" zpos="1227.5*mm"/>
+<layer rmin="576.1*mm" rmax="588.7*mm" th="15*mm" zpos="1230.5*mm"/>
+<layer rmin="588.7*mm" rmax="601.6*mm" th="15*mm" zpos="1233.5*mm"/>
+<layer rmin="601.6*mm" rmax="614.8*mm" th="15*mm" zpos="1236.5*mm"/>
+<layer rmin="614.8*mm" rmax="628.3*mm" th="15*mm" zpos="1239.5*mm"/>
+<layer rmin="628.3*mm" rmax="642*mm" th="15*mm" zpos="1242.5*mm"/>
+<layer rmin="642*mm" rmax="660*mm" th="15*mm" zpos="1245.5*mm"/>
+<layer rmin="660*mm" rmax="673*mm" th="15*mm" zpos="1248.5*mm"/>
+<layer rmin="673*mm" rmax="686.3*mm" th="15*mm" zpos="1251.5*mm"/>
+<layer rmin="686.3*mm" rmax="699.8*mm" th="15*mm" zpos="1254.5*mm"/>
+<layer rmin="699.8*mm" rmax="713.6*mm" th="15*mm" zpos="1257.5*mm"/>
+<layer rmin="713.6*mm" rmax="727.7*mm" th="15*mm" zpos="1260.5*mm"/>
+<layer rmin="727.7*mm" rmax="742*mm" th="15*mm" zpos="1263.5*mm"/>
+<layer rmin="742*mm" rmax="755.3*mm" th="15*mm" zpos="1266.5*mm"/>
+<layer rmin="755.3*mm" rmax="768.8*mm" th="15*mm" zpos="1269.5*mm"/>
+<layer rmin="768.8*mm" rmax="782.5*mm" th="15*mm" zpos="1272.5*mm"/>
+<layer rmin="782.5*mm" rmax="796.5*mm" th="15*mm" zpos="1275.5*mm"/>
+<layer rmin="796.5*mm" rmax="810.8*mm" th="15*mm" zpos="1278.5*mm"/>
+<layer rmin="810.8*mm" rmax="839.9*mm" th="15*mm" zpos="1281.5*mm"/>
+
+      </end3>
+	  </endcap>
+	  <barrel vis="barrelVis"> 
+	    <innertube rmin="196.1*mm" rmax="197.1*mm" length="1150*mm" wall_material="CarbonFiber" film0_th ="0.1*mm" film1_th ="0.05*mm" film_ma="G4_Al"/>
+	    <outertube rmin="840.*mm" rmax="850.*mm" length="2800*mm" wall_material="CarbonFiber" film2_th ="0.1*mm" film3_th ="0.1*mm" film_ma="G4_Al"/>
+	  </barrel>
+     <board x="10*mm" y="200*mm" z="100*mm" Cu_x="9*mm" Cu_y="15*mm" Cu_z="30*mm" material="M_synthesis" Cu_ma="G4_Cu" vis="boardVis"> 
+       <layer name="readoutborad1" nboard="10"  rpos="440*mm" zpos="1215*mm"/>
+       <layer name="readoutborad2" nboard="11"  rpos="470*mm" zpos="1225*mm"/>
+       <layer name="readoutborad3" nboard="12"  rpos="530*mm" zpos="1240*mm"/>
+       <layer name="readoutborad4" nboard="12"  rpos="560*mm" zpos="1245*mm"/>
+       <layer name="readoutborad5" nboard="13"  rpos="600*mm" zpos="1255*mm"/>
+       <layer name="readoutborad6" nboard="14"  rpos="630*mm" zpos="1260*mm"/>
+       <layer name="readoutborad7" nboard="15"  rpos="685*mm" zpos="1270*mm"/>
+       <layer name="readoutborad8" nboard="15"  rpos="715*mm" zpos="1280*mm"/>
+       <layer name="readoutborad9" nboard="16"  rpos="770*mm" zpos="1290*mm"/>
+       <layer name="readoutborad10" nboard="17"  rpos="800*mm" zpos="1300*mm"/>
+      </board>
+   </detector>
+
+
+</detectors>
+  
+  <readouts>
+    <readout name="MDCCollection"> 
+      <id>system:10,layer:8,sub:2,wire:10</id>
+    </readout>
+  </readouts>
+   
+
+
+</lccdd>

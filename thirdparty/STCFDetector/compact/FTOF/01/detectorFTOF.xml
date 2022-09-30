@@ -1,0 +1,170 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  <info name="STCF_DIRC"
+    title="STCF DIRC-like FTOF"
+    author="B.Qi"
+    url="www.ustc.edu.cn"
+    status="development"
+    version="$V1$">
+    <comment>
+      The compact format for the STCF DIRC-like FTOF Detector
+    </comment>
+  </info>
+
+  <!-- Debug flags for processing the compact xml file  -->
+  <debug>
+    <type name="isotopes"     value="0"/>
+    <type name="elements"     value="0"/>
+    <type name="materials"    value="1"/>
+    <type name="visattr"      value="0"/>
+    <type name="regions"      value="0"/>
+    <type name="readout"      value="0"/>
+    <type name="limits"       value="0"/>
+    <type name="segmentation" value="0"/>
+    <type name="surface"      value="1"/>
+  </debug>
+
+  <geometry>
+    <!--<clear name="elements"/>-->
+  </geometry>
+
+
+
+  <properties>
+    <matrix name="RINDEX_Air" coldim="2" values="0.4*eV 1.0 6.02*eV 1.0"/>
+    <matrix name="RINDEX_Quartz" coldim="2" values="
+      1.909*eV 1.4565 1.939*eV 1.4568 1.969*eV 1.4571 2.001*eV 1.4574 2.034*eV 1.4577 
+      2.068*eV 1.458  2.103*eV 1.4584 2.139*eV 1.4587 2.177*eV 1.4591 2.216*eV 1.4595 
+      2.256*eV 1.4599 2.298*eV 1.4603 2.341*eV 1.4608 2.386*eV 1.4613 2.433*eV 1.4618 
+      2.481*eV 1.4623 2.532*eV 1.4629 2.585*eV 1.4635 2.640*eV 1.4641 2.697*eV 1.4648 
+      2.757*eV 1.4656 2.820*eV 1.4663 2.885*eV 1.4672 2.954*eV 1.4681 3.026*eV 1.4691 
+      3.102*eV 1.4701 3.181*eV 1.4713 3.265*eV 1.4725 3.353*eV 1.4738 3.446*eV 1.4753 
+      3.545*eV 1.4769 3.649*eV 1.4787 3.760*eV 1.4806 3.877*eV 1.4827 4.002*eV 1.4851 
+      4.136*eV 1.4878"/>
+    <matrix name="ABSLENGTH_Quartz" coldim="2" values="
+      1.907*eV 2.349*km 1.921*eV 2.283*km 1.946*eV 2.163*km 1.978*eV 2.026*km 
+      2.019*eV 1.866*km 2.071*eV 1.689*km 2.117*eV 1.543*km 2.162*eV 1.423*km 
+      2.215*eV 1.290*km 2.261*eV 1.188*km 2.311*eV 1.086*km 2.375*eV 9.750*km 
+      2.442*eV 0.873*km 2.498*eV 0.798*km 2.566*eV 0.714*km 2.634*eV 0.647*km 
+      2.706*eV 0.581*km 2.772*eV 0.527*km 2.852*eV 0.465*km 2.937*eV 0.417*km 
+      3.011*eV 0.377*km 3.088*eV 0.341*km 3.174*eV 0.306*km 3.255*eV 0.275*km 
+      3.335*eV 0.253*km 3.435*eV 0.222*km 3.524*eV 0.199*km 3.630*eV 0.182*km 
+      3.737*eV 0.160*km 3.863*eV 0.137*km 3.991*eV 0.124*km 4.120*eV 0.106*km 
+      4.216*eV 0.102*km"/>
+    <matrix name="REFLECTIVITY_QuartzAir" coldim="2" values="
+      1.904*eV 0.982 2.055*eV 0.981 2.264*eV 0.98  2.584*eV 0.979 3.034*eV 0.978 
+      3.163*eV 0.977 3.237*eV 0.976 3.314*eV 0.976 3.395*eV 0.974 3.474*eV 0.973 
+      3.581*eV 0.971 3.663*eV 0.969 3.737*eV 0.967 3.821*eV 0.965 3.881*eV 0.963 
+      3.943*eV 0.961 3.993*eV 0.96  4.044*eV 0.958 4.074*eV 0.957 4.127*eV 0.955 
+      4.150*eV 0.954 4.181*eV 0.953"/>
+    <matrix name="REFLECTIVITY_QuartzCoatingMirror" coldim="2" values="
+      1.906*eV 0.869 1.914*eV 0.872 1.922*eV 0.875 1.931*eV 0.878 1.941*eV 0.881 
+      1.958*eV 0.883 1.977*eV 0.886 1.997*eV 0.89  2.024*eV 0.894 2.055*eV 0.898 
+      2.089*eV 0.903 2.124*eV 0.908 2.150*eV 0.912 2.176*eV 0.915 2.200*eV 0.918 
+      2.217*eV 0.92  2.235*eV 0.921 2.256*eV 0.923 2.279*eV 0.924 2.300*eV 0.925 
+      2.339*eV 0.926 2.361*eV 0.927 2.381*eV 0.928 2.400*eV 0.929 2.420*eV 0.93 
+      2.439*eV 0.931 2.450*eV 0.932 2.466*eV 0.933 2.477*eV 0.935 2.522*eV 0.936 
+      2.554*eV 0.937 2.643*eV 0.938 2.671*eV 0.939 2.701*eV 0.94  2.821*eV 0.939 
+      2.902*eV 0.938 3.016*eV 0.937 3.171*eV 0.936 3.259*eV 0.935 3.343*eV 0.934 
+      3.399*eV 0.933 3.431*eV 0.932 3.506*eV 0.931 3.546*eV 0.93  3.586*eV 0.929 
+      3.668*eV 0.928 3.705*eV 0.927 3.749*eV 0.926 3.846*eV 0.925 3.893*eV 0.924 
+      3.935*eV 0.923 3.991*eV 0.922 4.094*eV 0.921 4.163*eV 0.92"/>
+    <matrix name="EFFICIENCY_Cathode" coldim="2" values="
+      1.900*eV 0.0386 1.928*eV 0.0414 1.961*eV 0.0456 1.990*eV 0.049  2.048*eV 0.0572 
+      2.118*eV 0.066  2.178*eV 0.0743 2.231*eV 0.0837 2.314*eV 0.0966 2.386*eV 0.1088 
+      2.436*eV 0.1197 2.509*eV 0.1317 2.565*eV 0.1466 2.646*eV 0.1632 2.724*eV 0.1795 
+      2.789*eV 0.2023 2.867*eV 0.2173 2.931*eV 0.2362 3.027*eV 0.2537 3.108*eV 0.2725 
+      3.239*eV 0.2928 3.333*eV 0.2928 3.458*eV 0.2894 3.592*eV 0.2793 3.753*eV 0.2632 
+      3.896*eV 0.2571 4.122*eV 0.2452"/>
+  </properties>
+
+  <materials>
+    <material name="OpticalAir" state="gas">
+      <D unit="g/cm3" value="0.00120479"/>
+      <fraction n="1" ref="G4_AIR"/>
+      <property name="RINDEX" ref="RINDEX_Air"/>
+    </material>
+    <material name="Al" state="solid">
+      <D unit="g/cm3" value="2.699"/>
+      <fraction n="1" ref="G4_Al"/>
+    </material>
+    <material name="CFRP" state="solid">
+      <D unit="g/cm3" value="1.7"/>
+      <fraction n="0.95" ref="C"/>
+      <fraction n="0.04" ref="N"/>
+      <fraction n="0.01" ref="H"/>
+    </material>
+    <material name="Cathode" state="solid">
+      <D value="2.2" unit="g/cm3"/>
+      <composite n="1" ref="Si"/>
+    </material>
+    <material name="PhotonDet" state="solid">
+      <D value="2.2" unit="g/cm3"/>
+      <composite n="1" ref="Si"/>
+    </material>
+    <material name="OpticalQuartz" state="solid">
+      <D value="2.2" unit="g/cm3"/>
+      <composite n="1" ref="Si"/>
+      <composite n="2" ref="O"/>
+      <property name="RINDEX" ref="RINDEX_Quartz"/>
+      <property name="ABSLENGTH" ref="ABSLENGTH_Quartz"/>
+    </material>
+  </materials>
+
+  <limits>
+  </limits>
+
+  <display>
+    <vis name="FtofVis" alpha="0.5" r="0.8" g="0.8" b="0.8" drawingStyle="solid" showDaughters="ture" visible="false"/>
+    <vis name="FtofShieldVis" alpha="0.5" r="0.7" g="0.7" b="0.7" drawingStyle="solid" showDaughters="true" visible="ture"/>
+    <vis name="FtofCoatingVis" alpha="0.5" r="0.1" g="0.1" b="1" drawingStyle="solid" showDaughters="true" visible="ture"/>
+    <vis name="FtofQuartzVis" alpha="0.9" r="0.0" g="0.0" b="1" drawingStyle="solid" showDaughters="true" visible="ture"/>
+    <vis name="FtofPhotonDetVis" alpha="0.5" r="0.0" g="0.7" b="0.5" drawingStyle="solid" showDaughters="true" visible="ture"/>
+    <vis name="FtofCathodeVis" alpha="0.5" r="0.9" g="0.1" b="1" drawingStyle="solid" showDaughters="true" visible="true"/>
+  </display>
+
+  <surfaces>
+    <opticalsurface name="QuartzAirSurface" finish="ground" model="unified" type="dielectric_dielectric" value="0.1*deg">
+      <property name="REFLECTIVITY" ref="REFLECTIVITY_QuartzAir"/>
+      <property name="SPECULARLOBECONSTANT" coldim="2" values="0.4*eV 0.0 6.02*eV 0.0"/>
+      <property name="SPECULARSPIKECONSTANT" coldim="2" values="0.4*eV 1.0 6.02*eV 1.0"/>
+      <property name="BACKSCATTERCONSTANT" coldim="2" values="0.4*eV 0.0 6.02*eV 0.0"/> 
+    </opticalsurface>
+    <opticalsurface name="QuartzCoatingUpSurface" finish="polished" model="unified" type="dielectric_metal">
+      <property name="REFLECTIVITY" coldim="2" values="0.4*eV 0 6.02*eV 0"/>
+    </opticalsurface>
+    <opticalsurface name="QuartzCoatingDownSurface" finish="polished" model="unified" type="dielectric_metal">
+      <property name="REFLECTIVITY" coldim="2" values="0.4*eV 0 6.02*eV 0"/>
+    </opticalsurface>
+    <opticalsurface name="QuartzCoatingSideSurface" finish="polished" model="unified" type="dielectric_metal">
+      <property name="REFLECTIVITY" ref="REFLECTIVITY_QuartzCoatingMirror"/>
+    </opticalsurface>
+    <opticalsurface name="QuartzCathodeSurface" finish="polished" model="unified" type="dielectric_metal">
+      <property name="REFLECTIVITY" coldim="2" values="0.4*eV 0 6.02*eV 0"/>
+      <property name="EFFICIENCY" ref="EFFICIENCY_Cathode"/>
+    </opticalsurface>
+  </surfaces>
+
+  <detectors>
+    <comment> DIRC-like for STCF </comment>
+    <detector name="StcfFtof" type="StcfFtofGeoV1" vis="FtofVis" material="OpticalAir" id="40">
+      <Sector name="Sector" nSectors="4" radius1="560.*mm" radius2="1050.*mm" positionZ="1.5*m" thickness="200.*mm" material="OpticalAir" vis="FtofVis"/>
+      <Shield name="Shield" thickness="5.*mm" material="CFRP" vis="FtofShieldVis"/>
+      <Quartz name="quartz" thickness="1.5*cm"  interval="10.*mm" material="OpticalQuartz" vis="FtofQuartzVis"/>
+      <Coating name="Coating" thickness="0.5*mm" material="Al" vis="FtofCoatingVis"/>
+      <PhotonDet name="PhotonDet" nPhotonDets="18" thickness="16.6*mm" width="27.5*mm" height="27.5*mm" material="PhotonDet" vis="FtofPhotonDetVis"/>
+      <Cathode name="cathode" Nr="4" Nc="4" thickness="1.0*mm" width="5.5*mm" height="5.5*mm" material="Cathode" vis="FtofCathodeVis"/>
+    </detector>
+  </detectors>
+
+  <readouts>
+  </readouts>
+
+  <plugins>
+  </plugins>
+
+  <fields>
+  </fields>
+
+</lccdd>

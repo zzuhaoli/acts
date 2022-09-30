@@ -1,0 +1,80 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  <info name="STCF_DIRC"
+    title="STCF DIRC-like FTOF"
+    author="B.Qi"
+    url="www.ustc.edu.cn"
+    status="development"
+    version="$Id: $">
+    <comment>
+      The compact format for the STCF DIRC-like FTOF Detector
+    </comment>
+  </info>
+
+  <includes>
+    <gdmlFile ref="../../material/elements.xml"/>
+    <gdmlFile ref="../../material/materials.xml"/>
+  </includes>
+  <define>
+    <constant name="world_side"          value="10*m"/>
+    <constant name="world_x"             value="world_side/2"/>
+    <constant name="world_y"             value="world_side/2"/>
+    <constant name="world_z"             value="world_side/2"/>
+  </define>
+
+  <materials>
+    <material name="MCP">
+      <D value="2.2" unit="g/cm3"/>
+      <composite n="1" ref="Si"/>
+    </material>
+    <material name="PMT">
+      <D value="2.2" unit="g/cm3"/>
+      <composite n="1" ref="Si"/>
+    </material>
+    <material name="quartz">
+      <D value="2.2" unit="g/cm3"/>
+      <composite n="1" ref="Si"/>
+      <composite n="2" ref="O"/>
+    </material>
+  </materials>
+
+  <limits>
+    <limitset name="DIRC_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm"/>
+    </limitset>
+  </limits>
+
+  <display>
+    <vis name="DIRCVis" alpha="1.0" r="0.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="DIRCQuartzVis" alpha="1.0" r="0.0" g="0.0" b="1.0" drawingStyle="solid" showDaughters="true" visible="ture"/>
+    <vis name="DIRCPMTVis" alpha="1.0" r="0.0" g="1.0" b="0.0" drawingStyle="solid" showDaughters="true" visible="ture"/>
+    <vis name="DIRCMCPVis" alpha="1.0" r="0.0" g="1.0" b="1.0" drawingStyle="solid" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <comment> DIRC-like FTOF</comment>
+    <detector name="DIRCPID" type="DIRCPID" vis="DIRCVis" id="40" limits="DIRC_limits" insideTrackingVolume="ture">
+      <layer nLadders="12" phi0="0" positionZ="1.3*m" id="0">
+        <sensitive distance="0.5*m" thickness="2.0*cm" width1="0.54*m" width2="0.26*m" length="0.52*m" material="quartz" vis="DIRCQuartzVis"/>
+        <sensPMT nPMT="17" thickness="16.6*mm" width="27.5*mm" length="27.5*mm" gap="3.5*mm" material="PMT" vis="DIRCPMTVis"/>
+        <sensMCP nMCP="4" thickness="1.0*mm" width="5.5*mm" length="22.0*mm" material="MCP" vis="DIRCMCPVis"/>
+      </layer>
+      <layer nLadders="12" phi0="0" positionZ="-1.3*m" id="1">
+        <sensitive distance="0.5*m" thickness="2.0*cm" width1="0.54*m" width2="0.26*m" length="0.52*m" material="quartz" vis="DIRCQuartzVis"/>
+        <sensPMT nPMT="17" thickness="16.6*mm" width="27.5*mm" length="27.5*mm" gap="3.5*mm" material="PMT" vis="DIRCPMTVis"/>
+        <sensMCP nMCP="4" thickness="1.0*mm" width="5.5*mm" length="22.0*mm" material="MCP" vis="DIRCMCPVis"/>
+      </layer>
+    </detector>
+  </detectors>
+
+  <readouts>
+  </readouts>
+
+  <plugins>
+  </plugins>
+
+  <fields>
+  </fields>
+
+</lccdd>
