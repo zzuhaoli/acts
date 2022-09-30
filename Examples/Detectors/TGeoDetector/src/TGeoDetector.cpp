@@ -21,6 +21,7 @@
 #include "Acts/Plugins/TGeo/TGeoCylinderDiscSplitter.hpp"
 #include "Acts/Plugins/TGeo/TGeoDetectorElement.hpp"
 #include "Acts/Plugins/TGeo/TGeoDriftChamberLayerSplitter.hpp"
+#include "Acts/Plugins/TGeo/TGeoURwellLayerSplitter.hpp"
 #include "Acts/Plugins/TGeo/TGeoLayerBuilder.hpp"
 #include "Acts/Utilities/Logger.hpp"
 #include "ActsExamples/Framework/IContextDecorator.hpp"
@@ -129,6 +130,10 @@ std::vector<Acts::TGeoLayerBuilder::Config> makeLayerBuilderConfigs(
       Acts::TGeoDriftChamberLayerSplitter::Config dcConfig;
       layerBuilderConfig.detectorElementSplitter =
           std::make_shared<const Acts::TGeoDriftChamberLayerSplitter>(dcConfig);
+    } else if(volume.uRwellLayerSplit){
+      Acts::TGeoURwellLayerSplitter::Config dcConfig;
+      layerBuilderConfig.detectorElementSplitter =
+          std::make_shared<const Acts::TGeoURwellLayerSplitter>(dcConfig);
     }
 
     detLayerConfigs.push_back(layerBuilderConfig);
@@ -198,6 +203,17 @@ std::shared_ptr<const Acts::TrackingGeometry> buildTGeoDetector(
     bplConfig.centralLayerRadii = {config.beamPipeRadius};
     bplConfig.centralLayerHalflengthZ = {config.beamPipeHalflengthZ};
     bplConfig.centralLayerThickness = {config.beamPipeLayerThickness};
+  
+    ///////////////////////////////////////////////////////////////////////////////  
+    Acts::BinUtility pCylinderUtility(1, -M_PI, M_PI, Acts::closed, Acts::binPhi);
+    pCylinderUtility += Acts::BinUtility(1, -1, 1, Acts::open, Acts::binZ);
+    auto pCylinderMaterial =
+      std::make_shared<const Acts::ProtoSurfaceMaterial>(pCylinderUtility);
+     std::shared_ptr<const Acts::ISurfaceMaterial> beamPipeMaterial = pCylinderMaterial;
+    // assign proto material to the representation surface of the beam layer 
+     bplConfig.centralLayerMaterial = {beamPipeMaterial};
+    ///////////////////////////////////////////////////////////////////////////////  
+
     auto beamPipeBuilder = std::make_shared<const Acts::PassiveLayerBuilder>(
         bplConfig,
         Acts::getDefaultLogger("BeamPipeLayerBuilder", config.layerLogLevel));

@@ -155,6 +155,7 @@ void from_json(const nlohmann::json& j,
   }
 
   vol.driftChamberLayerSplit = j.at("geo-tgeo-dc-layer-split");
+  vol.uRwellLayerSplit = j.at("geo-tgeo-urwell-layer-split");
 }
 
 /// Write volume struct

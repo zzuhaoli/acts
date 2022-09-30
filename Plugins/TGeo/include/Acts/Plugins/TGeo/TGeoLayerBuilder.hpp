@@ -15,7 +15,9 @@
 #include "Acts/Geometry/LayerCreator.hpp"
 #include "Acts/Geometry/ProtoLayerHelper.hpp"
 #include "Acts/Geometry/SurfaceBinningMatcher.hpp"
+#include "Acts/Material/ProtoSurfaceMaterial.hpp"
 #include "Acts/Plugins/TGeo/ITGeoIdentifierProvider.hpp"
+#include "Acts/Utilities/BinUtility.hpp"
 #include "Acts/Utilities/BinningType.hpp"
 #include "Acts/Utilities/Logger.hpp"
 
@@ -190,6 +192,20 @@ class TGeoLayerBuilder : public ILayerBuilder {
   /// Private helper method : register splitting input
   void registerSplit(std::vector<double>& parameters, double test,
                      double tolerance, std::pair<double, double>& range) const;
+
+  std::shared_ptr<Acts::ProtoSurfaceMaterial> createProtoMaterial(
+      const std::vector<std::pair<const std::string, Acts::BinningOption>>&
+          binning,
+      const std::vector<std::pair<std::string, int>>& surfaceBins) const;
+
+  void addCylinderLayerProtoMaterial(
+      Layer& layer,
+      const std::vector<std::pair<const std::string, Acts::BinningOption>>&
+          binning,
+      const std::vector<std::pair<std::string, int>>& representSurfaceBins,
+      const std::vector<std::pair<std::string, int>>& innerApproachSurfaceBins,
+      const std::vector<std::pair<std::string, int>>& outerApproachSurfaceBins)
+      const;
 };
 
 inline void TGeoLayerBuilder::registerSplit(

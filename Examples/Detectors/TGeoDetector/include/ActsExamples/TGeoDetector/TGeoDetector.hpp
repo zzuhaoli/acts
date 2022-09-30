@@ -122,6 +122,7 @@ struct TGeoDetector : public ActsExamples::IBaseDetector {
       std::map<std::string, std::vector<std::pair<double, double>>> discMap;
 
       bool driftChamberLayerSplit = false;
+      bool uRwellLayerSplit = false;
     };
 
     std::vector<Volume> volumes;

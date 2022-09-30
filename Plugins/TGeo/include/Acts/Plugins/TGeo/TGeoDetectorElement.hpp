@@ -22,6 +22,7 @@ class SurfaceBounds;
 class PlanarBounds;
 class DiscBounds;
 class LineBounds;
+class CylinderBounds;
 class DigitizationModule;
 
 /// @class TGeoDetectorElement
@@ -116,6 +117,21 @@ class TGeoDetectorElement : public IdentifiedDetectorElement {
   TGeoDetectorElement(const Identifier& identifier, const TGeoNode& tGeoNode,
                       const Transform3& tgTransform,
                       std::shared_ptr<const LineBounds> tgBounds,
+                      double tgThickness = 0.);
+
+  /// Constructor with pre-computed cylinder surface.
+  ///
+  /// @note this detector element constructor needs everything
+  /// pre-computed.
+  ///
+  /// @param identifier is the detector identifier
+  /// @param tGeoNode is the TGeoNode which should be represented
+  /// @param tgTransform the transform of this detector element
+  /// @param tgBounds the bounds of this surface
+  /// @param tgThickness the thickness of this detector element
+  TGeoDetectorElement(const Identifier& identifier, const TGeoNode& tGeoNode,
+                      const Transform3& tgTransform,
+                      std::shared_ptr<const CylinderBounds> tgBounds,
                       double tgThickness = 0.);
 
   ~TGeoDetectorElement() override;
