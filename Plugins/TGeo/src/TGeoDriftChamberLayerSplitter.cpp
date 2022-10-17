@@ -27,20 +27,16 @@ Acts::TGeoDriftChamberLayerSplitter::TGeoDriftChamberLayerSplitter(
 
 std::vector<std::shared_ptr<const Acts::TGeoDetectorElement>>
 Acts::TGeoDriftChamberLayerSplitter::split(
-    const GeometryContext& gctx,
+    const GeometryContext& /*gctx*/,
     std::shared_ptr<const Acts::TGeoDetectorElement> tgde) const {
-  const Acts::Surface& sf = tgde->surface();
   // Thickness
   auto tgIdentifier = tgde->identifier();
   const TGeoNode& tgNode = tgde->tgeoNode();
-  ActsScalar tgThickness =
-      tgde->thickness() * m_cfg.unitScalar;  // turn cm into mm
-  std::cout << "detElement based on node " << tgNode.GetName()
-            << " has thickness" << tgThickness << std::endl;
+  ACTS_DEBUG("TGeoDriftChamberLayerSplitter splitting detElement "
+             << tgNode.GetName());
 
   std::vector<std::shared_ptr<const Acts::TGeoDetectorElement>>
       tgDetectorElements = {};
-  // std::cout<<"There are " << tgNode.CountDaughters(kFALSE) << std::endl;
 
   // get the number of sense wires in this layer
   int nSenseWires = 0;
@@ -53,21 +49,23 @@ Acts::TGeoDriftChamberLayerSplitter::split(
       // This is a cell. Check its size
       TGeoTube* cell = dynamic_cast<TGeoTube*>(node->GetVolume()->GetShape());
       if (cell == nullptr) {
-        std::cout << "cast bad (cell is always a tube. This should not happen)"
-                  << std::endl;
+        ACTS_WARNING(
+            "cast bad (drift cell is always a tube. This is not supposed to "
+            "happen)");
       } else {
         ActsScalar parameters[5];
         cell->GetBoundingCylinder(parameters);
-        ActsScalar rMin = cell->GetRmin() * m_cfg.unitScalar;  // in cm
-        ActsScalar rMax = cell->GetRmax() * m_cfg.unitScalar;  // in cm
-        ActsScalar dPhi = std::abs(parameters[2] - parameters[3]) * M_PI / 180;
-        std::cout << "cast good: cell has rmin = " << rMin
-                  << ", rmax = " << rMax << " and dphi "
-                  << std::abs(parameters[2] - parameters[3]) << std::endl;
+        ActsScalar minR = cell->GetRmin() * m_cfg.unitScalar;  // in cm
+        ActsScalar maxR = cell->GetRmax() * m_cfg.unitScalar;  // in cm
+        ActsScalar deltaPhi =
+            std::abs(parameters[2] - parameters[3]) * M_PI / 180;
         // calcuate the approximate lineBounds r
-        ActsScalar r = std::hypot(rMax * std::cos(dPhi) - (rMin + rMax) / 2,
-                                  rMax * std::sin(dPhi));
-        ActsScalar thickness = rMax - rMin;
+        ActsScalar r = std::hypot(maxR * std::cos(deltaPhi) - (minR + maxR) / 2,
+                                  maxR * std::sin(deltaPhi));
+        ActsScalar thickness = maxR - minR;
+        ACTS_DEBUG("cast good: drift cell has minR = "
+                   << minR << ", maxR = " << maxR << " and deltaPhi "
+                   << deltaPhi << " (deg) and thickness " << thickness);
 
         // The relative position of cell w.r.t. layer
         const TGeoMatrix* cmatrix = node->GetMatrix();
@@ -79,17 +77,17 @@ Acts::TGeoDriftChamberLayerSplitter::split(
           if (dNode != nullptr) {
             std::string dNodeName = dNode->GetName();
             if (dNodeName.find("sense_wire") != std::string::npos) {
-              std::cout << "sense wire" << dNodeName << std::endl;
+              ACTS_DEBUG("Found sense wire" << dNodeName
+                                            << " in the drift cell");
               // create a Line surface
               nSenseWires++;
               TGeoTube* wire =
                   dynamic_cast<TGeoTube*>(dNode->GetVolume()->GetShape());
               if (wire == nullptr) {
-                std::cout << "cast to TGeoTube bad" << std::endl;
+                ACTS_WARNING("Failed to cast to TGeoTube");
               } else {
-                ActsScalar dZ = wire->GetDz() * m_cfg.unitScalar;
-                std::cout << "thickness =  " << thickness << std::endl;
-                std::cout << "half length =  " << dZ << std::endl;
+                ActsScalar halfZ = wire->GetDz() * m_cfg.unitScalar;
+                ACTS_DEBUG("half length of the cell: " << halfZ);
 
                 const TGeoMatrix* wmatrix = dNode->GetMatrix();
                 // Is this correct?
@@ -107,12 +105,9 @@ Acts::TGeoDriftChamberLayerSplitter::split(
                 Vector3 cy(rotation[1], rotation[4], rotation[7]);
                 Vector3 cz(rotation[2], rotation[5], rotation[8]);
                 auto etrf = TGeoPrimitivesHelper::makeTransform(cx, cy, cz, t);
-                std::cout << "wire at " << t.transpose() << " and rotation x"
-                          << cx.transpose() << " rotation y " << cy.transpose()
-                          << " rotation z " << cz.transpose() << std::endl;
 
-                // make a lineSurface
-                auto tgWire = std::make_shared<Acts::LineBounds>(r, dZ);
+                // make a lineBounds
+                auto tgWire = std::make_shared<Acts::LineBounds>(r*1.5, halfZ);
 
                 // Create a new detector element per split
                 auto tgDetectorElement =
@@ -128,7 +123,7 @@ Acts::TGeoDriftChamberLayerSplitter::split(
     }
   }
 
-  std::cout << "Found " << nSenseWires << " on layer" << std::endl;
+  ACTS_DEBUG("Found " << nSenseWires << " sense wires on this layer");
 
   if (not tgDetectorElements.empty()) {
     return tgDetectorElements;
