@@ -56,7 +56,7 @@ void defineReconstructionPerformance(
 	//"muon (#theta=30 deg)",
 	//"pion (#theta=90 deg)",
 	//"pion (#theta=30 deg)",
-	"pion in #psi(2S)->#pi^{+}#pi^{-}J/#psi(#rightarrow#mu^{+}#mu^{-})",
+	"muon in #psi(2S)->#pi^{+}#pi^{-}J/#psi(#rightarrow#mu^{+}#mu^{-})",
 	},
 	std::vector<int> colors={
           872,
@@ -68,7 +68,7 @@ void defineReconstructionPerformance(
     const std::string& simParticleTreeName = "track_finder_particles",
     const std::string& trackSummaryTreeName = "tracksummary",
     unsigned int nHitsMin = 5, unsigned int nMeasurementsMin = 5,
-    double ptMin = 0.05, double absEtaMax=2, double truthMatchProbMin = 0.5) {
+    double ptMin = 0.05, double absEtaMax=2, double truthMatchProbMin = 0.5, int absPdgId=13) {
   gStyle->SetOptFit(0011);
   gStyle->SetOptStat(0000);
   gStyle->SetPadLeftMargin(0.18);
@@ -82,8 +82,8 @@ void defineReconstructionPerformance(
   gStyle->SetNdivisions(505, "y");
 
   //std::vector<double> ptRanges = {40, 0.05, 0.45};
-  std::vector<double> ptRanges = {20, 0.05, 0.45};
-  //std::vector<double> ptRanges = {19, 0.05, 1.95};
+  //std::vector<double> ptRanges = {20, 0.05, 0.45};
+  std::vector<double> ptRanges = {19, 0.05, 1.95};
   //std::vector<double> pts={0.05, 0.15, 0.3, 0.45};
 
   // Check the inputs are valid
@@ -92,9 +92,6 @@ void defineReconstructionPerformance(
         "Please specify the legends you want to show for all the track files");
   }
 
-  // Open the files for reading
-  //TFile* particleFile = TFile::Open(inputSimParticleFileName.c_str(), "read");
-  
   // The number of track files to read
   unsigned int nTrackFiles = inputTrackSummaryFileNames.size();
   std::vector<TFile*> particleFiles;
@@ -109,8 +106,6 @@ void defineReconstructionPerformance(
   }
 
   // Define variables for tree reading (turn on the events sorting since we have more than one root files to read)
-  //ParticleReader pReader(
-  //    (TTree*)particleFile->Get(simParticleTreeName.c_str()), true);
   std::vector<ParticleReader> pReaders;
   std::vector<TrackSummaryReader> tReaders;
   pReaders.reserve(nTrackFiles);
@@ -130,20 +125,20 @@ void defineReconstructionPerformance(
   }
 
   // Define the efficiency plots
-  std::vector<TEfficiency*> trackEff_vs_eta;
-  std::vector<TEfficiency*> fakeRate_vs_eta;
-  std::vector<TEfficiency*> duplicateRate_vs_eta;
+  std::vector<TEfficiency*> trackEff_vs_theta;
+  std::vector<TEfficiency*> fakeRate_vs_theta;
+  std::vector<TEfficiency*> duplicateRate_vs_theta;
   std::vector<TEfficiency*> trackEff_vs_pt;
   std::vector<TEfficiency*> fakeRate_vs_pt;
   std::vector<TEfficiency*> duplicateRate_vs_pt;
 
   for (int i = 0; i < nTrackFiles; ++i) {
-    trackEff_vs_eta.push_back(new TEfficiency(
-        Form("trackeff_vs_eta_%i", i), ";Truth #theta;Efficiency", 40, -4, 4));
-    fakeRate_vs_eta.push_back(new TEfficiency(
-        Form("fakerate_vs_eta_%i", i), ";#theta;fake rate", 40, -4, 4));
-    duplicateRate_vs_eta.push_back(new TEfficiency(
-        Form("duplicaterate_vs_eta_%i", i), ";#theta;Duplicate rate", 40, -4, 4));
+    trackEff_vs_theta.push_back(new TEfficiency(
+        Form("trackeff_vs_theta_%i", i), ";Truth #theta;Efficiency", 40, -4, 4));
+    fakeRate_vs_theta.push_back(new TEfficiency(
+        Form("fakerate_vs_theta_%i", i), ";#theta;fake rate", 40, -4, 4));
+    duplicateRate_vs_theta.push_back(new TEfficiency(
+        Form("duplicaterate_vs_theta_%i", i), ";#theta;Duplicate rate", 40, -4, 4));
     trackEff_vs_pt.push_back(new TEfficiency(
         Form("trackeff_vs_pt_%i", i), ";Truth pt [GeV];Efficiency", ptRanges[0], ptRanges[1], ptRanges[2]));
     fakeRate_vs_pt.push_back(new TEfficiency(
@@ -156,9 +151,9 @@ void defineReconstructionPerformance(
   for (int i = 0; i < nTrackFiles; ++i) {
     auto color = colors[i];
     auto marker  = markers[i];
-    setEffStyle(trackEff_vs_eta[i], color, marker);
-    setEffStyle(fakeRate_vs_eta[i], color, marker);
-    setEffStyle(duplicateRate_vs_eta[i], color, marker);
+    setEffStyle(trackEff_vs_theta[i], color, marker);
+    setEffStyle(fakeRate_vs_theta[i], color, marker);
+    setEffStyle(duplicateRate_vs_theta[i], color, marker);
     setEffStyle(trackEff_vs_pt[i], color, marker);
     setEffStyle(fakeRate_vs_pt[i], color, marker);
     setEffStyle(duplicateRate_vs_pt[i], color, marker);
@@ -218,10 +213,10 @@ void defineReconstructionPerformance(
         if (nMajorityHits * 1. / nMeasurements >= truthMatchProbMin) {
           matchedParticles[majorityParticleId].push_back(
               {eta, pt, nMajorityHits, nMeasurements});
-          fakeRate_vs_eta[ifile]->Fill(false, theta);
+          fakeRate_vs_theta[ifile]->Fill(false, theta);
           fakeRate_vs_pt[ifile]->Fill(false, pt);
         } else {
-          fakeRate_vs_eta[ifile]->Fill(true, theta);
+          fakeRate_vs_theta[ifile]->Fill(true, theta);
           fakeRate_vs_pt[ifile]->Fill(true, pt);
         }
       }  // end of all tracks
@@ -252,10 +247,10 @@ void defineReconstructionPerformance(
           auto pt = matchedTracks[k].pt;
           double theta = std::atan(std::exp(-eta))*2;
           if (k == 0) {
-            duplicateRate_vs_eta[ifile]->Fill(false, theta);
+            duplicateRate_vs_theta[ifile]->Fill(false, theta);
             duplicateRate_vs_pt[ifile]->Fill(false, pt);
           } else {
-            duplicateRate_vs_eta[ifile]->Fill(true, theta);
+            duplicateRate_vs_theta[ifile]->Fill(true, theta);
             duplicateRate_vs_pt[ifile]->Fill(true, pt);
           }
         }
@@ -271,7 +266,7 @@ void defineReconstructionPerformance(
         auto nHits = particle.nHits;
         auto eta = particle.eta;
         auto pt = particle.pt;
-        if (abs(particle.particlePdg) != 211){
+        if (absPdgId!=999 and abs(particle.particlePdg) != absPdgId){
           continue;	
 	}	
         if (abs(particle.eta) > absEtaMax){
@@ -286,10 +281,10 @@ void defineReconstructionPerformance(
         // Fill the efficiency plots
         auto ip = matchedParticles.find(id);
         if (ip != matchedParticles.end()) {
-          trackEff_vs_eta[ifile]->Fill(true, theta);
+          trackEff_vs_theta[ifile]->Fill(true, theta);
           trackEff_vs_pt[ifile]->Fill(true, pt);
         } else {
-          trackEff_vs_eta[ifile]->Fill(false, theta);
+          trackEff_vs_theta[ifile]->Fill(false, theta);
           trackEff_vs_pt[ifile]->Fill(false, pt);
         }
       }  // end of all particles
@@ -311,11 +306,11 @@ void defineReconstructionPerformance(
   }
   // Add entry for the legends
   for (int i = 0; i < nTrackFiles; ++i) {
-    legs[0]->AddEntry(trackEff_vs_eta[i],
+    legs[0]->AddEntry(trackEff_vs_theta[i],
                       Form("%s", trackSummaryFileLegends[i].c_str()), "lp");
-    legs[1]->AddEntry(fakeRate_vs_eta[i],
+    legs[1]->AddEntry(fakeRate_vs_theta[i],
                       Form("%s", trackSummaryFileLegends[i].c_str()), "lp");
-    legs[2]->AddEntry(duplicateRate_vs_eta[i],
+    legs[2]->AddEntry(duplicateRate_vs_theta[i],
                       Form("%s", trackSummaryFileLegends[i].c_str()), "lp");
     legs[3]->AddEntry(trackEff_vs_pt[i],
                       Form("%s", trackSummaryFileLegends[i].c_str()), "lp");
@@ -333,25 +328,25 @@ void defineReconstructionPerformance(
   for (int i = 0; i < nTrackFiles; ++i) {
     std::string mode = (i == 0) ? "" : "same";
     c1->cd(1);
-    trackEff_vs_eta[i]->Draw(mode.c_str());
+    trackEff_vs_theta[i]->Draw(mode.c_str());
     if (i == nTrackFiles - 1) {
       legs[0]->Draw();
     }
-    adaptEffRange(trackEff_vs_eta[i], 1, scaleRangeMax);
+    adaptEffRange(trackEff_vs_theta[i], 1, scaleRangeMax);
 
     c1->cd(2);
-    fakeRate_vs_eta[i]->Draw(mode.c_str());
+    fakeRate_vs_theta[i]->Draw(mode.c_str());
     if (i == nTrackFiles - 1) {
       legs[1]->Draw();
     }
-    adaptEffRange(fakeRate_vs_eta[i], 1, scaleRangeMax);
+    adaptEffRange(fakeRate_vs_theta[i], 1, scaleRangeMax);
 
     c1->cd(3);
-    duplicateRate_vs_eta[i]->Draw(mode.c_str());
+    duplicateRate_vs_theta[i]->Draw(mode.c_str());
     if (i == nTrackFiles - 1) {
       legs[2]->Draw();
     }
-    adaptEffRange(duplicateRate_vs_eta[i], 1, scaleRangeMax);
+    adaptEffRange(duplicateRate_vs_theta[i], 1, scaleRangeMax);
 
     c1->cd(4);
     trackEff_vs_pt[i]->Draw(mode.c_str());
