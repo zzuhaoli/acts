@@ -48,8 +48,8 @@ void setHistStyle(hist_t* hist, short color = 1) {
 /// @param eff the effiency histogram
 /// @param color the color to be set
 template <typename eff_t>
-void setEffStyle(eff_t* eff, short color = 1) {
-  eff->SetMarkerStyle(20);
+void setEffStyle(eff_t* eff, short color = 1, short marker=20) {
+  eff->SetMarkerStyle(marker);
   eff->SetMarkerSize(0.8);
   eff->SetLineWidth(2);
   eff->SetLineColor(color);

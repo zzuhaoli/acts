@@ -18,6 +18,7 @@
 
 #include "CommonUtils.h"
 #include "TreeReader.h"
+#include "SetStyleATLAS.hpp"
 
 /// This script/function reads all the reconstructed tracks from e.g.
 /// 'tracksummary_ckf.root' and the (possibly selected) truth particles from
@@ -33,16 +34,41 @@
 /// sense to have ptMin = 0.5 GeV here.
 ///
 void defineReconstructionPerformance(
-    const std::string& inputSimParticleFileName =
-        "performance_track_finder.root",
+    const std::vector<std::string>& inputSimParticleFileNames =
+        {
+	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/performance_seeding_trees.root",
+	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_30deg/performance_seeding_trees.root",
+	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_90deg/performance_seeding_trees.root",
+	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_30deg/performance_seeding_trees.root",
+	"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/2mu2pi_test/performance_seeding_trees.root",
+	},
     const std::vector<std::string>& inputTrackSummaryFileNames =
-        {"tracksummary_ckf.root"},
+        {
+	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/tracksummary_ckf.root",
+	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_30deg/tracksummary_ckf.root",
+	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_90deg/tracksummary_ckf.root",
+	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_30deg/tracksummary_ckf.root",
+	"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/2mu2pi_test/tracksummary_ckf.root",
+	},
     const std::vector<std::string>& trackSummaryFileLegends =
-        {"CKF with reco seeds"},
+        {
+	//"muon (#theta=90 deg)",
+	//"muon (#theta=30 deg)",
+	//"pion (#theta=90 deg)",
+	//"pion (#theta=30 deg)",
+	"pion in #psi(2S)->#pi^{+}#pi^{-}J/#psi(#rightarrow#mu^{+}#mu^{-})",
+	},
+	std::vector<int> colors={
+          872,
+          866,
+          854,
+          896,
+	},
+	std::vector<int> markers ={24, 26, 20, 22},
     const std::string& simParticleTreeName = "track_finder_particles",
-    const std::string& trackSummaryTreeName = "tracksummary_ckf",
-    unsigned int nHitsMin = 9, unsigned int nMeasurementsMin = 6,
-    double ptMin = 0.5, double truthMatchProbMin = 0.5) {
+    const std::string& trackSummaryTreeName = "tracksummary",
+    unsigned int nHitsMin = 5, unsigned int nMeasurementsMin = 5,
+    double ptMin = 0.05, double absEtaMax=2, double truthMatchProbMin = 0.5) {
   gStyle->SetOptFit(0011);
   gStyle->SetOptStat(0000);
   gStyle->SetPadLeftMargin(0.18);
@@ -55,27 +81,43 @@ void defineReconstructionPerformance(
   gStyle->SetTitleOffset(1.5, "y");
   gStyle->SetNdivisions(505, "y");
 
+  //std::vector<double> ptRanges = {40, 0.05, 0.45};
+  std::vector<double> ptRanges = {20, 0.05, 0.45};
+  //std::vector<double> ptRanges = {19, 0.05, 1.95};
+  //std::vector<double> pts={0.05, 0.15, 0.3, 0.45};
+
   // Check the inputs are valid
-  if (inputTrackSummaryFileNames.size() != trackSummaryFileLegends.size()) {
+  if (inputSimParticleFileNames.size()!=inputTrackSummaryFileNames.size() or inputTrackSummaryFileNames.size() != trackSummaryFileLegends.size()) {
     throw std::invalid_argument(
         "Please specify the legends you want to show for all the track files");
   }
 
   // Open the files for reading
-  TFile* particleFile = TFile::Open(inputSimParticleFileName.c_str(), "read");
+  //TFile* particleFile = TFile::Open(inputSimParticleFileName.c_str(), "read");
+  
   // The number of track files to read
   unsigned int nTrackFiles = inputTrackSummaryFileNames.size();
+  std::vector<TFile*> particleFiles;
   std::vector<TFile*> trackFiles;
+  particleFiles.reserve(nTrackFiles);
   trackFiles.reserve(nTrackFiles);
+  for (const auto& fileName : inputSimParticleFileNames) {
+    particleFiles.push_back(TFile::Open(fileName.c_str(), "read"));
+  }
   for (const auto& fileName : inputTrackSummaryFileNames) {
     trackFiles.push_back(TFile::Open(fileName.c_str(), "read"));
   }
 
   // Define variables for tree reading (turn on the events sorting since we have more than one root files to read)
-  ParticleReader pReader(
-      (TTree*)particleFile->Get(simParticleTreeName.c_str()), true);
+  //ParticleReader pReader(
+  //    (TTree*)particleFile->Get(simParticleTreeName.c_str()), true);
+  std::vector<ParticleReader> pReaders;
   std::vector<TrackSummaryReader> tReaders;
+  pReaders.reserve(nTrackFiles);
   tReaders.reserve(nTrackFiles);
+  for (const auto& particleFile : particleFiles) {
+    pReaders.emplace_back((TTree*)particleFile->Get(simParticleTreeName.c_str()), true);
+  }
   for (const auto& trackFile : trackFiles) {
     tReaders.emplace_back((TTree*)trackFile->Get(trackSummaryTreeName.c_str()), true);
   }
@@ -97,37 +139,39 @@ void defineReconstructionPerformance(
 
   for (int i = 0; i < nTrackFiles; ++i) {
     trackEff_vs_eta.push_back(new TEfficiency(
-        Form("trackeff_vs_eta_%i", i), ";Truth #eta [GeV/c];Efficiency", 40, -4, 4));
+        Form("trackeff_vs_eta_%i", i), ";Truth #theta;Efficiency", 40, -4, 4));
     fakeRate_vs_eta.push_back(new TEfficiency(
-        Form("fakerate_vs_eta_%i", i), ";#eta [GeV/c];fake rate", 40, -4, 4));
+        Form("fakerate_vs_eta_%i", i), ";#theta;fake rate", 40, -4, 4));
     duplicateRate_vs_eta.push_back(new TEfficiency(
-        Form("duplicaterate_vs_eta_%i", i), ";#eta [GeV/c];Duplicate rate", 40, -4, 4));
+        Form("duplicaterate_vs_eta_%i", i), ";#theta;Duplicate rate", 40, -4, 4));
     trackEff_vs_pt.push_back(new TEfficiency(
-        Form("trackeff_vs_pt_%i", i), ";Truth pt [GeV/c];Efficiency", 40, 0, 100));
+        Form("trackeff_vs_pt_%i", i), ";Truth pt [GeV];Efficiency", ptRanges[0], ptRanges[1], ptRanges[2]));
     fakeRate_vs_pt.push_back(new TEfficiency(
-        Form("fakerate_vs_pt_%i", i), ";pt [GeV/c];fake rate", 40, 0, 100));
+        Form("fakerate_vs_pt_%i", i), ";pt [GeV];fake rate", ptRanges[0], ptRanges[1], ptRanges[2]));
     duplicateRate_vs_pt.push_back(new TEfficiency(
-        Form("duplicaterate_vs_pt_%i", i), ";pt [GeV/c];Duplicate rate", 40, 0, 100));
+        Form("duplicaterate_vs_pt_%i", i), ";pt [GeV];Duplicate rate", ptRanges[0], ptRanges[1], ptRanges[2]));
   }
 
   // Set styles
   for (int i = 0; i < nTrackFiles; ++i) {
-    auto color = i + 1;
-    setEffStyle(trackEff_vs_eta[i], color);
-    setEffStyle(fakeRate_vs_eta[i], color);
-    setEffStyle(duplicateRate_vs_eta[i], color);
-    setEffStyle(trackEff_vs_pt[i], color);
-    setEffStyle(fakeRate_vs_pt[i], color);
-    setEffStyle(duplicateRate_vs_pt[i], color);
+    auto color = colors[i];
+    auto marker  = markers[i];
+    setEffStyle(trackEff_vs_eta[i], color, marker);
+    setEffStyle(fakeRate_vs_eta[i], color, marker);
+    setEffStyle(duplicateRate_vs_eta[i], color, marker);
+    setEffStyle(trackEff_vs_pt[i], color, marker);
+    setEffStyle(fakeRate_vs_pt[i], color, marker);
+    setEffStyle(duplicateRate_vs_pt[i], color, marker);
   }
-
-  // The particles in each event
-  std::map<unsigned int, std::vector<ParticleInfo>> particles;
 
   // Loop over the track files
   for (unsigned int ifile = 0; ifile < nTrackFiles; ++ifile) {
     std::cout << "Processing track file: " << inputTrackSummaryFileNames[ifile]
               << std::endl;
+  
+    // The particles in each event
+    std::map<unsigned int, std::vector<ParticleInfo>> particles;
+
 
     // The container from track-particle matching info (Flushed per event)
     std::map<uint64_t, std::vector<RecoTrackInfo>> matchedParticles;
@@ -145,7 +189,7 @@ void defineReconstructionPerformance(
       // read)
       auto it = particles.find(i);
       if (it == particles.end()) {
-        particles.emplace(i, pReader.getParticles(i));
+        particles.emplace(i, pReaders[ifile].getParticles(i));
       }
 
       // Loop over the tracks
@@ -174,10 +218,10 @@ void defineReconstructionPerformance(
         if (nMajorityHits * 1. / nMeasurements >= truthMatchProbMin) {
           matchedParticles[majorityParticleId].push_back(
               {eta, pt, nMajorityHits, nMeasurements});
-          fakeRate_vs_eta[ifile]->Fill(false, eta);
+          fakeRate_vs_eta[ifile]->Fill(false, theta);
           fakeRate_vs_pt[ifile]->Fill(false, pt);
         } else {
-          fakeRate_vs_eta[ifile]->Fill(true, eta);
+          fakeRate_vs_eta[ifile]->Fill(true, theta);
           fakeRate_vs_pt[ifile]->Fill(true, pt);
         }
       }  // end of all tracks
@@ -206,11 +250,12 @@ void defineReconstructionPerformance(
         for (size_t k = 0; k < matchedTracks.size(); ++k) {
           auto eta = matchedTracks[k].eta;
           auto pt = matchedTracks[k].pt;
+          double theta = std::atan(std::exp(-eta))*2;
           if (k == 0) {
-            duplicateRate_vs_eta[ifile]->Fill(false, eta);
+            duplicateRate_vs_eta[ifile]->Fill(false, theta);
             duplicateRate_vs_pt[ifile]->Fill(false, pt);
           } else {
-            duplicateRate_vs_eta[ifile]->Fill(true, eta);
+            duplicateRate_vs_eta[ifile]->Fill(true, theta);
             duplicateRate_vs_pt[ifile]->Fill(true, pt);
           }
         }
@@ -219,22 +264,32 @@ void defineReconstructionPerformance(
       // Loop over all truth particles in this event
       // The effiency is define as the ratio of selected particles that have
       // been matched with reco
+      if(particles[i].size()==0){
+         std::cout<<"Skip event " << i << " as there is no truth particle in this event" << std::endl; 
+      } 
       for (const auto& particle : particles[i]) {
         auto nHits = particle.nHits;
         auto eta = particle.eta;
         auto pt = particle.pt;
-        if (nHits < nHitsMin or pt < ptMin) {
+        if (abs(particle.particlePdg) != 211){
+          continue;	
+	}	
+        if (abs(particle.eta) > absEtaMax){
+          continue;	
+	}	
+	if (nHits < nHitsMin or pt < ptMin ) {
           continue;
         }
         uint64_t id = particle.particleId;
 
+        double theta = std::atan(std::exp(-eta))*2;
         // Fill the efficiency plots
         auto ip = matchedParticles.find(id);
         if (ip != matchedParticles.end()) {
-          trackEff_vs_eta[ifile]->Fill(true, eta);
+          trackEff_vs_eta[ifile]->Fill(true, theta);
           trackEff_vs_pt[ifile]->Fill(true, pt);
         } else {
-          trackEff_vs_eta[ifile]->Fill(false, eta);
+          trackEff_vs_eta[ifile]->Fill(false, theta);
           trackEff_vs_pt[ifile]->Fill(false, pt);
         }
       }  // end of all particles
@@ -274,7 +329,7 @@ void defineReconstructionPerformance(
   TCanvas* c1 = new TCanvas("recoPerf", " ", 1500, 800);
   c1->Divide(3, 2);
 
-  float scaleRangeMax = 1.15;
+  float scaleRangeMax = 1.1;
   for (int i = 0; i < nTrackFiles; ++i) {
     std::string mode = (i == 0) ? "" : "same";
     c1->cd(1);

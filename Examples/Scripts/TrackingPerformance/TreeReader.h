@@ -26,6 +26,7 @@ struct RecoTrackInfo {
 
 struct ParticleInfo {
   ULong64_t particleId = 0;
+  int particlePdg = 0;
   double eta = 0;
   double p = 0;
   double pt = 0;
@@ -328,6 +329,18 @@ struct TrackSummaryReader : public TreeReader {
     tree->SetBranchAddress("eTHETA_fit", &eTHETA_fit);
     tree->SetBranchAddress("eQOP_fit", &eQOP_fit);
     tree->SetBranchAddress("eT_fit", &eT_fit);
+    tree->SetBranchAddress("res_eLOC0_fit", &res_eLOC0_fit);
+    tree->SetBranchAddress("res_eLOC1_fit", &res_eLOC1_fit);
+    tree->SetBranchAddress("res_ePHI_fit", &res_ePHI_fit);
+    tree->SetBranchAddress("res_eTHETA_fit", &res_eTHETA_fit);
+    tree->SetBranchAddress("res_eQOP_fit", &res_eQOP_fit);
+    tree->SetBranchAddress("res_eT_fit", &res_eT_fit);
+    tree->SetBranchAddress("pull_eLOC0_fit", &pull_eLOC0_fit);
+    tree->SetBranchAddress("pull_eLOC1_fit", &pull_eLOC1_fit);
+    tree->SetBranchAddress("pull_ePHI_fit", &pull_ePHI_fit);
+    tree->SetBranchAddress("pull_eTHETA_fit", &pull_eTHETA_fit);
+    tree->SetBranchAddress("pull_eQOP_fit", &pull_eQOP_fit);
+    tree->SetBranchAddress("pull_eT_fit", &pull_eT_fit);
     tree->SetBranchAddress("err_eLOC0_fit", &err_eLOC0_fit);
     tree->SetBranchAddress("err_eLOC1_fit", &err_eLOC1_fit);
     tree->SetBranchAddress("err_ePHI_fit", &err_ePHI_fit);
@@ -397,6 +410,22 @@ struct TrackSummaryReader : public TreeReader {
   std::vector<float>* err_eTHETA_fit = new std::vector<float>;
   std::vector<float>* err_eQOP_fit = new std::vector<float>;
   std::vector<float>* err_eT_fit = new std::vector<float>;
+
+    // The residual of fitted parameters
+  std::vector<float>* res_eLOC0_fit = new std::vector<float>;
+  std::vector<float>* res_eLOC1_fit = new std::vector<float>;
+  std::vector<float>* res_ePHI_fit = new std::vector<float>;
+  std::vector<float>* res_eTHETA_fit = new std::vector<float>;
+  std::vector<float>* res_eQOP_fit = new std::vector<float>;
+  std::vector<float>* res_eT_fit = new std::vector<float>;
+
+  std::vector<float>* pull_eLOC0_fit = new std::vector<float>;
+  std::vector<float>* pull_eLOC1_fit = new std::vector<float>;
+  std::vector<float>* pull_ePHI_fit = new std::vector<float>;
+  std::vector<float>* pull_eTHETA_fit = new std::vector<float>;
+  std::vector<float>* pull_eQOP_fit = new std::vector<float>;
+  std::vector<float>* pull_eT_fit = new std::vector<float>;
+
 };
 
 /// Struct used for reading particles written out by the
@@ -443,18 +472,20 @@ struct ParticleReader : public TreeReader {
     std::string findParticlesSize = "event_id==" + eventNumberStr;
     size_t startEntry = tree->GetEntries(findStartEntry.c_str());
     size_t nParticles = tree->GetEntries(findParticlesSize.c_str());
-    if (nParticles == 0) {
-      throw std::invalid_argument(
-          "No particles found. Please check the input file.");
-    }
     std::vector<ParticleInfo> particles;
+    if (nParticles == 0) {
+      std::cout<<"WARNING: Event " << eventNumber  << " has no particles "<< std::endl;      
+       return particles; 
+      //throw std::invalid_argument(
+      //    "No particles found. Please check the input file.");
+    }
     particles.reserve(nParticles);
     for (unsigned int i = 0; i < nParticles; ++i) {
       getEntry(startEntry + i);
       auto pt = std::hypot(px, py);
       auto p = std::hypot(pt, pz);
       auto eta = std::atanh(pz / p * 1.);
-      particles.push_back({particleId, eta, p, pt, nHits});
+      particles.push_back({particleId, particleType, eta, p, pt, nHits});
     }
     return particles;
   }
