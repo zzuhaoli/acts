@@ -107,12 +107,19 @@ void comparePerigee_v1(
 	std::string inFile2 = "/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_30deg/tracksummary_ckf.root",
 	std::string inFile3 = "/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_90deg/tracksummary_ckf.root",
 	std::string inFile4 = "/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_30deg/tracksummary_ckf.root",
-    double absEtaMin = 0, double absEtaMax = 1.75, double ptMin = 0.2,
-    double ptMax = 2, bool saveAs = false, bool showEta = false,
+    double absEtaMin = 0, double absEtaMax = 1.75, double ptMin = 0.05,
+    double ptMax = 1.8, bool saveAs = false, bool showEta = false,
     bool showPt = true, bool fit = true, bool plotResidual = true,
     // plotType 0: mean,   1:width,   2: mean and width
     int plotType = 1, bool plotResidualRatio = false, bool absEta = true,
-    bool variablePtBin = true, std::vector<int> colors = {872, 866, 854, 896}, std::vector<int> markers ={24, 26, 20, 22}) {
+    bool variablePtBin = true, 
+    std::vector<std::string> legs = {
+        "muon (#theta=90 deg)",
+        "muon (#theta=30 deg)",
+        "pion (#theta=90 deg)",
+        "pion (#theta=30 deg)",
+    },
+    std::vector<int> colors = {872, 866, 854, 896}, std::vector<int> markers ={24, 26, 20, 22}) {
   gStyle->SetOptFit(0000);
   gStyle->SetOptStat(0000);
   gStyle->SetPadLeftMargin(0.20);
@@ -285,12 +292,6 @@ void comparePerigee_v1(
       {-0.02, 0.02}, {-0.1, 0.1}, {-3.5, 3.5},
   };
 
-  std::vector<std::string> legs = {
-      "muon (#theta=90 deg)",
-      "muon (#theta=30 deg)",
-      "pion (#theta=90 deg)",
-      "pion (#theta=30 deg)",
-  };
   std::vector<std::string> names = {"l0", "l1", "phi", "theta", "qop", "t"};
   std::vector<std::string> pullTitles = {
       "(#frac{d_{0}^{fit} - d_{0}^{truth}}{#sigma(d_{0})})",

@@ -285,6 +285,9 @@ class Propagator final {
 
     /// Context object for the geometry
     std::reference_wrapper<const GeometryContext> geoContext;
+ 
+    /// propagation steps
+    size_t steps = 0; 
   };
 
  private:

@@ -1,0 +1,17 @@
+identifier	time_total_s	time_perevent_s
+Reader:RootSTCFMeasurementReader	9.879	0.001976
+Algorithm:TruthSeedSelector	0.04636	9.271e-06
+Algorithm:SpacePointMaker	0.03901	7.802e-06
+Algorithm:SeedingAlgorithm	0.2596	5.193e-05
+Algorithm:TrackParamsEstimationAlgorithm	0.02501	5.001e-06
+Algorithm:TrackFindingAlgorithm	4.183	0.0008366
+Writer:TrackFinderPerformanceWriter	0.1077	2.154e-05
+Writer:SeedingPerformanceWriter	0.01702	3.405e-06
+Writer:RootTrajectoryStatesWriter	2.768	0.0005537
+Writer:RootTrajectorySummaryWriter	0.2654	5.308e-05
+Writer:CKFPerformanceWriter	0.06003	1.201e-05
+Writer:TrackFinderPerformanceWriter:endRun	0.005111	1.022e-06
+Writer:SeedingPerformanceWriter:endRun	0.009878	1.976e-06
+Writer:RootTrajectoryStatesWriter:endRun	0.2923	5.846e-05
+Writer:RootTrajectorySummaryWriter:endRun	0.005033	1.007e-06
+Writer:CKFPerformanceWriter:endRun	0.004401	8.802e-07

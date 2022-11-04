@@ -40,7 +40,9 @@ void defineReconstructionPerformance(
 	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_30deg/performance_seeding_trees.root",
 	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_90deg/performance_seeding_trees.root",
 	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_30deg/performance_seeding_trees.root",
-	"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/2mu2pi_test/performance_seeding_trees.root",
+	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/2mu2pi_test/performance_seeding_trees.root",
+        "/home/xiaocong/Software/Oscar/acts/RunSpace/scan/v1.1.testLandauLowPt/mu-/absThetaDeg_90_90_momentumPtMev_100_100/performance_seeding_trees.root"	
+        "/home/xiaocong/Software/Oscar/acts/RunSpace/scan/v1.1.testLandauLowPt/mu-/absThetaDeg_90_90_momentumPtMev_150_150/performance_seeding_trees.root"	
 	},
     const std::vector<std::string>& inputTrackSummaryFileNames =
         {
@@ -48,7 +50,9 @@ void defineReconstructionPerformance(
 	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_30deg/tracksummary_ckf.root",
 	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_90deg/tracksummary_ckf.root",
 	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_30deg/tracksummary_ckf.root",
-	"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/2mu2pi_test/tracksummary_ckf.root",
+	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/2mu2pi_test/tracksummary_ckf.root",
+        "/home/xiaocong/Software/Oscar/acts/RunSpace/scan/v1.1.testLandauLowPt/mu-/absThetaDeg_90_90_momentumPtMev_100_100/tracksummary_ckf.root"	
+        "/home/xiaocong/Software/Oscar/acts/RunSpace/scan/v1.1.testLandauLowPt/mu-/absThetaDeg_90_90_momentumPtMev_150_150/tracksummary_ckf.root"	
 	},
     const std::vector<std::string>& trackSummaryFileLegends =
         {
@@ -56,7 +60,9 @@ void defineReconstructionPerformance(
 	//"muon (#theta=30 deg)",
 	//"pion (#theta=90 deg)",
 	//"pion (#theta=30 deg)",
-	"muon in #psi(2S)->#pi^{+}#pi^{-}J/#psi(#rightarrow#mu^{+}#mu^{-})",
+	//"muon in #psi(2S)->#pi^{+}#pi^{-}J/#psi(#rightarrow#mu^{+}#mu^{-})",
+	"muon (#theta=90 deg)",
+	"muon (#theta=90 deg)",
 	},
 	std::vector<int> colors={
           872,
@@ -67,7 +73,7 @@ void defineReconstructionPerformance(
 	std::vector<int> markers ={24, 26, 20, 22},
     const std::string& simParticleTreeName = "track_finder_particles",
     const std::string& trackSummaryTreeName = "tracksummary",
-    unsigned int nHitsMin = 5, unsigned int nMeasurementsMin = 5,
+    unsigned int nHitsMin = 5, unsigned int nMeasurementsMin = 5, unsigned int nOutliersMax = 100,
     double ptMin = 0.05, double absEtaMax=2, double truthMatchProbMin = 0.5, int absPdgId=13) {
   gStyle->SetOptFit(0011);
   gStyle->SetOptStat(0000);
@@ -205,7 +211,7 @@ void defineReconstructionPerformance(
         // Select the track, e.g. you might also want to add cuts on the
         // nOutliers, nHoles
         if ((!hasFittedParameters) or nMeasurements < nMeasurementsMin or
-            pt < ptMin) {
+             nOutliers > nOutliersMax or pt < ptMin) {
           continue;
         }
 

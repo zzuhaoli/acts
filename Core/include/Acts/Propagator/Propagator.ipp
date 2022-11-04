@@ -38,7 +38,7 @@ auto Acts::Propagator<S, N>::propagate_impl(propagator_state_t& state,
     terminatedNormally = false;  // priming error condition
 
     // Propagation loop : stepping
-    for (; result.steps < state.options.maxSteps; ++result.steps) {
+    for (; result.steps < state.options.maxSteps; ++result.steps, ++state.steps) {
       // Perform a propagation step - it takes the propagation state
       Result<double> res = m_stepper.step(state);
       if (res.ok()) {
