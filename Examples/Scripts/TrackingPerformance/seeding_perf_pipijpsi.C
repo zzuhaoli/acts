@@ -33,20 +33,20 @@
 /// truth particles are already required to have pT > 1 GeV, it does not make
 /// sense to have ptMin = 0.5 GeV here.
 ///
-void defineReconstructionPerformance(
+void seeding_perf_pipijpsi(
     const std::vector<std::string>& inputSimParticleFileNames =
         {
 	"/home/xiaocong/Software/Oscar/acts/RunSpace/pipijpsi/v1.1.testLandauLowPt/performance_seeding_trees.root",
 	},
-    const std::vector<std::string>& inputTrackSummaryFileNames =
+    const std::vector<std::string>& inputSeedFileNames =
         {
-	"/home/xiaocong/Software/Oscar/acts/RunSpace/pipijpsi/v1.1.testLandauLowPt/tracksummary_ckf.root",
+	"/home/xiaocong/Software/Oscar/acts/RunSpace/pipijpsi/v1.1.testLandauLowPt/performance_seeding_trees.root",
 	},
-    const std::vector<std::string>& trackSummaryFileLegends_plus =
+    const std::vector<std::string>& legends_plus =
         {
 	"#pi^{+}",
 	},
-    const std::vector<std::string>& trackSummaryFileLegends_minus =
+    const std::vector<std::string>& legends_minus =
         {
 	"#pi^{-}",
 	},
@@ -59,7 +59,7 @@ void defineReconstructionPerformance(
 	std::vector<int> markers_plus ={20},
 	std::vector<int> markers_minus ={21},
     const std::string& simParticleTreeName = "track_finder_particles",
-    const std::string& trackSummaryTreeName = "tracksummary",
+    const std::string& seedTreeName = "track_finder_tracks",
     unsigned int nHitsMin = 5, unsigned int nMeasurementsMin = 5, unsigned int nOutliersMax = 2,
     double ptMin = 0.05, double absCosTheta=0.94, double truthMatchProbMin = 0.5, int absPdgId=13) {
   gStyle->SetOptFit(0011);
@@ -84,13 +84,13 @@ void defineReconstructionPerformance(
   
 
   // Check the inputs are valid
-  if (inputSimParticleFileNames.size()!=inputTrackSummaryFileNames.size() or inputTrackSummaryFileNames.size() != trackSummaryFileLegends_plus.size()) {
+  if (inputSimParticleFileNames.size()!=inputSeedFileNames.size() or inputSeedFileNames.size() != legends_plus.size()) {
     throw std::invalid_argument(
         "Please specify the legends you want to show for all the track files");
   }
 
   // The number of track files to read
-  unsigned int nTrackFiles = inputTrackSummaryFileNames.size();
+  unsigned int nTrackFiles = inputSeedFileNames.size();
   std::vector<TFile*> particleFiles;
   std::vector<TFile*> trackFiles;
   particleFiles.reserve(nTrackFiles);
@@ -98,26 +98,26 @@ void defineReconstructionPerformance(
   for (const auto& fileName : inputSimParticleFileNames) {
     particleFiles.push_back(TFile::Open(fileName.c_str(), "read"));
   }
-  for (const auto& fileName : inputTrackSummaryFileNames) {
+  for (const auto& fileName : inputSeedFileNames) {
     trackFiles.push_back(TFile::Open(fileName.c_str(), "read"));
   }
 
   // Define variables for tree reading (turn on the events sorting since we have more than one root files to read)
   std::vector<ParticleReader> pReaders;
-  std::vector<TrackSummaryReader> tReaders;
+  std::vector<SeedReader> sReaders;
   pReaders.reserve(nTrackFiles);
-  tReaders.reserve(nTrackFiles);
+  sReaders.reserve(nTrackFiles);
   for (const auto& particleFile : particleFiles) {
     pReaders.emplace_back((TTree*)particleFile->Get(simParticleTreeName.c_str()), true);
   }
   for (const auto& trackFile : trackFiles) {
-    tReaders.emplace_back((TTree*)trackFile->Get(trackSummaryTreeName.c_str()), true);
+    sReaders.emplace_back((TTree*)trackFile->Get(seedTreeName.c_str()), true);
   }
 
   std::vector<size_t> nEvents;
   nEvents.reserve(nTrackFiles);
-  for (const auto& tReader : tReaders) {
-    size_t entries = tReader.tree->GetEntries();
+  for (const auto& sReader : sReaders) {
+    size_t entries = sReader.tree->GetEntries();
     //size_t entries = 1000;
     
     nEvents.push_back(entries);
@@ -189,130 +189,41 @@ void defineReconstructionPerformance(
 
   // Loop over the track files
   for (unsigned int ifile = 0; ifile < nTrackFiles; ++ifile) {
-    std::cout << "Processing track file: " << inputTrackSummaryFileNames[ifile]
+    std::cout << "Processing track file: " << inputSeedFileNames[ifile]
               << std::endl;
-  
-    // The particles in each event
-    std::map<unsigned int, std::vector<ParticleInfo>> particles;
 
+     // The particles in each event
+    //std::map<unsigned int, std::vector<ParticleInfo>> particles;
 
-    // The container from track-particle matching info (Flushed per event)
-    std::map<uint64_t, std::vector<RecoTrackInfo>> matchedParticles;
-
-    // Loop over the events to fill plots
-    for (size_t i = 0; i < nEvents[ifile]; ++i) {
-      if (i % 10 == 0) {
-        std::cout << "Processed events: " << i << std::endl;
+    //for(size_t i = 0; i < pReaders[ifile].tree->GetEntries(); ++i) {
+    for(size_t i = 0; i < 100; ++i) {
+      if (i % 100 == 0) {
+        std::cout << "Processed event: " << i << std::endl;
       }
 
-      // Get the tracks
-      tReaders[ifile].getEntry(i);
+      std::vector<ParticleInfo> particles =  pReaders[ifile].getParticles(i);
+     
+      std::map<uint64_t, int> matchedParticles; 
+      // Loop over the seeds
+      for (size_t iseed = 0; iseed < sReaders[ifile].tree->GetEntries(); ++iseed) {
+        sReaders[ifile].getEntry(iseed);
+         
+        if(sReaders[ifile].trkEventId!=i) continue;	
 
-      // Get the particles (do nothing if the particles for this event already
-      // read)
-      auto it = particles.find(i);
-      if (it == particles.end()) {
-        particles.emplace(i, pReaders[ifile].getParticles(i));
+	if(sReaders[ifile].trkNumParticles==1){
+	  auto majorityParticleId = sReaders[ifile].trkParticleId->at(0);
+          matchedParticles[majorityParticleId] +=1; 
+	}
       }
-
-      // Loop over the tracks
-      // The fake rate is defined as the ratio of selected truth-matched tracks
-      // over all selected tracks
-      for (size_t j = 0; j < tReaders[ifile].nStates->size(); ++j) {
-        bool hasFittedParameters = tReaders[ifile].hasFittedParams->at(j);
-        auto nMeasurements = tReaders[ifile].nMeasurements->at(j);
-        auto nOutliers = tReaders[ifile].nOutliers->at(j);
-        auto nHoles = tReaders[ifile].nHoles->at(j);
-        auto theta = tReaders[ifile].eTHETA_fit->at(j);
-        auto qop = tReaders[ifile].eQOP_fit->at(j);
-        auto pt = std::abs(1 / qop) * std::sin(theta);
-        auto eta = std::atanh(std::cos(theta));
-        auto nMajorityHits = tReaders[ifile].nMajorityHits->at(j);
-        auto majorityParticleId = tReaders[ifile].majorityParticleId->at(j);
-
-        // Select the track, e.g. you might also want to add cuts on the
-        // nOutliers, nHoles
-        if ((!hasFittedParameters) or nMeasurements < nMeasurementsMin or
-             nOutliers > nOutliersMax or pt < ptMin or std::abs(std::cos(theta))>absCosTheta) {
-          continue;
-        }
-
-        // Fill the fake rate plots
-        if (nMajorityHits * 1. / nMeasurements >= truthMatchProbMin) {
-          matchedParticles[majorityParticleId].push_back(
-              {eta, pt, qop, nMajorityHits, nMeasurements});
-          if(qop>0){ 
-	    fakeRate_vs_theta_plus[ifile]->Fill(false, std::cos(theta));
-            fakeRate_vs_pt_plus[ifile]->Fill(false, pt);
-          } else {
-	    fakeRate_vs_theta_minus[ifile]->Fill(false, std::cos(theta));
-            fakeRate_vs_pt_minus[ifile]->Fill(false, pt);
-	  } 
-        } else {
-          if(qop>0){ 
-            fakeRate_vs_theta_plus[ifile]->Fill(true, std::cos(theta));
-            fakeRate_vs_pt_plus[ifile]->Fill(true, pt);
-          } else {
-            fakeRate_vs_theta_minus[ifile]->Fill(true, std::cos(theta));
-            fakeRate_vs_pt_minus[ifile]->Fill(true, pt);
-	  } 
-        }
-      }  // end of all tracks
-
-      // Loop over all selected and truth-matched tracks
-      // The duplicate rate is defined as the ratio of duplicate tracks among
-      // all the selected truth-matched tracks (only one track is 'real'; others
-      // are 'duplicated')
-      for (auto& [id, matchedTracks] : matchedParticles) {
-        // Sort all tracks matched to this particle according to majority prob
-        // and track quality
-        std::sort(matchedTracks.begin(), matchedTracks.end(),
-                  [](const RecoTrackInfo& lhs, const RecoTrackInfo& rhs) {
-                    if (lhs.nMajorityHits > rhs.nMajorityHits) {
-                      return true;
-                    }
-                    if (lhs.nMajorityHits < rhs.nMajorityHits) {
-                      return false;
-                    }
-                    if (lhs.nMeasurements > rhs.nMeasurements) {
-                      return true;
-                    }
-                    return false;
-                  });
-        // Fill the duplication rate plots
-        for (size_t k = 0; k < matchedTracks.size(); ++k) {
-          auto eta = matchedTracks[k].eta;
-          auto pt = matchedTracks[k].pt;
-          auto qop = matchedTracks[k].qop;
-          double theta = std::atan(std::exp(-eta))*2;
-          if (k == 0) {
-	    if(qop>0){
-              duplicateRate_vs_theta_plus[ifile]->Fill(false, std::cos(theta));
-              duplicateRate_vs_pt_plus[ifile]->Fill(false, pt);
-            } else {
-              duplicateRate_vs_theta_minus[ifile]->Fill(false, std::cos(theta));
-              duplicateRate_vs_pt_minus[ifile]->Fill(false, pt);
-	    } 
-	  } else {
-            std::cout<<"Find duplicate track for event " << i << std::endl; 
-	    if(qop>0){
-	      duplicateRate_vs_theta_plus[ifile]->Fill(true, std::cos(theta));
-              duplicateRate_vs_pt_plus[ifile]->Fill(true, pt);
-            } else {
-	      duplicateRate_vs_theta_minus[ifile]->Fill(true, std::cos(theta));
-              duplicateRate_vs_pt_minus[ifile]->Fill(true, pt);
-	    } 
-          }
-        }
-      }  // end of all selected truth-matched tracks
 
       // Loop over all truth particles in this event
       // The effiency is define as the ratio of selected particles that have
       // been matched with reco
-      if(particles[i].size()==0){
+      if(particles.size()==0){
          std::cout<<"Skip event " << i << " as there is no truth particle in this event" << std::endl; 
       } 
-      for (const auto& particle : particles[i]) {
+    
+      for (const auto& particle : particles) {
         auto nHits = particle.nHits;
         auto eta = particle.eta;
         double theta = std::atan(std::exp(-eta))*2;
@@ -339,6 +250,29 @@ void defineReconstructionPerformance(
 	    trackEff_vs_theta_minus[ifile]->Fill(true, std::cos(theta));
             trackEff_vs_pt_minus[ifile]->Fill(true, pt);
 	  }
+
+          ////////////////////////////////////////////////////////////////////
+          for(int j=0; j < matchedParticles[id]; ++j){
+             if(j==0){
+                if(q>0){
+                  duplicateRate_vs_theta_plus[ifile]->Fill(false, std::cos(theta));
+                  duplicateRate_vs_pt_plus[ifile]->Fill(false, pt);
+                } else {
+                  duplicateRate_vs_theta_minus[ifile]->Fill(false, std::cos(theta));
+                  duplicateRate_vs_pt_minus[ifile]->Fill(false, pt);
+                }
+	     } else {
+                if(q>0){
+                  duplicateRate_vs_theta_plus[ifile]->Fill(true, std::cos(theta));
+                  duplicateRate_vs_pt_plus[ifile]->Fill(true, pt);
+                } else {
+                  duplicateRate_vs_theta_minus[ifile]->Fill(true, std::cos(theta));
+                  duplicateRate_vs_pt_minus[ifile]->Fill(true, pt);
+                }
+	     }
+	  }
+          ////////////////////////////////////////////////////////////////////
+
         } else {
           if(q>0){ 
             trackEff_vs_theta_plus[ifile]->Fill(false, std::cos(theta));
@@ -348,10 +282,12 @@ void defineReconstructionPerformance(
             trackEff_vs_pt_minus[ifile]->Fill(false, pt);
 	  }
         }
+
+
       }  // end of all particles
 
-      matchedParticles.clear();
-    }  // end of all events
+    } // end of all events
+  
   }    // end of all track files
 
   std::cout << "All good. Now plotting..." << std::endl;
@@ -369,30 +305,30 @@ void defineReconstructionPerformance(
   // Add entry for the legends
   for (int i = 0; i < nTrackFiles; ++i) {
     legs[0]->AddEntry(trackEff_vs_theta_minus[i],
-                      Form("%s", trackSummaryFileLegends_minus[i].c_str()), "lp");
+                      Form("%s", legends_minus[i].c_str()), "lp");
     legs[1]->AddEntry(fakeRate_vs_theta_minus[i],
-                      Form("%s", trackSummaryFileLegends_minus[i].c_str()), "lp");
+                      Form("%s", legends_minus[i].c_str()), "lp");
     legs[2]->AddEntry(duplicateRate_vs_theta_minus[i],
-                      Form("%s", trackSummaryFileLegends_minus[i].c_str()), "lp");
+                      Form("%s", legends_minus[i].c_str()), "lp");
     legs[3]->AddEntry(trackEff_vs_pt_minus[i],
-                      Form("%s", trackSummaryFileLegends_minus[i].c_str()), "lp");
+                      Form("%s", legends_minus[i].c_str()), "lp");
     legs[4]->AddEntry(fakeRate_vs_pt_minus[i],
-                      Form("%s", trackSummaryFileLegends_minus[i].c_str()), "lp");
+                      Form("%s", legends_minus[i].c_str()), "lp");
     legs[5]->AddEntry(duplicateRate_vs_pt_minus[i],
-                      Form("%s", trackSummaryFileLegends_minus[i].c_str()), "lp");
+                      Form("%s", legends_minus[i].c_str()), "lp");
     
     legs[0]->AddEntry(trackEff_vs_theta_plus[i],
-                      Form("%s", trackSummaryFileLegends_plus[i].c_str()), "lp");
+                      Form("%s", legends_plus[i].c_str()), "lp");
     legs[1]->AddEntry(fakeRate_vs_theta_plus[i],
-                      Form("%s", trackSummaryFileLegends_plus[i].c_str()), "lp");
+                      Form("%s", legends_plus[i].c_str()), "lp");
     legs[2]->AddEntry(duplicateRate_vs_theta_plus[i],
-                      Form("%s", trackSummaryFileLegends_plus[i].c_str()), "lp");
+                      Form("%s", legends_plus[i].c_str()), "lp");
     legs[3]->AddEntry(trackEff_vs_pt_plus[i],
-                      Form("%s", trackSummaryFileLegends_plus[i].c_str()), "lp");
+                      Form("%s", legends_plus[i].c_str()), "lp");
     legs[4]->AddEntry(fakeRate_vs_pt_plus[i],
-                      Form("%s", trackSummaryFileLegends_plus[i].c_str()), "lp");
+                      Form("%s", legends_plus[i].c_str()), "lp");
     legs[5]->AddEntry(duplicateRate_vs_pt_plus[i],
-                      Form("%s", trackSummaryFileLegends_plus[i].c_str()), "lp");
+                      Form("%s", legends_plus[i].c_str()), "lp");
   }
 
   // Now draw the plots

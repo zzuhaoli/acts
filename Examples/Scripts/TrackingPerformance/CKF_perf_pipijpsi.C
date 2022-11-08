@@ -33,7 +33,7 @@
 /// truth particles are already required to have pT > 1 GeV, it does not make
 /// sense to have ptMin = 0.5 GeV here.
 ///
-void defineReconstructionPerformance(
+void CKF_perf_pipijpsi(
     const std::vector<std::string>& inputSimParticleFileNames =
         {
 	"/home/xiaocong/Software/Oscar/acts/RunSpace/pipijpsi/v1.1.testLandauLowPt/performance_seeding_trees.root",
@@ -44,11 +44,11 @@ void defineReconstructionPerformance(
 	},
     const std::vector<std::string>& trackSummaryFileLegends_plus =
         {
-	"#pi^{+}",
+	"#mu^{+}",
 	},
     const std::vector<std::string>& trackSummaryFileLegends_minus =
         {
-	"#pi^{-}",
+	"#mu^{-}",
 	},
 	std::vector<int> colors_plus={
           854,
@@ -117,8 +117,8 @@ void defineReconstructionPerformance(
   std::vector<size_t> nEvents;
   nEvents.reserve(nTrackFiles);
   for (const auto& tReader : tReaders) {
-    size_t entries = tReader.tree->GetEntries();
-    //size_t entries = 1000;
+    //size_t entries = tReader.tree->GetEntries();
+    size_t entries = 10000;
     
     nEvents.push_back(entries);
   }
@@ -271,9 +271,9 @@ void defineReconstructionPerformance(
                     if (lhs.nMajorityHits > rhs.nMajorityHits) {
                       return true;
                     }
-                    if (lhs.nMajorityHits < rhs.nMajorityHits) {
-                      return false;
-                    }
+                   // if (lhs.nMajorityHits < rhs.nMajorityHits) {
+                   //   return false;
+                   // }
                     if (lhs.nMeasurements > rhs.nMeasurements) {
                       return true;
                     }
