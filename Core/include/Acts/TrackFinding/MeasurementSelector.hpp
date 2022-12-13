@@ -117,7 +117,7 @@ class MeasurementSelector {
       double chi2 = calculateChi2(
           trackState.calibrated(), trackState.calibratedCovariance(),
           trackState.predicted(), trackState.predictedCovariance(),
-          trackState.projector(), trackState.calibratedSize());
+          trackState.projector(), trackState.calibratedSize(), *surface);
 
       trackState.chi2() = chi2;
 
@@ -221,7 +221,7 @@ class MeasurementSelector {
                        false>::Covariance predictedCovariance,
       TrackStateTraits<MultiTrajectoryTraits::MeasurementSizeMax,
                        false>::Projector projector,
-      unsigned int calibratedSize) const;
+      unsigned int calibratedSize, const Surface& surface) const;
 
   Config m_config;
 };

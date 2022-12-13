@@ -32,4 +32,8 @@ void ActsExamples::Options::addFittingOptions(
       value<Reals<6>>()->default_value({{1., 1., 1., 1., 1., 1.}}),
       "Inflation factor for the initial covariance for the Kalman filter, 6 "
       "values are required in the form of i:j:k:l:m:n.");
+  opt.add_options()("fit-truth-estimated-seeds", bool_switch(),
+      "Use track parameters smeared from truth particles for steering KF");
+  opt.add_options()("fit-chi2-cut", value<double>()->default_value(0),
+                    "Chi2 cut for finding outlier. 0 means no chi2.");
 }

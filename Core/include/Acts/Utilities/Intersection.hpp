@@ -200,6 +200,8 @@ bool checkIntersection(const intersection_t& intersection, double pLimit,
 
   const double cLimit = intersection.pathLength;
 
+  //std::cout<<"intersection.pathLength = " << cLimit << std::endl;
+
   if constexpr (doLogging) {
     ACTS_VERBOSE(" -> pLimit, oLimit, cLimit: " << pLimit << ", " << oLimit
                                                 << ", " << cLimit);
@@ -207,6 +209,15 @@ bool checkIntersection(const intersection_t& intersection, double pLimit,
 
   const bool coCriterion = cLimit > oLimit;
   const bool cpCriterion = std::abs(cLimit) < std::abs(pLimit) + tolerance;
+  //if(not coCriterion) {
+  //        std::cout<<"- intersection path length "
+  //                   << cLimit << " <= overstep limit " << oLimit << std::endl; 
+  //}
+  //if (not cpCriterion) {
+  //  std::cout<<std::abs(cLimit) << " is over the path limit "
+  //                   << (std::abs(pLimit) + tolerance)
+  //                   << " (including tolerance of " << tolerance << ")" << std::endl;
+  //}
 
   const bool accept = coCriterion and cpCriterion;
 

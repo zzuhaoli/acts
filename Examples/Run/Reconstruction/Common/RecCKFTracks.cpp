@@ -21,6 +21,7 @@
 #include "ActsExamples/Io/Csv/CsvSimHitReader.hpp"
 #include "ActsExamples/Io/Performance/CKFPerformanceWriter.hpp"
 #include "ActsExamples/Io/Performance/TrackFinderPerformanceWriter.hpp"
+#include "ActsExamples/Io/Root/RootSTCFMeasurementReader.hpp"
 #include "ActsExamples/Io/Root/RootTrajectoryStatesWriter.hpp"
 #include "ActsExamples/Io/Root/RootTrajectorySummaryWriter.hpp"
 #include "ActsExamples/MagneticField/MagneticFieldOptions.hpp"
@@ -125,8 +126,8 @@ int runRecCKFTracks(int argc, char* argv[],
   particleSelectorCfg.inputMeasurementParticlesMap =
       digiCfg.outputMeasurementParticlesMap;
   particleSelectorCfg.outputParticles = "particles_selected";
-  particleSelectorCfg.ptMin = 500_MeV;
-  particleSelectorCfg.nHitsMin = 9;
+  particleSelectorCfg.ptMin = 40_MeV;
+  particleSelectorCfg.nHitsMin = 5;
   sequencer.addAlgorithm(
       std::make_shared<TruthSeedSelector>(particleSelectorCfg, logLevel));
 
@@ -180,14 +181,14 @@ int runRecCKFTracks(int argc, char* argv[],
       seedingCfg.seedFinderConfig.deltaRMin =
           seedingCfg.seedFilterConfig.deltaRMin;
 
-      seedingCfg.gridConfig.deltaRMax = 60._mm;
+      seedingCfg.gridConfig.deltaRMax = 80._mm;
       seedingCfg.seedFinderConfig.deltaRMax = seedingCfg.gridConfig.deltaRMax;
 
       seedingCfg.seedFinderConfig.collisionRegionMin = -250_mm;
       seedingCfg.seedFinderConfig.collisionRegionMax = 250._mm;
 
-      seedingCfg.gridConfig.zMin = -2000._mm;
-      seedingCfg.gridConfig.zMax = 2000._mm;
+      seedingCfg.gridConfig.zMin = -500._mm;
+      seedingCfg.gridConfig.zMax = 500._mm;
       seedingCfg.seedFinderConfig.zMin = seedingCfg.gridConfig.zMin;
       seedingCfg.seedFinderConfig.zMax = seedingCfg.gridConfig.zMax;
 
@@ -195,22 +196,25 @@ int runRecCKFTracks(int argc, char* argv[],
       seedingCfg.seedFinderConfig.maxSeedsPerSpM =
           seedingCfg.seedFilterConfig.maxSeedsPerSpM;
 
-      seedingCfg.gridConfig.cotThetaMax = 7.40627;  // 2.7 eta
+      // seedingCfg.gridConfig.cotThetaMax = 7.40627;  // 2.7 eta
+      seedingCfg.gridConfig.cotThetaMax = 2.74;
       seedingCfg.seedFinderConfig.cotThetaMax =
           seedingCfg.gridConfig.cotThetaMax;
 
       seedingCfg.seedFinderConfig.sigmaScattering = 50;
       seedingCfg.seedFinderConfig.radLengthPerSeed = 0.1;
 
-      seedingCfg.gridConfig.minPt = 500._MeV;
+      seedingCfg.gridConfig.minPt = 40._MeV;
       seedingCfg.seedFinderConfig.minPt = seedingCfg.gridConfig.minPt;
 
-      seedingCfg.gridConfig.bFieldInZ = 1.99724_T;
+      // seedingCfg.gridConfig.bFieldInZ = 1.99724_T;
+      seedingCfg.gridConfig.bFieldInZ = 1_T;
       seedingCfg.seedFinderConfig.bFieldInZ = seedingCfg.gridConfig.bFieldInZ;
 
       seedingCfg.seedFinderConfig.beamPos = {0_mm, 0_mm};
 
-      seedingCfg.seedFinderConfig.impactMax = 3._mm;
+      // seedingCfg.seedFinderConfig.impactMax = 3._mm;
+      seedingCfg.seedFinderConfig.impactMax = 10._mm;
 
       sequencer.addAlgorithm(
           std::make_shared<SeedingAlgorithm>(seedingCfg, logLevel));
@@ -243,9 +247,9 @@ int runRecCKFTracks(int argc, char* argv[],
     paramsEstimationCfg.magneticField = magneticField;
     paramsEstimationCfg.bFieldMin = 0.1_T;
     paramsEstimationCfg.deltaRMax = 100._mm;
-    paramsEstimationCfg.deltaRMin = 10._mm;
-    paramsEstimationCfg.sigmaLoc0 = 25._um;
-    paramsEstimationCfg.sigmaLoc1 = 100._um;
+    paramsEstimationCfg.deltaRMin = 30._mm;
+    paramsEstimationCfg.sigmaLoc0 = 100._um;
+    paramsEstimationCfg.sigmaLoc1 = 400._um;
     paramsEstimationCfg.sigmaPhi = 0.02_degree;
     paramsEstimationCfg.sigmaTheta = 0.02_degree;
     paramsEstimationCfg.sigmaQOverP = 0.1 / 1._GeV;
@@ -267,11 +271,14 @@ int runRecCKFTracks(int argc, char* argv[],
   trackFindingCfg.inputSourceLinks = digiCfg.outputSourceLinks;
   trackFindingCfg.inputInitialTrackParameters = outputTrackParameters;
   trackFindingCfg.outputTrajectories = "trajectories";
+  trackFindingCfg.outputTrackParameters = "parameters";
   trackFindingCfg.computeSharedHits = true;
   trackFindingCfg.findTracks = TrackFindingAlgorithm::makeTrackFinderFunction(
       trackingGeometry, magneticField);
   sequencer.addAlgorithm(
       std::make_shared<TrackFindingAlgorithm>(trackFindingCfg, logLevel));
+
+  std::cout << "Added CKF " << std::endl;
 
   // write track states from CKF
   RootTrajectoryStatesWriter::Config trackStatesWriter;
@@ -314,7 +321,21 @@ int runRecCKFTracks(int argc, char* argv[],
       digiCfg.outputMeasurementParticlesMap;
   // The bottom seed could be the first, second or third hits on the truth track
   perfWriterCfg.nMeasurementsMin = particleSelectorCfg.nHitsMin - 3;
-  perfWriterCfg.ptMin = 0.4_GeV;
+  perfWriterCfg.ptMin = 40_MeV;
+  perfWriterCfg.effPlotToolConfig.varBinning["Eta"] =
+      PlotHelpers::Binning("#eta", 35, -1.75, 1.75);
+  perfWriterCfg.effPlotToolConfig.varBinning["Pt"] =
+      PlotHelpers::Binning("pT [GeV/c]", 30, 0, 0.3);
+  perfWriterCfg.fakeRatePlotToolConfig.varBinning["Eta"] =
+      PlotHelpers::Binning("#eta", 35, -1.75, 1.75);
+  perfWriterCfg.fakeRatePlotToolConfig.varBinning["Pt"] =
+      PlotHelpers::Binning("pT [GeV/c]", 30, 0, 0.3);
+  perfWriterCfg.trackSummaryPlotToolConfig.varBinning["Eta"] =
+      PlotHelpers::Binning("#eta", 35, -1.75, 1.75);
+  perfWriterCfg.trackSummaryPlotToolConfig.varBinning["Pt"] =
+      PlotHelpers::Binning("pT [GeV/c]", 30, 0, 0.3);
+  perfWriterCfg.trackSummaryPlotToolConfig.varBinning["Num"] =
+      PlotHelpers::Binning("N", 60, -0.5, 59.5);
   perfWriterCfg.filePath = outputDir + "/performance_ckf.root";
 #ifdef ACTS_PLUGIN_ONNX
   // Onnx plugin related options

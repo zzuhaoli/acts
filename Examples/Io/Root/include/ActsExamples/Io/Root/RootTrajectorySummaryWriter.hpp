@@ -90,8 +90,12 @@ class RootTrajectorySummaryWriter final
   std::vector<float> m_chi2Sum;               ///< The total chi2
   std::vector<unsigned int>
       m_NDF;  ///< The number of ndf of the measurements+outliers
+  
   std::vector<std::vector<double>>
       m_measurementChi2;  ///< The chi2 on all measurement states
+  // The int does not work!! 
+  std::vector<std::vector<double>>
+      m_measurementIndex;  ///< The index of source link for all measurement states
   std::vector<std::vector<double>>
       m_outlierChi2;  ///< The chi2 on all outlier states
   std::vector<std::vector<double>>
@@ -108,6 +112,8 @@ class RootTrajectorySummaryWriter final
       m_nMajorityHits;  ///< The number of hits from majority particle
   std::vector<uint64_t>
       m_majorityParticleId;      ///< The particle Id of the majority particle
+  std::vector<int>
+      m_majorityParticlePdg;      ///< The Pdg of the majority particle
   std::vector<int> m_t_charge;   ///< Charge of majority particle
   std::vector<float> m_t_time;   ///< Time of majority particle
   std::vector<float> m_t_vx;     ///< Vertex x positions of majority particle

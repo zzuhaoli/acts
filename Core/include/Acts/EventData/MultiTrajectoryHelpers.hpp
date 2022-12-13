@@ -12,6 +12,7 @@
 #include "Acts/Geometry/Layer.hpp"
 #include "Acts/Geometry/TrackingVolume.hpp"
 #include "Acts/Surfaces/Surface.hpp"
+#include "Acts/EventData/SourceLink.hpp"
 
 #include <functional>
 #include <unordered_map>

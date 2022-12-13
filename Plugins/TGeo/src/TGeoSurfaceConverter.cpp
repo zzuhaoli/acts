@@ -85,19 +85,21 @@ Acts::TGeoSurfaceConverter::cylinderComponents(const TGeoShape& tgShape,
       double halfPhi = M_PI;
       double avgPhi = 0.;
       // Check if it's a segment
-      auto tubeSeg = dynamic_cast<const TGeoTubeSeg*>(tube);
-      if (tubeSeg != nullptr) {
-        double phi1 = toRadian(tubeSeg->GetPhi1());
-        double phi2 = toRadian(tubeSeg->GetPhi2());
-        if (not boost::starts_with(axes, "X")) {
-          throw std::invalid_argument(
-              "TGeoShape -> CylinderSurface (sectorial): can only be converted "
-              "with "
-              "'(X)(y/Y)(*)' axes.");
-        }
-        halfPhi = 0.5 * (std::max(phi1, phi2) - std::min(phi1, phi2));
-        avgPhi = 0.5 * (phi1 + phi2);
-      }
+      std::cout << "tube name " << tube->GetName() << std::endl;
+      // auto tubeSeg = dynamic_cast<const TGeoTubeSeg*>(tube);
+      // if (tubeSeg != nullptr) {
+      //   double phi1 = toRadian(tubeSeg->GetPhi1());
+      //   double phi2 = toRadian(tubeSeg->GetPhi2());
+      //   std::cout<<"phi1= " << phi1 <<", phi2 "<< phi2 << std::endl;
+      //   if (not boost::starts_with(axes, "X")) {
+      //     throw std::invalid_argument(
+      //         "TGeoShape -> CylinderSurface (sectorial): can only be
+      //         converted " "with "
+      //         "'(X)(y/Y)(*)' axes.");
+      //   }
+      //   halfPhi = 0.5 * (std::max(phi1, phi2) - std::min(phi1, phi2));
+      //   avgPhi = 0.5 * (phi1 + phi2);
+      // }
       bounds = std::make_shared<CylinderBounds>(medR, halfZ, halfPhi, avgPhi);
       thickness = deltaR;
     }

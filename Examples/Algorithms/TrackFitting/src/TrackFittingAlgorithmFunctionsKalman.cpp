@@ -42,6 +42,40 @@ struct SimpleReverseFilteringLogic {
   }
 };
 
+struct SimpleOutlierFinder{
+   double chi2Cut;
+   bool isOutlier(Acts::MultiTrajectory<Acts::VectorMultiTrajectory>::ConstTrackStateProxy
+          state) const {
+    if(chi2Cut<=0){
+      return false; 
+    }
+    
+    // can't determine an outlier w/o a measurement or predicted parameters
+    if (not state.hasCalibrated() or not state.hasPredicted()) {
+      return false;
+    }
+    const size_t measdim = state.calibratedSize(); 
+    
+    //auto geoId = state.referenceSurface().geometryId(); 
+    
+    auto H = state.effectiveProjector();
+    auto res = state.effectiveCalibrated() - H * state.predicted();
+    auto predictedCovariance   = state.predictedCovariance();
+    auto calibratedCovariance = state.effectiveCalibratedCovariance();
+
+    auto cov = calibratedCovariance +
+                  H * predictedCovariance * H.transpose();
+
+   auto chi2 = (res.transpose() * cov.inverse() * res).eval()(0,0);
+   if(chi2>chi2Cut){
+     return true;
+   }
+     
+     return false; 
+   } 
+};
+
+
 template <typename TrackFitterFunktion>
 auto makeKfOptions(
     const TrackFitterFunktion& f,
@@ -56,6 +90,7 @@ auto makeKfOptions(
   extensions.reverseFilteringLogic
       .connect<&SimpleReverseFilteringLogic::doBackwardFiltering>(
           &f.reverseFilteringLogic);
+  extensions.outlierFinder.connect<&SimpleOutlierFinder::isOutlier>(&f.outlierFinder);
 
   Acts::KalmanFitterOptions<Acts::VectorMultiTrajectory> kfOptions(
       options.geoContext, options.magFieldContext, options.calibrationContext,
@@ -76,6 +111,7 @@ struct TrackFitterFunctionImpl
   Acts::GainMatrixUpdater kfUpdater;
   Acts::GainMatrixSmoother kfSmoother;
   SimpleReverseFilteringLogic reverseFilteringLogic;
+  SimpleOutlierFinder outlierFinder; 
 
   bool multipleScattering;
   bool energyLoss;
@@ -105,6 +141,8 @@ struct DirectedFitterFunctionImpl
   Acts::GainMatrixUpdater kfUpdater;
   Acts::GainMatrixSmoother kfSmoother;
   SimpleReverseFilteringLogic reverseFilteringLogic;
+  SimpleOutlierFinder outlierFinder; 
+
 
   bool multipleScattering;
   bool energyLoss;
@@ -135,6 +173,7 @@ ActsExamples::TrackFittingAlgorithm::makeKalmanFitterFunction(
     std::shared_ptr<const Acts::MagneticFieldProvider> magneticField,
     bool multipleScattering, bool energyLoss,
     double reverseFilteringMomThreshold,
+    double chi2Cut, 
     Acts::FreeToBoundCorrection freeToBoundCorrection) {
   Stepper stepper(std::move(magneticField));
   Acts::Navigator::Config cfg{trackingGeometry};
@@ -152,6 +191,8 @@ ActsExamples::TrackFittingAlgorithm::makeKalmanFitterFunction(
   fitterFunction->energyLoss = energyLoss;
   fitterFunction->reverseFilteringLogic.momentumThreshold =
       reverseFilteringMomThreshold;
+  fitterFunction->outlierFinder.chi2Cut =
+      chi2Cut;
   fitterFunction->freeToBoundCorrection = freeToBoundCorrection;
 
   return fitterFunction;
@@ -163,6 +204,7 @@ ActsExamples::TrackFittingAlgorithm::makeKalmanFitterFunction(
     std::shared_ptr<const Acts::MagneticFieldProvider> magneticField,
     bool multipleScattering, bool energyLoss,
     double reverseFilteringMomThreshold,
+    double chi2Cut, 
     Acts::FreeToBoundCorrection freeToBoundCorrection) {
   // construct all components for the fitter
   Stepper stepper(std::move(magneticField));
@@ -177,6 +219,8 @@ ActsExamples::TrackFittingAlgorithm::makeKalmanFitterFunction(
   fitterFunction->energyLoss = energyLoss;
   fitterFunction->reverseFilteringLogic.momentumThreshold =
       reverseFilteringMomThreshold;
+  fitterFunction->outlierFinder.chi2Cut =
+      chi2Cut;
   fitterFunction->freeToBoundCorrection = freeToBoundCorrection;
 
   return fitterFunction;

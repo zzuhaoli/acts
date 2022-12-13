@@ -96,6 +96,7 @@ ActsExamples::RootTrajectoryStatesWriter::RootTrajectoryStatesWriter(
     m_outputTree->Branch("layer_id", &m_layerID);
     m_outputTree->Branch("module_id", &m_moduleID);
     m_outputTree->Branch("pathLength", &m_pathLength);
+    m_outputTree->Branch("measurementIndex", &m_measurementIndex);
     m_outputTree->Branch("l_x_hit", &m_lx_hit);
     m_outputTree->Branch("l_y_hit", &m_ly_hit);
     m_outputTree->Branch("g_x_hit", &m_x_hit);
@@ -326,7 +327,8 @@ ActsExamples::ProcessCode ActsExamples::RootTrajectoryStatesWriter::writeT(
         const auto& sl =
             static_cast<const IndexSourceLink&>(state.uncalibrated());
         const auto hitIdx = sl.index();
-        auto indices = makeRange(hitSimHitsMap.equal_range(hitIdx));
+        m_measurementIndex.push_back(hitIdx); 
+	auto indices = makeRange(hitSimHitsMap.equal_range(hitIdx));
         auto [truthLocal, truthPos4, truthUnitDir] =
             averageSimHits(ctx.geoContext, surface, simHits, indices);
         // momemtum averaging makes even less sense than averaging position and
@@ -583,6 +585,7 @@ ActsExamples::ProcessCode ActsExamples::RootTrajectoryStatesWriter::writeT(
       m_outputTree->Fill();
 
       // now reset
+      m_measurementIndex.clear();
       m_t_x.clear();
       m_t_y.clear();
       m_t_z.clear();

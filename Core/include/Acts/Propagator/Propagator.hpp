@@ -288,6 +288,9 @@ class Propagator final {
  
     /// propagation steps
     size_t steps = 0; 
+ 
+    /// Stepper adustFail
+    bool stepAdjustFail = false; 
   };
 
  private:

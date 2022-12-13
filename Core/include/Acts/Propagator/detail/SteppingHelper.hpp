@@ -51,8 +51,12 @@ Acts::Intersection3D::Status updateSingleSurfaceStatus(
     double pLimit = state.stepSize.value(ConstrainedStep::aborter);
     double oLimit = stepper.overstepLimit(state);
 
+    auto updatedOLimit = (surface.type()==Surface::SurfaceType::Straw)?oLimit*100:oLimit;
+    auto updatedPLimit = (surface.type()==Surface::SurfaceType::Straw)?pLimit*10:pLimit;
+
+
     // If either of the two intersections are viable return reachable
-    if (detail::checkIntersection(sIntersection.intersection, pLimit, oLimit,
+    if (detail::checkIntersection(sIntersection.intersection, updatedPLimit, updatedOLimit,
                                   s_onSurfaceTolerance, logger)) {
       ACTS_VERBOSE("Surface is reachable");
       stepper.setStepSize(state,

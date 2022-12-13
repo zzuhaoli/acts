@@ -106,6 +106,7 @@ class RootTrajectoryStatesWriter final : public WriterT<TrajectoriesContainer> {
   std::vector<int> m_volumeID;      ///< volume identifier
   std::vector<int> m_layerID;       ///< layer identifier
   std::vector<int> m_moduleID;      ///< surface identifier
+  std::vector<int> m_measurementIndex;      ///< surface identifier
   std::vector<float> m_pathLength;  ///< path length
   std::vector<float> m_lx_hit;      ///< uncalibrated measurement local x
   std::vector<float> m_ly_hit;      ///< uncalibrated measurement local y

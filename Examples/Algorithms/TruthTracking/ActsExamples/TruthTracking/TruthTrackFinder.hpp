@@ -26,8 +26,14 @@ class TruthTrackFinder final : public BareAlgorithm {
     std::string inputParticles;
     /// The input hit-particles map collection.
     std::string inputMeasurementParticlesMap;
+    /// Input simulated hit collection
+    std::string inputSimulatedHits;
+    /// Input measurement to simulated hit map for truth position
+    std::string inputMeasurementSimHitsMap;
     /// The output proto tracks collection.
     std::string outputProtoTracks;
+    /// Remove hits from another loop 
+    bool removeHitsFromLoops = false; 
   };
 
   TruthTrackFinder(const Config& config, Acts::Logging::Level level);

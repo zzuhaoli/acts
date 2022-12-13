@@ -90,6 +90,8 @@ ActsExamples::RootSTCFMeasurementReader::RootSTCFMeasurementReader(
   ITDmomentumX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITDHitCol.momentum.x");
   ITDmomentumY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITDHitCol.momentum.y");
   ITDmomentumZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITDHitCol.momentum.z");
+  ITDtime = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITDHitCol.time");
+  ITDmass = new TTreeReaderArray<double>(*m_treeReader,"ITDHitCol.mass");
   
   MDCcellID = new TTreeReaderArray<int>(*m_treeReader,"MDCHitCol.cellID");
   MDClayerID = new TTreeReaderArray<int>(*m_treeReader,"MDCHitCol.layerID");
@@ -108,6 +110,8 @@ ActsExamples::RootSTCFMeasurementReader::RootSTCFMeasurementReader(
   MDCwirePoint2X = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.wirePoint2.x");
   MDCwirePoint2Y = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.wirePoint2.y");
   MDCwirePoint2Z = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.wirePoint2.z");
+  MDCtime = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.time");
+  MDCmass = new TTreeReaderArray<float>(*m_treeReader,"MDCHitCol.mass");
 
   
 
@@ -144,6 +148,8 @@ ActsExamples::RootSTCFMeasurementReader::~RootSTCFMeasurementReader() {
   delete ITDmomentumX; 
   delete ITDmomentumY; 
   delete ITDmomentumZ; 
+  delete ITDtime;
+  delete ITDmass;
 
   delete MDCcellID;
   delete MDClayerID;
@@ -162,6 +168,8 @@ ActsExamples::RootSTCFMeasurementReader::~RootSTCFMeasurementReader() {
   delete MDCwirePoint2X;
   delete MDCwirePoint2Y;
   delete MDCwirePoint2Z;
+  delete MDCtime;
+  delete MDCmass;
 }
 
 ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
@@ -228,7 +236,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
 	} else {
            auto bounds = cylinderSurface->bounds();
            auto values = bounds.values();
-           std::cout<<"ITD surface r = "<< values[0] << std::endl;	
+           //std::cout<<"ITD surface r = "<< values[0] << std::endl;	
 	}
 
 	int particleId = (*ITDparticleId)[i];   
@@ -237,13 +245,14 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
            posUpdated.x() * Acts::UnitConstants::mm,
            posUpdated.y() * Acts::UnitConstants::mm,
            posUpdated.z() * Acts::UnitConstants::mm,
-           0 * Acts::UnitConstants::ns,
+           (*ITDtime)[i] * Acts::UnitConstants::ns,
         };
+	auto energy = std::sqrt(mom.x()*mom.x()+mom.y()*mom.y() + mom.z()*mom.z() + (*ITDmass)[i]*(*ITDmass)[i]);
         ActsFatras::Hit::Vector4 mom4{
            mom.x()/1000 * Acts::UnitConstants::GeV,
            mom.y()/1000 * Acts::UnitConstants::GeV,
            mom.z()/1000 * Acts::UnitConstants::GeV,
-           0 * Acts::UnitConstants::GeV,
+           energy/1000. * Acts::UnitConstants::GeV,
         };
         ActsFatras::Hit::Vector4 delta4{
            0 * Acts::UnitConstants::GeV,
@@ -283,8 +292,8 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
           ACTS_FATAL("Global to local transformation did not succeed.");
           return ProcessCode::ABORT;
         }
-        auto lPosition = lpResult.value();
-        std::cout<<"MDC " << geoId <<" has drift distance = " << (*MDCdriftDistance)[i] << ", local Pos x = " << lPosition[0] <<", localPos.y() " << lPosition[1] << std::endl;
+        //auto lPosition = lpResult.value();
+        //std::cout<<"MDC " << geoId <<" has drift distance = " << (*MDCdriftDistance)[i] << ", local Pos x = " << lPosition[0] <<", localPos.y() " << lPosition[1] << std::endl;
 
 	int particleId = (*MDCparticleId)[i];
 
@@ -292,20 +301,21 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
            posUpdated.x() * Acts::UnitConstants::mm,
            posUpdated.y() * Acts::UnitConstants::mm,
            posUpdated.z() * Acts::UnitConstants::mm,
-           //0 * Acts::UnitConstants::ns,
-           (*MDCdriftDistance)[i]*Acts::UnitConstants::mm,
+           (*MDCtime)[i] * Acts::UnitConstants::ns,
         };
+	auto energy = std::sqrt(mom.x()*mom.x()+mom.y()*mom.y() + mom.z()*mom.z() + (*MDCmass)[i]*(*MDCmass)[i]);
         ActsFatras::Hit::Vector4 mom4{
            mom.x()/1000 * Acts::UnitConstants::GeV,
            mom.y()/1000 * Acts::UnitConstants::GeV,
            mom.z()/1000 * Acts::UnitConstants::GeV,
-           0 * Acts::UnitConstants::GeV,
+           energy/1000. * Acts::UnitConstants::GeV,
         };
         ActsFatras::Hit::Vector4 delta4{
            0 * Acts::UnitConstants::GeV,
            0 * Acts::UnitConstants::GeV,
            0 * Acts::UnitConstants::GeV,
-           0 * Acts::UnitConstants::GeV,
+           //0 * Acts::UnitConstants::GeV,
+           (*MDCdriftDistance)[i]*Acts::UnitConstants::mm, 
         };
 
         // The last parameter is not simHitIdx?
@@ -313,7 +323,6 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
                         particleHitIdx[particleId]);
         unordered_hits.push_back(std::move(hit));
         particleHitIdx[particleId]++;	
-        particleITDHitIdx[particleId]++;	
       }
 
       simHits.insert(unordered_hits.begin(), unordered_hits.end());
@@ -374,16 +383,25 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
               return ProcessCode::ABORT;
             }
             auto lPosition = lpResult.value();
-            auto driftDistance = std::copysign(simHit.fourPosition()[3], lPosition[0]);
+            //auto driftDistance = std::copysign(simHit.fourPosition()[3], lPosition[0]);
+            auto driftDistance = std::copysign(simHit.depositedEnergy(), lPosition[0]);
 
-	    //Acts::ActsVector<2> par{ driftDistance + 0.15* stdNormal(rng), lPosition[1] + 5*stdNormal(rng)}; // error is 500 um? 
-	    //Acts::ActsVector<1> par{ lPosition[0] + 0.5* stdNormal(rng)}; // error is 500 um? 
-	    Acts::ActsVector<1> par{ driftDistance + 0.15* stdNormal(rng)}; // error is 500 um? 
-	    //Acts::ActsVector<1> par{ driftDistance}; // error is 500 um? 
+	    double sigma=0.125; 
+            //std::uniform_real_distribution<double> uniform(0,1); 
+	    //if(uniform(rng)<0.782){
+            //  sigma= 0.09; 
+	    //}  else {
+            //  sigma = 0.24;
+	    //} 
+
+	    Acts::ActsVector<1> par{ driftDistance + sigma* stdNormal(rng)};
             Acts::ActsSymMatrix<1> cov = Acts::ActsSymMatrix<1>::Identity();
-            cov(0,0) = 0.15*0.15;	
+	    //Acts::ActsVector<2> par{ driftDistance + sigma* stdNormal(rng), lPosition[1] + 5*stdNormal(rng)};
+            //Acts::ActsSymMatrix<2> cov = Acts::ActsSymMatrix<2>::Identity();
+            cov(0,0) = sigma*sigma;	
             //cov(1,1) = 5*5;	
             measurements.emplace_back(Acts::Measurement<Acts::BoundIndices, 1>(sourceLink, indices, par, cov));  
+            //measurements.emplace_back(Acts::Measurement<Acts::BoundIndices, 2>(sourceLink, indices, par, cov));  
 
           } else {
             ACTS_ERROR("The surface type must be Cylinder or Straw");
@@ -402,10 +420,9 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
 
 
 
-      for(int i=0; i< measurements.size(); i++){ 
+      for(size_t i=0; i< measurements.size(); i++){ 
         const auto sourceLink_ = sourceLinks.nth(i); 
         auto geoId_ = sourceLink_->get().geometryId();
-        std::cout<<"check sourceLink with index " << sourceLink_->get().index() <<" has geoID_" << geoId_ << std::endl;  
       }
 
       //Reading truth particles

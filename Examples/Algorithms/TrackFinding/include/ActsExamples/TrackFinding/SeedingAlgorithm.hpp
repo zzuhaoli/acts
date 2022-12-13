@@ -49,6 +49,8 @@ class SeedingAlgorithm final : public BareAlgorithm {
     // number of phiBin neighbors at each side of the current bin that will be
     // used to search for SPs
     int numPhiNeighbors;
+    /// max number of seeds per events
+    int maxSeeds = std::numeric_limits<int>::max();
   };
 
   /// Construct the seeding algorithm.

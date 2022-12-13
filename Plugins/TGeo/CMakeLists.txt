@@ -1,6 +1,8 @@
 add_library(
   ActsPluginTGeo SHARED
   src/TGeoCylinderDiscSplitter.cpp
+  src/TGeoURwellLayerSplitter.cpp
+  src/TGeoDriftChamberLayerSplitter.cpp
   src/TGeoDetectorElement.cpp
   src/TGeoLayerBuilder.cpp
   src/TGeoParser.cpp

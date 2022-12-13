@@ -15,6 +15,7 @@
 #include "ActsExamples/EventData/Track.hpp"
 #include "ActsExamples/EventData/Trajectories.hpp"
 #include "ActsExamples/Framework/WhiteBoard.hpp"
+#include "Acts/Definitions/Units.hpp"
 
 #include <stdexcept>
 
@@ -59,7 +60,9 @@ ActsExamples::ProcessCode ActsExamples::TrackFindingAlgorithm::execute(
       Acts::Vector3{0., 0., 0.});
 
   Acts::PropagatorPlainOptions pOptions;
-  pOptions.maxSteps = 10000;
+  pOptions.maxSteps = m_cfg.maxPropSteps; 
+  pOptions.mass = m_cfg.mass* Acts::UnitConstants::MeV; 
+  pOptions.tolerance=m_cfg.tolerance;
 
   MeasurementCalibrator calibrator{measurements};
   Acts::GainMatrixUpdater kfUpdater;

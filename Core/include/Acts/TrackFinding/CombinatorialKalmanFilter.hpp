@@ -345,6 +345,8 @@ class CombinatorialKalmanFilter {
       // Update:
       // - Waiting for a current surface
       auto surface = state.navigation.currentSurface;
+      //if(surface != nullptr) 
+      //std::cout<<"CKF reaching surface " << surface->geometryId() << std::endl; 
       if (surface != nullptr and not result.filtered) {
         // There are three scenarios:
         // 1) The surface is in the measurement map
@@ -368,10 +370,16 @@ class CombinatorialKalmanFilter {
         }
       }
 
+      if(surface != nullptr and result.smoothed){
+         //std::cout<<"Reaching surface " << surface->geometryId() << " after smoothing " << std::endl;
+         materialInteractor(surface, state, stepper);
+      }
+
       // Reset propagation state:
       // - When navigation breaks and there is stil active tip present after
       // recording&removing track tips on current surface
-      if (state.navigation.navigationBreak and not result.filtered) {
+      if ((state.navigation.navigationBreak or state.steps >= state.options.maxSteps*0.8 or state.stepAdjustFail) and not result.filtered) {
+      //if ((state.navigation.navigationBreak or state.steps >= state.options.maxSteps*0.8) and not result.filtered) {
         // Record the tips on current surface as trajectory entry indices
         // (taking advantage of fact that those tips are consecutive in list of
         // active tips) and remove those tips from active tips
@@ -419,9 +427,13 @@ class CombinatorialKalmanFilter {
         }
         // If no more active tip, done with filtering; Otherwise, reset
         // propagation state to track state at last tip of active tips
-        if (result.activeTips.empty()) {
+        if (result.activeTips.empty() or state.steps >= state.options.maxSteps*0.8 or state.stepAdjustFail ) {
+        //if (result.activeTips.empty() or state.steps >= state.options.maxSteps*0.8) {
           ACTS_VERBOSE("Kalman filtering finds "
                        << result.lastTrackIndices.size() << " tracks");
+	  if(result.lastTrackIndices.size()>1){
+	    std::cout<<"Kalman filtering finds " << result.lastTrackIndices.size() << " tracks" << std::endl; 
+	  }
           result.filtered = true;
         } else {
           ACTS_VERBOSE("Propagation jumps to branch with tip = "
@@ -691,6 +703,7 @@ class CombinatorialKalmanFilter {
           // measurement and filtered parameter
           auto stateMask =
               ~(TrackStatePropMask::Calibrated | TrackStatePropMask::Filtered);
+              //~(TrackStatePropMask::Calibrated);
 
           // Increment of number of processed states
           tipState.nStates++;
@@ -720,12 +733,23 @@ class CombinatorialKalmanFilter {
             // No branch on this surface
             nBranchesOnSurface = 0;
           }
-        }
+        
+          //if (surface->surfaceMaterial() != nullptr) {
+          ////  // Update state and stepper with material effects
+          //  materialInteractor(surface, state, stepper,
+          //                   MaterialUpdateStage::FullUpdate);
+          //  auto trackStateProxy = result.fittedStates.getTrackState(currentTip);
+          ////  //update the filtered covariance 
+	  //   
+	  //  trackStateProxy.filteredCovariance() = state.stepping.cov; 
+	  ////  trackStateProxy.filteredCovariance() = trackStateProxy.predictedCovariance(); 
+	  //}
+	}
         if (surface->surfaceMaterial() != nullptr) {
           // Update state and stepper with material effects
           materialInteractor(surface, state, stepper,
                              MaterialUpdateStage::FullUpdate);
-        }
+	}
       } else {
         // Neither measurement nor material on surface, this branch is still
         // valid. Count the branch on current surface
@@ -802,7 +826,8 @@ class CombinatorialKalmanFilter {
         if (it == slBegin) {
           // only set these for first
           ts.predicted() = boundParams.parameters();
-          if (boundParams.covariance()) {
+          //std::cout<<"Predicted parameters: " << boundParams.parameters().transpose() << std::endl;  
+	  if (boundParams.covariance()) {
             ts.predictedCovariance() = *boundParams.covariance();
           }
           ts.jacobian() = jacobian;
@@ -963,8 +988,10 @@ class CombinatorialKalmanFilter {
       const auto& [boundParams, jacobian, pathLength] = boundState;
       // Fill the track state
       trackStateProxy.predicted() = boundParams.parameters();
+      //trackStateProxy.filtered() = boundParams.parameters();
       if (boundParams.covariance().has_value()) {
         trackStateProxy.predictedCovariance() = *boundParams.covariance();
+        //trackStateProxy.filteredCovariance() = *boundParams.covariance();
       }
       trackStateProxy.jacobian() = jacobian;
       trackStateProxy.pathLength() = pathLength;
@@ -1010,13 +1037,14 @@ class CombinatorialKalmanFilter {
       bool hasMaterial = false;
 
       if (surface and surface->surfaceMaterial()) {
-        // Prepare relevant input particle properties
+	// Prepare relevant input particle properties
         detail::PointwiseMaterialInteraction interaction(surface, state,
                                                          stepper);
         // Evaluate the material properties
         if (interaction.evaluateMaterialSlab(state, updateStage)) {
           // Surface has material at this stage
           hasMaterial = true;
+	  //std::cout<<"Has material at this stage " << std::endl;
 
           // Evaluate the material effects
           interaction.evaluatePointwiseMaterialInteraction(multipleScattering,
@@ -1025,7 +1053,7 @@ class CombinatorialKalmanFilter {
           // Screen out material effects info
           ACTS_VERBOSE("Material effects on surface: "
                        << surface->geometryId()
-                       << " at update stage: " << updateStage << " are :");
+                       << " at point " << (stepper.position(state.stepping)).transpose() <<" at update stage: " << updateStage << " are :");
           ACTS_VERBOSE("eLoss = "
                        << interaction.Eloss << ", "
                        << "variancePhi = " << interaction.variancePhi << ", "
@@ -1132,9 +1160,9 @@ class CombinatorialKalmanFilter {
       // smoothed measurement state. Also, whether the intersection is on
       // surface is not checked here.
       bool reverseDirection = false;
-      bool closerToFirstCreatedState =
-          (std::abs(firstIntersection.intersection.pathLength) <=
-           std::abs(lastIntersection.intersection.pathLength));
+      bool closerToFirstCreatedState = true;
+         // (std::abs(firstIntersection.intersection.pathLength) <=
+         //  std::abs(lastIntersection.intersection.pathLength));
       if (closerToFirstCreatedState) {
         stepper.update(state.stepping, firstParams,
                        firstCreatedState.smoothed(),
@@ -1155,7 +1183,8 @@ class CombinatorialKalmanFilter {
           "Smoothing successful, updating stepping state to smoothed "
           "parameters at surface "
           << surface.geometryId() << ". Prepared to reach the target surface.");
-
+      //std::cout<<"momentum is " << stepper.momentum(state.stepping) << std::endl;
+ 
       // Reverse the navigation direction if necessary
       if (reverseDirection) {
         ACTS_VERBOSE(
@@ -1175,6 +1204,18 @@ class CombinatorialKalmanFilter {
           state.stepping.navDir * std::abs(state.options.maxStepSize));
       // Set accumulatd path to zero before targeting surface
       state.stepping.pathAccumulated = 0.;
+
+
+      /////////////////////////////////////////////////////////////////////////////
+      state.navigation.reset(state.geoContext, stepper.position(state.stepping),
+                             stepper.direction(state.stepping),
+                             state.stepping.navDir,
+                             &surface, nullptr);
+
+      // No Kalman filtering for the starting surface, but still need
+      // to consider the material effects here
+      materialInteractor(state.navigation.currentSurface, state, stepper);
+      /////////////////////////////////////////////////////////////////////////////
 
       return Result<void>::success();
     }
@@ -1243,6 +1284,7 @@ class CombinatorialKalmanFilter {
         Aborter<SourceLinkAccessor, parameters_t>;
     using CombinatorialKalmanFilterActor =
         Actor<SourceLinkAccessor, parameters_t>;
+    //using LP = LoopProtection<PathLimitReached>;
     using Actors = ActionList<CombinatorialKalmanFilterActor>;
     using Aborters = AbortList<CombinatorialKalmanFilterAborter>;
 

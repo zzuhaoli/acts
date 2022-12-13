@@ -116,6 +116,23 @@ Acts::Result<double> Acts::EigenStepper<E, A>::step(
     propagator_state_t& state) const {
   using namespace UnitLiterals;
 
+  double tolerance = state.options.tolerance;
+  double p = momentum(state.stepping);
+  if(p<0.06){
+    tolerance = 0.001;
+  } else if(p<0.1){
+    tolerance = 0.0002;
+  }
+//  std::cout<<"p = " << p << std::endl;
+ 
+  // if(p<0.07){
+ //   tolerance = 0.01;
+ // } else if(p<0.1){
+ //   tolerance = 0.001;
+ // } else if(p<0.13){
+ //   tolerance = 0.0008;
+ // }
+
   // Runge-Kutta integrator state
   auto& sd = state.stepping.stepData;
   double error_estimate = 0.;
@@ -187,7 +204,7 @@ Acts::Result<double> Acts::EigenStepper<E, A>::step(
               std::abs(sd.kQoP[0] - sd.kQoP[1] - sd.kQoP[2] + sd.kQoP[3]));
     error_estimate = std::max(error_estimate, 1e-20);
 
-    return success(error_estimate <= state.options.tolerance);
+    return success(error_estimate <= tolerance);
   };
 
   double stepSizeScaling = 1.;
@@ -205,7 +222,7 @@ Acts::Result<double> Acts::EigenStepper<E, A>::step(
 
     stepSizeScaling =
         std::min(std::max(0.25f, std::sqrt(std::sqrt(static_cast<float>(
-                                     state.options.tolerance /
+                                     tolerance /
                                      std::abs(2. * error_estimate))))),
                  4.0f);
     state.stepping.stepSize.scale(stepSizeScaling);
@@ -264,7 +281,7 @@ Acts::Result<double> Acts::EigenStepper<E, A>::step(
     stepSizeScaling = std::min(
         std::max(0.25f,
                  std::sqrt(std::sqrt(static_cast<float>(
-                     state.options.tolerance / std::abs(error_estimate))))),
+                     tolerance / std::abs(error_estimate))))),
         4.0f);
     state.stepping.stepSize.scale(stepSizeScaling);
   }

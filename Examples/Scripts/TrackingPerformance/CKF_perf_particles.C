@@ -41,60 +41,39 @@
 
 
 void CKF_perf_particles(
-//    const std::vector<std::string>& inputSimParticleFileNames =
-//        {
-//	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/performance_seeding_trees.root",
-//	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_30deg/performance_seeding_trees.root",
-//	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_90deg/performance_seeding_trees.root",
-//	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_30deg/performance_seeding_trees.root",
-//	"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/2mu2pi_test/performance_seeding_trees.root",
-//	},
-//    const std::vector<std::string>& inputTrackSummaryFileNames =
-//        {
-//	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/tracksummary_ckf.root",
-//	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_30deg/tracksummary_ckf.root",
-//	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_90deg/tracksummary_ckf.root",
-//	//"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_30deg/tracksummary_ckf.root",
-//	"/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/2mu2pi_test/tracksummary_ckf.root",
-//	},
-//    const std::vector<std::string>& trackSummaryFileLegends =
-//        {
-//	//"muon (#theta=90 deg)",
-//	//"muon (#theta=30 deg)",
-//	//"pion (#theta=90 deg)",
-//	//"pion (#theta=30 deg)",
-//	"muon in #psi(2S)->#pi^{+}#pi^{-}J/#psi(#rightarrow#mu^{+}#mu^{-})",
-//	},
-//
-
-       std::string inputPath = "/home/xiaocong/Software/Oscar/acts/RunSpace/scan/v1.1.testLandauLowPt",
-       std::string particle = "proton",
-       std::vector<std::string> degs = {"90","60","30"},
-       //std::vector<std::string> degs = {"90"},
+       //std::string inputPath = "/nfs/xiaocong/acts_workspace/scan/CKF.estimated.chi2Cut15.maxPropSteps330.maxSeeds2",
+       //std::string inputPath = "/nfs/xiaocong/acts_workspace/scan/CKF.estimated.chi2Cut15.maxPropSteps330.NoStepAjustError.maxSeeds2",
+       std::string inputPath = "/nfs/xiaocong/acts_workspace/scan/CKF.estimated.PreditedDriftSign.chi2Cut30.maxPropSteps330.NoStepAjustError.maxSeeds2",
+       std::string particle = "pi-",
+       //std::vector<std::string> degs = {"90","60","30"},
+       std::vector<std::string> degs = {"30"},
        //in GeV
        bool usePt = true,
        //0.125 has problem, 0.120, 0.130 are OK
-       //std::vector<double> ps = {0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8},
-       std::vector<double> ps = {0.175, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8},
-       //std::vector<double> ps = {0.05, 0.075, 0.1, 0.15, 0.2},
+       std::vector<double> ps = {0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8},
+       //std::vector<double> ps = {0.175, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8},
 
+       bool savePlot = false,
        std::map<std::string, std::string> tags = {
          {"90","|cos#theta|=0"},
          {"60","|cos#theta|=0.5"},
          {"30","|cos#theta|=0.87"},
        },
 
-       std::vector<int> colors={
-          872,
-          866,
-          854,
-          896,
+       std::map<std::string,  int> colors={
+	       {"90",854},
+	       {"60",866},
+	       {"30",872},
 	},
-	std::vector<int> markers ={24, 26, 20, 22},
+	std::map<std::string,int> markers ={
+		{"90",20}, 
+		{"60",26}, 
+		{"30",24},
+	},
     const std::string& simParticleTreeName = "track_finder_particles",
     const std::string& trackSummaryTreeName = "tracksummary",
     unsigned int nHitsMin = 5, unsigned int nMeasurementsMin = 5, unsigned int nOutliersMax = 100,
-    double ptMin = 0.03, double absEtaMax=2, double truthMatchProbMin = 0.5, int absPdgId=2212) {
+    double ptMin = 0.03, double absEtaMax=2, double truthMatchProbMin = 0.5) {
   gStyle->SetOptFit(0011);
   gStyle->SetOptStat(0000);
   gStyle->SetPadLeftMargin(0.18);
@@ -105,12 +84,19 @@ void CKF_perf_particles(
   gStyle->SetLabelSize(0.05, "xy");
   gStyle->SetTitleOffset(1., "x");
   gStyle->SetTitleOffset(1.5, "y");
-  gStyle->SetNdivisions(505, "y");
+  gStyle->SetNdivisions(510, "xy");
+  gStyle->SetErrorX(0);
 
-  //std::vector<double> ptRanges = {40, 0.05, 0.45};
-  //std::vector<double> ptRanges = {20, 0.05, 0.45};
-  std::vector<double> ptRanges = {19, 0.05, 1.95};
-  //std::vector<double> pts={0.05, 0.15, 0.3, 0.45};
+  std::string saveTag ="STCF_" + particle;
+
+  int absPdgId=0;
+  if(particle == "mu-"){
+    absPdgId = 13;
+  } else if (particle== "pi-"){
+    absPdgId = 211;
+  } else if (particle == "proton"){
+    absPdgId = 2212;
+  }
 
 
   std::vector<double> ptbins;
@@ -130,10 +116,6 @@ void CKF_perf_particles(
   ptbins.push_back(pup);
 
 
-  //std::map<std::string, std::vector<TFile*>> inputSimParticleFileNames;
-  //std::map<std::string, std::vector<TFile*>> inputTrackSummaryFileNames;
-  //std::map<std::string, std::vector<ParticleReader>> pReaders;
-  //std::map<std::string, std::vector<TrackSummaryReader>> tReaders;
   std::vector<TFile*> inputSimParticleFileNames;
   std::vector<TFile*> inputTrackSummaryFileNames;
 
@@ -225,6 +207,8 @@ void CKF_perf_particles(
   std::vector<TEfficiency*> fakeRate_vs_pt;
   std::vector<TEfficiency*> duplicateRate_vs_pt;
 
+  std::string xAxisTitle = (usePt)? "p_{T} [GeV]" :  "p [GeV]";
+
   for (int i = 0; i < degs.size(); ++i) {
     trackEff_vs_theta.push_back(new TEfficiency(
         Form("trackeff_vs_theta_%i", i), ";Truth #theta;Efficiency", 40, -4, 4));
@@ -233,17 +217,17 @@ void CKF_perf_particles(
     duplicateRate_vs_theta.push_back(new TEfficiency(
         Form("duplicaterate_vs_theta_%i", i), ";#theta;Duplicate rate", 40, -4, 4));
     trackEff_vs_pt.push_back(new TEfficiency(
-        Form("trackeff_vs_pt_%i", i), ";Truth pt [GeV];Efficiency", ptbins.size()-1, ptbins.data()));
+        Form("trackeff_vs_pt_%i", i), Form(";Truth %s;Efficiency", xAxisTitle.c_str()), ptbins.size()-1, ptbins.data()));
     fakeRate_vs_pt.push_back(new TEfficiency(
-        Form("fakerate_vs_pt_%i", i), ";pt [GeV];fake rate", ptbins.size()-1, ptbins.data()));
+        Form("fakerate_vs_pt_%i", i), Form(";%s;fake rate", xAxisTitle.c_str()), ptbins.size()-1, ptbins.data()));
     duplicateRate_vs_pt.push_back(new TEfficiency(
-        Form("duplicaterate_vs_pt_%i", i), ";pt [GeV];Duplicate rate", ptbins.size()-1, ptbins.data()));
+        Form("duplicaterate_vs_pt_%i", i), Form(";%s;Duplicate rate", xAxisTitle.c_str()), ptbins.size()-1, ptbins.data()));
   }
 
   // Set styles
   for (int i = 0; i < degs.size(); ++i) {
-    auto color = colors[i];
-    auto marker  = markers[i];
+    auto color = colors[degs[i]];
+    auto marker  = markers[degs[i]];
     setEffStyle(trackEff_vs_theta[i], color, marker);
     setEffStyle(fakeRate_vs_theta[i], color, marker);
     setEffStyle(duplicateRate_vs_theta[i], color, marker);
@@ -301,6 +285,7 @@ void CKF_perf_particles(
           auto theta = tReaders[iFile].eTHETA_fit->at(l);
           auto qop = tReaders[iFile].eQOP_fit->at(l);
           auto pt = std::abs(1 / qop) * std::sin(theta);
+          auto p = std::abs(1 / qop);
           auto eta = std::atanh(std::cos(theta));
           auto nMajorityHits = tReaders[iFile].nMajorityHits->at(l);
           auto majorityParticleId = tReaders[iFile].majorityParticleId->at(l);
@@ -308,19 +293,28 @@ void CKF_perf_particles(
           // Select the track, e.g. you might also want to add cuts on the
           // nOutliers, nHoles
           if ((!hasFittedParameters) or nMeasurements < nMeasurementsMin or
-               nOutliers > nOutliersMax or pt < ptMin) {
+               //nOutliers > nOutliersMax or pt < ptMin) {
+               nOutliers > nOutliersMax) {
             continue;
           }
 
-    //      // Fill the fake rate plots
+          // Fill the fake rate plots
           if (nMajorityHits * 1. / nMeasurements >= truthMatchProbMin) {
             matchedParticles[majorityParticleId].push_back(
-                {eta, pt, nMajorityHits, nMeasurements});
+                {eta, pt, qop, nMajorityHits, nMeasurements});
             fakeRate_vs_theta[i]->Fill(false, theta);
-            fakeRate_vs_pt[i]->Fill(false, pt);
+	    if(usePt){
+              fakeRate_vs_pt[i]->Fill(false, pt);
+	    } else {
+              fakeRate_vs_pt[i]->Fill(false, p);
+	    }
           } else {
             fakeRate_vs_theta[i]->Fill(true, theta);
-            fakeRate_vs_pt[i]->Fill(true, pt);
+	    if(usePt){
+              fakeRate_vs_pt[i]->Fill(true, pt);
+	    } else {
+              fakeRate_vs_pt[i]->Fill(true, p);
+	    }
           }
         }  // end of all tracks in this event
 
@@ -337,9 +331,6 @@ void CKF_perf_particles(
                       if (lhs.nMajorityHits > rhs.nMajorityHits) {
                         return true;
                       }
-                      if (lhs.nMajorityHits < rhs.nMajorityHits) {
-                        return false;
-                      }
                       if (lhs.nMeasurements > rhs.nMeasurements) {
                         return true;
                       }
@@ -350,12 +341,21 @@ void CKF_perf_particles(
             auto eta = matchedTracks[m].eta;
             auto pt = matchedTracks[m].pt;
             double theta = std::atan(std::exp(-eta))*2;
+            auto p = pt/sin(theta);
             if (m == 0) {
               duplicateRate_vs_theta[i]->Fill(false, theta);
-              duplicateRate_vs_pt[i]->Fill(false, pt);
+              if(usePt){ 
+                duplicateRate_vs_pt[i]->Fill(false, pt);
+              } else {
+                duplicateRate_vs_pt[i]->Fill(false, p);
+	      }
             } else {
               duplicateRate_vs_theta[i]->Fill(true, theta);
-              duplicateRate_vs_pt[i]->Fill(true, pt);
+              if(usePt){ 
+                duplicateRate_vs_pt[i]->Fill(true, pt);
+              } else {
+                duplicateRate_vs_pt[i]->Fill(true, p);
+	      }
             }
           }
         }  // end of all selected truth-matched tracks in this event
@@ -370,6 +370,7 @@ void CKF_perf_particles(
           auto nHits = particle.nHits;
           auto eta = particle.eta;
           auto pt = particle.pt;
+          auto p = particle.p;
           if (absPdgId!=999 and abs(particle.particlePdg) != absPdgId){
             continue;	
           }	
@@ -386,10 +387,18 @@ void CKF_perf_particles(
           auto ip = matchedParticles.find(id);
           if (ip != matchedParticles.end()) {
             trackEff_vs_theta[i]->Fill(true, theta);
-            trackEff_vs_pt[i]->Fill(true, pt);
+            if(usePt){ 
+	      trackEff_vs_pt[i]->Fill(true, pt);
+	    } else {
+	      trackEff_vs_pt[i]->Fill(true, p);
+	    }
           } else {
             trackEff_vs_theta[i]->Fill(false, theta);
-            trackEff_vs_pt[i]->Fill(false, pt);
+            if(usePt){ 
+              trackEff_vs_pt[i]->Fill(false, pt);
+	    } else {
+              trackEff_vs_pt[i]->Fill(false, p);
+	    }
           }
         }  // end of all particles
 
@@ -402,7 +411,7 @@ void CKF_perf_particles(
   // The legends
   std::vector<TLegend*> legs;
   for (int i = 0; i < 6; ++i) {
-    TLegend* legend = new TLegend(0.4, 0.8, 0.9, 0.9);
+    TLegend* legend = new TLegend(0.4, 0.7, 0.9, 0.9);
     legend->SetBorderSize(0);
     legend->SetFillStyle(0);
     legend->SetTextFont(42);
@@ -425,49 +434,54 @@ void CKF_perf_particles(
   }
 
   // Now draw the plots
-  TCanvas* c1 = new TCanvas("recoPerf", " ", 1500, 800);
-  c1->Divide(3, 2);
+  std::vector<TCanvas*> cs;
+  for(int i=0; i < 6; ++i){
+     cs.push_back(new TCanvas(Form("c_%i", i), "", 600, 500));
+     cs[i]->SetGrid(); 
+  }
+
 
   auto nTrackFiles = degs.size();
   float scaleRangeMax = 1.1;
   for (int i = 0; i < nTrackFiles; ++i) {
+    //std::string mode = (i == 0) ? "EX0" : "EsameX0";
     std::string mode = (i == 0) ? "" : "same";
-    c1->cd(1);
+    cs[0]->cd();
     trackEff_vs_theta[i]->Draw(mode.c_str());
     if (i == nTrackFiles - 1) {
       legs[0]->Draw();
     }
     adaptEffRange(trackEff_vs_theta[i], 1, scaleRangeMax);
 
-    c1->cd(2);
+    cs[1]->cd();
     fakeRate_vs_theta[i]->Draw(mode.c_str());
     if (i == nTrackFiles - 1) {
       legs[1]->Draw();
     }
     adaptEffRange(fakeRate_vs_theta[i], 1, scaleRangeMax);
 
-    c1->cd(3);
+    cs[2]->cd();
     duplicateRate_vs_theta[i]->Draw(mode.c_str());
     if (i == nTrackFiles - 1) {
       legs[2]->Draw();
     }
     adaptEffRange(duplicateRate_vs_theta[i], 1, scaleRangeMax);
 
-    c1->cd(4);
+    cs[3]->cd();
     trackEff_vs_pt[i]->Draw(mode.c_str());
     if (i == nTrackFiles - 1) {
       legs[3]->Draw();
     }
     adaptEffRange(trackEff_vs_pt[i], 1, scaleRangeMax);
 
-    c1->cd(5);
+    cs[4]->cd();
     fakeRate_vs_pt[i]->Draw(mode.c_str());
     if (i == nTrackFiles - 1) {
       legs[4]->Draw();
     }
     adaptEffRange(fakeRate_vs_pt[i], 1, scaleRangeMax);
 
-    c1->cd(6);
+    cs[5]->cd();
     duplicateRate_vs_pt[i]->Draw(mode.c_str());
     if (i == nTrackFiles - 1) {
       legs[5]->Draw();
@@ -475,5 +489,13 @@ void CKF_perf_particles(
     adaptEffRange(duplicateRate_vs_pt[i], 1, scaleRangeMax);
   }
 
-  c1->Update();
+  std::string plotName = (usePt)? "pt":"p";
+  if(savePlot){
+    cs[0]->SaveAs(Form("STCF_%s_eff_vs_costheta.pdf", particle.c_str()));
+    cs[1]->SaveAs(Form("STCF_%s_fakerate_vs_costheta.pdf", particle.c_str()));
+    cs[2]->SaveAs(Form("STCF_%s_duplirate_vs_costheta.pdf", particle.c_str()));
+    cs[3]->SaveAs(Form("STCF_%s_eff_vs_%s.pdf", particle.c_str(), plotName.c_str()));
+    cs[4]->SaveAs(Form("STCF_%s_fakerate_vs_%s.pdf", particle.c_str(), plotName.c_str()));
+    cs[5]->SaveAs(Form("STCF_%s_duplirate_vs_%s.pdf", particle.c_str(), plotName.c_str()));
+  }
 }

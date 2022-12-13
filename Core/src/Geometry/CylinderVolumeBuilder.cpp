@@ -60,6 +60,7 @@ Acts::CylinderVolumeBuilder::trackingVolume(
     const GeometryContext& gctx, TrackingVolumePtr existingVolume,
     VolumeBoundsPtr externalBounds) const {
   ACTS_DEBUG("Configured to build volume : " << m_cfg.volumeName);
+  std::cout<<"Configured to build volume : " << m_cfg.volumeName  << std::endl; 
   if (existingVolume) {
     ACTS_DEBUG("- will wrap/enclose : " << existingVolume->volumeName());
   }
@@ -71,6 +72,7 @@ Acts::CylinderVolumeBuilder::trackingVolume(
   // now analyize the layers that are provided
   // -----------------------------------------------------
   ACTS_DEBUG("-> Building layers");
+  std::cout << "-> Building layers" << std::endl;
   LayerVector negativeLayers;
   LayerVector centralLayers;
   LayerVector positiveLayers;
@@ -241,6 +243,7 @@ Acts::CylinderVolumeBuilder::trackingVolume(
                 wConfig.cVolumeConfig.zMin, wConfig.cVolumeConfig.zMax,
                 m_cfg.volumeName + "::Barrel")
           : nullptr;
+   std::cout<<"creating tracking volume " << m_cfg.volumeName << " at rMin = " << wConfig.cVolumeConfig.rMin <<" rMax = " << wConfig.cVolumeConfig.rMax << std::endl;
 
   // Helper method to check for
 
@@ -579,7 +582,7 @@ Acts::VolumeConfig Acts::CylinderVolumeBuilder::analyzeContent(
             CylinderBounds::eHalfLengthZ);
         lConfig.rMin =
             std::min(lConfig.rMin, rMinC - m_cfg.layerEnvelopeR.first);
-        lConfig.rMax =
+	lConfig.rMax =
             std::max(lConfig.rMax, rMaxC + m_cfg.layerEnvelopeR.second);
         lConfig.zMin =
             std::min(lConfig.zMin, center.z() - hZ - m_cfg.layerEnvelopeZ);
@@ -627,6 +630,7 @@ Acts::VolumeConfig Acts::CylinderVolumeBuilder::analyzeContent(
   // overwrite to radius 0 if needed
   if (m_cfg.buildToRadiusZero) {
     ACTS_VERBOSE("This layer builder is configured to build to the beamline.");
+    std::cout<<"This layer builder is configured to build to the beamline." << std::endl;
     lConfig.rMin = 0.;
   }
 

@@ -62,11 +62,15 @@ ActsExamples::DD4hep::DD4hepGeometryService::buildDD4hepGeometry() {
   }
   m_lcdd = &(dd4hep::Detector::getInstance());
   for (auto& file : m_cfg.xmlFileNames) {
-    m_lcdd->fromCompact(file.c_str());
+    // m_lcdd->fromCompact(file.c_str());
+    m_lcdd->fromXML(file.c_str());
   }
   m_lcdd->volumeManager();
   m_lcdd->apply("DD4hepVolumeManager", 0, nullptr);
   m_dd4hepGeometry = m_lcdd->world();
+
+  TGeoManager* manager = &m_lcdd->manager();
+  manager->Export("DD4hep.root");
 
   return ActsExamples::ProcessCode::SUCCESS;
 }

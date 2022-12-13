@@ -72,6 +72,8 @@ ActsExamples::ProcessCode ActsExamples::TrackFittingAlgorithm::execute(
   // measurements to construct it. The other extensions are hold by the
   // fit-function-object
   ActsExamples::MeasurementCalibrator calibrator(measurements);
+  auto pOptions = Acts::PropagatorPlainOptions();
+  pOptions.maxSteps = 10000; 
 
   GeneralFitterOptions options{ctx.geoContext,
                                ctx.magFieldContext,
@@ -79,7 +81,7 @@ ActsExamples::ProcessCode ActsExamples::TrackFittingAlgorithm::execute(
                                calibrator,
                                &(*pSurface),
                                Acts::LoggerWrapper{logger()},
-                               Acts::PropagatorPlainOptions()};
+                               pOptions};
 
   // Perform the fit for each input track
   std::vector<std::reference_wrapper<const IndexSourceLink>> trackSourceLinks;

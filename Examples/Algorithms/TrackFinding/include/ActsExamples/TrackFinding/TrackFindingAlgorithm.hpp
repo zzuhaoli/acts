@@ -67,6 +67,12 @@ class TrackFindingAlgorithm final : public BareAlgorithm {
     Acts::MeasurementSelector::Config measurementSelectorCfg;
     /// Compute shared hit information
     bool computeSharedHits = false;
+    /// Max propagation steps
+    size_t maxPropSteps = 10000;
+    /// Tolerance for the error of the integration
+    double tolerance = 1e-4;
+    /// Particle mass 
+    double mass = 139.57018;
   };
 
   /// Constructor of the track finding algorithm

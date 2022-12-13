@@ -44,6 +44,7 @@ Acts::TGeoDetectorElement::TGeoDetectorElement(
     : Acts::IdentifiedDetectorElement(),
       m_detElement(&tGeoNode),
       m_identifier(identifier) {
+  std::cout << "Create TGeoDetectorElement " << std::endl;
   // Create temporary local non const surface (to allow setting the
   // material)
   const Double_t* translation = tGeoMatrix.GetTranslation();
@@ -92,6 +93,7 @@ Acts::TGeoDetectorElement::TGeoDetectorElement(
   if (m_surface != nullptr) {
     m_surface->assignSurfaceMaterial(std::move(material));
   }
+  std::cout << "End TGeoDetectorElement " << std::endl;
 }
 
 Acts::TGeoDetectorElement::TGeoDetectorElement(
@@ -131,6 +133,19 @@ Acts::TGeoDetectorElement::TGeoDetectorElement(
       m_bounds(tgBounds),
       m_thickness(tgThickness) {
   m_surface = Surface::makeShared<StrawSurface>(tgBounds, *this);
+}
+
+Acts::TGeoDetectorElement::TGeoDetectorElement(
+    const Identifier& identifier, const TGeoNode& tGeoNode,
+    const Transform3& tgTransform,
+    std::shared_ptr<const CylinderBounds> tgBounds, double tgThickness)
+    : Acts::IdentifiedDetectorElement(),
+      m_detElement(&tGeoNode),
+      m_transform(tgTransform),
+      m_identifier(identifier),
+      m_bounds(tgBounds),
+      m_thickness(tgThickness) {
+  m_surface = Surface::makeShared<CylinderSurface>(tgBounds, *this);
 }
 
 Acts::TGeoDetectorElement::~TGeoDetectorElement() = default;

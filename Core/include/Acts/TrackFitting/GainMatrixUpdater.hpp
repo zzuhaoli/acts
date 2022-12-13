@@ -36,6 +36,7 @@ class GainMatrixUpdater {
     TrackStateTraits<MultiTrajectoryTraits::MeasurementSizeMax,
                      false>::Projector projector;
     unsigned int calibratedSize;
+    const Surface* referenceSurface = nullptr;
   };
 
  public:
@@ -85,6 +86,7 @@ class GainMatrixUpdater {
             trackState.calibratedCovariance(),
             trackState.projector(),
             trackState.calibratedSize(),
+	    &trackState.referenceSurface(),
         },
         direction, logger);
 

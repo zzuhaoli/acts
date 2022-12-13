@@ -193,6 +193,9 @@ ActsExamples::ProcessCode ActsExamples::SeedingAlgorithm::execute(
   // run the seeding
   static thread_local SimSeedContainer seeds;
   seeds.clear();
+  static thread_local SimSeedContainer seedsFiltered;
+  seedsFiltered.clear();
+
   static thread_local decltype(finder)::State state;
 
   auto group = spacePointsGrouping.begin();
@@ -202,24 +205,35 @@ ActsExamples::ProcessCode ActsExamples::SeedingAlgorithm::execute(
                                group.middle(), group.top(), rRangeSPExtent);
   }
 
+  if(not seeds.empty()){
+    std::sort(seeds.begin(),seeds.end(), [](const auto& seed0, const auto& seed1){ return seed0.seedQuality() > seed1.seedQuality();});
+    for(int i=0;i <std::min(m_cfg.maxSeeds, static_cast<int>(seeds.size())); ++i){
+      seedsFiltered.push_back(seeds[i]);
+    }
+  }
+
+
   // extract proto tracks, i.e. groups of measurement indices, from tracks seeds
-  size_t nSeeds = seeds.size();
+  size_t nSeeds = seedsFiltered.size();
   static thread_local ProtoTrackContainer protoTracks;
   protoTracks.clear();
 
   protoTracks.reserve(nSeeds);
-  for (const auto& seed : seeds) {
+  for (const auto& seed : seedsFiltered) {
     ProtoTrack& protoTrack = protoTracks.emplace_back();
     protoTrack.reserve(seed.sp().size());
+    std::cout<<"Seed " << std::endl;
     for (auto spacePointPtr : seed.sp()) {
-      protoTrack.push_back(spacePointPtr->measurementIndex());
+       std::cout<<"sp from measurement " << spacePointPtr->measurementIndex() << " : " << spacePointPtr->x() << ", " << spacePointPtr->y() << ", " << spacePointPtr->z() << std::endl; 
+       protoTrack.push_back(spacePointPtr->measurementIndex());
     }
+    std::cout<<std::endl;
   }
 
-  ACTS_DEBUG("Created " << seeds.size() << " track seeds from "
+  ACTS_DEBUG("Created " << seedsFiltered.size() << " track seeds from "
                         << spacePointPtrs.size() << " space points");
 
-  ctx.eventStore.add(m_cfg.outputSeeds, SimSeedContainer{seeds});
+  ctx.eventStore.add(m_cfg.outputSeeds, SimSeedContainer{seedsFiltered});
   ctx.eventStore.add(m_cfg.outputProtoTracks, ProtoTrackContainer{protoTracks});
   return ActsExamples::ProcessCode::SUCCESS;
 }

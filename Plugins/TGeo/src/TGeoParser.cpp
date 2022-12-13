@@ -20,6 +20,7 @@
 void Acts::TGeoParser::select(Acts::TGeoParser::State& state,
                               const Acts::TGeoParser::Options& options,
                               const TGeoMatrix& gmatrix) {
+  std::cout << "calling select================" << std::endl;
   // Volume is present
   if (state.volume != nullptr) {
     std::string volumeName = state.volume->GetName();
@@ -27,13 +28,26 @@ void Acts::TGeoParser::select(Acts::TGeoParser::State& state,
     state.onBranch =
         state.onBranch or
         TGeoPrimitivesHelper::match(options.volumeNames, volumeName.c_str());
+    if (state.onBranch) {
+      std::cout << "state onBranch" << std::endl;
+    }
     // Loop over the daughters and collect them
     auto daugthers = state.volume->GetNodes();
-    // Daughter node iteration
+    std::cout << "volume " << volumeName << std::endl;
+    //  Daughter node iteration
     TIter iObj(daugthers);
     while (TObject* obj = iObj()) {
       TGeoNode* node = dynamic_cast<TGeoNode*>(obj);
       if (node != nullptr) {
+        const TGeoMatrix* nmatrix = node->GetMatrix();
+        TGeoHMatrix transform =
+            TGeoCombiTrans(gmatrix) * TGeoCombiTrans(*nmatrix);
+        const Double_t* translation = transform.GetTranslation();
+        Vector3 t(options.unit * translation[0], options.unit * translation[1],
+                  options.unit * translation[2]);
+
+        std::cout << "daughter node: " << node->GetName() << " at "
+                  << t.transpose() << std::endl;
         state.volume = nullptr;
         state.node = node;
         select(state, options, gmatrix);
@@ -58,6 +72,8 @@ void Acts::TGeoParser::select(Acts::TGeoParser::State& state,
       // Create a eigen transform
       Vector3 t(options.unit * translation[0], options.unit * translation[1],
                 options.unit * translation[2]);
+      std::cout << "node " << nodeName << " at " << t.transpose()
+                << " has volume " << nodeVolName << std::endl;
       Vector3 cx(rotation[0], rotation[3], rotation[6]);
       Vector3 cy(rotation[1], rotation[4], rotation[7]);
       Vector3 cz(rotation[2], rotation[5], rotation[8]);
@@ -65,6 +81,8 @@ void Acts::TGeoParser::select(Acts::TGeoParser::State& state,
 
       bool accept = true;
       if (not options.parseRanges.empty()) {
+        std::cout << "found node! Check if its volume is within parseRanges "
+                  << std::endl;
         auto shape =
             dynamic_cast<TGeoBBox*>(state.node->GetVolume()->GetShape());
         // It uses the bounding box of TGeoBBox
@@ -87,6 +105,9 @@ void Acts::TGeoParser::select(Acts::TGeoParser::State& state,
             }
           }
         }
+
+        // xai: For test
+        accept = true;
       }
       if (accept) {
         state.selectedNodes.push_back(

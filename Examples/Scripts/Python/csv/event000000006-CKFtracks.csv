@@ -1,0 +1,5 @@
+track_id,particleId,nStates,nMajorityHits,nMeasurements,nOutliers,nHoles,nSharedHits,chi2,ndf,chi2/ndf,pT,eta,phi,truthMatchProbability,good/duplicate/fake
+3,1|0|1|0|0,21,11,11,0,0,0,13.1056,22,0.595708,8.83267,0.133655,-0.211449,1,duplicate
+2,1|0|1|0|0,20,10,10,0,0,0,10.1335,20,0.506675,8.83952,0.133711,-0.211211,1,duplicate
+1,1|0|1|0|0,23,12,12,0,0,0,13.033,24,0.543041,8.83841,0.133928,-0.211023,1,duplicate
+0,1|0|1|0|0,23,12,12,0,0,0,17.6026,24,0.733442,8.85084,0.133895,-0.2109,1,good

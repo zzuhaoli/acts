@@ -50,6 +50,7 @@ void CKF_perf_pipijpsi(
         {
 	"#mu^{-}",
 	},
+        std::string particle = "mu",	
 	std::vector<int> colors_plus={
           854,
 	},
@@ -61,7 +62,7 @@ void CKF_perf_pipijpsi(
     const std::string& simParticleTreeName = "track_finder_particles",
     const std::string& trackSummaryTreeName = "tracksummary",
     unsigned int nHitsMin = 5, unsigned int nMeasurementsMin = 5, unsigned int nOutliersMax = 2,
-    double ptMin = 0.05, double absCosTheta=0.94, double truthMatchProbMin = 0.5, int absPdgId=13) {
+    double ptMin = 0.05, double absCosTheta=0.94, double truthMatchProbMin = 0.5) {
   gStyle->SetOptFit(0011);
   gStyle->SetOptStat(0000);
   gStyle->SetPadLeftMargin(0.18);
@@ -76,11 +77,15 @@ void CKF_perf_pipijpsi(
 
   //std::vector<double> ptRanges = {40, 0.05, 0.45};
   std::vector<double> ptRanges;
-  if(absPdgId==211){
-   ptRanges  = {20, 0.05, 0.45};
-  } else {
-   ptRanges  = {30, 0.35, 1.85};
+  int absPdgId;
+  if(particle == "mu"){
+     absPdgId = 13;
+     ptRanges  = {30, 0.35, 1.85};
+  } else if (particle == "pi"){
+     absPdgId = 211;
+     ptRanges  = {20, 0.05, 0.45};
   } 
+  
   
 
   // Check the inputs are valid
@@ -118,7 +123,7 @@ void CKF_perf_pipijpsi(
   nEvents.reserve(nTrackFiles);
   for (const auto& tReader : tReaders) {
     //size_t entries = tReader.tree->GetEntries();
-    size_t entries = 10000;
+    size_t entries = 100;
     
     nEvents.push_back(entries);
   }
@@ -453,13 +458,6 @@ void CKF_perf_pipijpsi(
     adaptEffRange(duplicateRate_vs_pt_minus[i], 1, scaleRangeMax);
   }
 
-  std::string particle = "";
-  if(absPdgId==211){
-	  particle = "pi";
-  }
-  if(absPdgId==13){
-	  particle = "mu";
-  }
   cs[0]->SaveAs(Form("STCF_pipijpsi_%s_eff_vs_costheta.pdf", particle.c_str()));
   cs[1]->SaveAs(Form("STCF_pipijpsi_%s_fakerate_vs_costheta.pdf", particle.c_str()));
   cs[2]->SaveAs(Form("STCF_pipijpsi_%s_duplirate_vs_costheta.pdf", particle.c_str()));

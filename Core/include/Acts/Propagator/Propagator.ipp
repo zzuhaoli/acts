@@ -7,6 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "Acts/EventData/TrackParametersConcept.hpp"
+#include "Acts/Propagator/EigenStepperError.hpp"
 
 template <typename S, typename N>
 template <typename result_t, typename propagator_state_t>
@@ -49,8 +50,11 @@ auto Acts::Propagator<S, N>::propagate_impl(propagator_state_t& state,
       } else {
         ACTS_ERROR("Step failed with " << res.error() << ": "
                                        << res.error().message());
-        // pass error to caller
-        return res.error();
+        if(res.error() == EigenStepperError::StepSizeAdjustmentFailed){
+         state.stepAdjustFail = true;	
+	}	
+	// pass error to caller
+        //return res.error();
       }
       // Post-stepping:
       // navigator status call - action list - aborter list - target call

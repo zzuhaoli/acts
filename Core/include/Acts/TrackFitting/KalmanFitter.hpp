@@ -361,6 +361,12 @@ class KalmanFitter {
             result.result = res.error();
           }
         }
+
+	if(result.smoothed and not result.reversed){
+         std::cout<<"Reaching surface " << surface->geometryId() << " after smoothing " << std::endl;
+         materialInteractor(surface, state, stepper);
+	}
+
         if (result.reversed) {
           ACTS_VERBOSE("Perform " << direction << " filter step");
           auto res = reversedFilter(surface, state, stepper, result);
@@ -378,13 +384,14 @@ class KalmanFitter {
       if (not result.smoothed and not result.reversed) {
         if (result.measurementStates == inputMeasurements->size() or
             (result.measurementStates > 0 and
-             state.navigation.navigationBreak)) {
+             state.navigation.navigationBreak) or state.steps >= state.options.maxSteps*0.8) {
           // Remove the missing surfaces that occur after the last measurement
           result.missedActiveSurfaces.resize(result.measurementHoles);
           // now get track state proxy for the smoothing logic
           auto trackStateProxy =
               result.fittedStates.getTrackState(result.lastMeasurementIndex);
-          if (reversedFiltering ||
+          //@todo. When starting the reverse filtering, the propagation steps (state.steps) can already reach maximum steps 
+	  if (reversedFiltering ||
               extensions.reverseFilteringLogic(trackStateProxy)) {
             // Start to run reversed filtering:
             // Reverse navigation direction and reset navigation and stepping
@@ -917,9 +924,9 @@ class KalmanFitter {
       // smoothed measurement state. Also, whether the intersection is on
       // surface is not checked here.
       bool reverseDirection = false;
-      bool closerTofirstCreatedState =
-          (std::abs(firstIntersection.intersection.pathLength) <=
-           std::abs(lastIntersection.intersection.pathLength));
+      bool closerTofirstCreatedState = true;
+        //  (std::abs(firstIntersection.intersection.pathLength) <=
+        //   std::abs(lastIntersection.intersection.pathLength));
       if (closerTofirstCreatedState) {
         stepper.resetState(state.stepping, firstCreatedState.smoothed(),
                            firstCreatedState.smoothedCovariance(),
@@ -949,11 +956,27 @@ class KalmanFitter {
                 ? NavigationDirection::Backward
                 : NavigationDirection::Forward;
       }
+      // Reinitialize the stepping jacobian
+      state.stepping.jacobian = BoundMatrix::Identity();
+      state.stepping.jacTransport = FreeMatrix::Identity();
+      state.stepping.derivative = FreeVector::Zero();
+
       // Reset the step size
       state.stepping.stepSize = ConstrainedStep(
           state.stepping.navDir * std::abs(state.options.maxStepSize));
       // Set accumulatd path to zero before targeting surface
       state.stepping.pathAccumulated = 0.;
+
+//      /////////////////////////////////////////////////////////////////////////////
+      state.navigation.reset(state.geoContext, stepper.position(state.stepping),
+                             stepper.direction(state.stepping),
+                             state.stepping.navDir,
+                             &surface, nullptr);
+
+      // No Kalman filtering for the starting surface, but still need
+      // to consider the material effects here
+      materialInteractor(state.navigation.currentSurface, state, stepper);
+      /////////////////////////////////////////////////////////////////////////////
 
       return Result<void>::success();
     }

@@ -30,6 +30,21 @@ target_link_libraries(
     ActsExamplesRecTracksCommon
     ActsExamplesDetectorTelescope)
 
+# Truth reco for STCF detector 
+add_executable(
+        ActsExampleTruthTracksSTCF
+        STCFRecTruthTracks.cpp)
+target_link_libraries(
+        ActsExampleTruthTracksSTCF
+  PRIVATE
+    ActsExamplesDetectorTGeo
+    ActsExamplesFramework
+    ActsExamplesCommon
+    ActsExamplesMagneticField
+    ActsExamplesIoPerformance
+    )
+
+
 # CKF reco for Generic detector 
 add_executable(
   ActsExampleCKFTracksGeneric
@@ -40,6 +55,20 @@ target_link_libraries(
     ActsExamplesRecTracksCommon 
     ActsExamplesDetectorGeneric)
 
+# CKF reco for STCF detector 
+add_executable(
+	ActsExampleCKFTracksSTCF
+	STCFRecCKFTracks.cpp)
+target_link_libraries(
+	ActsExampleCKFTracksSTCF
+  PRIVATE
+    ActsExamplesDetectorTGeo
+    ActsExamplesFramework
+    ActsExamplesCommon
+    ActsExamplesMagneticField
+    ActsExamplesIoPerformance 
+    )
+
 # CKF reco for TGeo detector 
 add_executable(
   ActsExampleCKFTracksTGeo
@@ -47,8 +76,10 @@ add_executable(
 target_link_libraries(
   ActsExampleCKFTracksTGeo
   PRIVATE
-    ActsExamplesRecTracksCommon 
+    ActsExamplesRecTracksCommon
     ActsExamplesDetectorTGeo)
+
+
 
 # CKF reco for Telescope detector 
 add_executable(

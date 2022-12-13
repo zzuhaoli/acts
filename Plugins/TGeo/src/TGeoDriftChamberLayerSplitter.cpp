@@ -60,12 +60,15 @@ Acts::TGeoDriftChamberLayerSplitter::split(
         ActsScalar deltaPhi =
             std::abs(parameters[2] - parameters[3]) * M_PI / 180;
         // calcuate the approximate lineBounds r
-        ActsScalar r = std::hypot(maxR * std::cos(deltaPhi) - (minR + maxR) / 2,
-                                  maxR * std::sin(deltaPhi));
-        ActsScalar thickness = maxR - minR;
+        ActsScalar distanceToOuterCorner = std::hypot(maxR * std::cos(deltaPhi/2) - (minR + maxR) / 2,
+                                  maxR * std::sin(deltaPhi/2));
+        ActsScalar distanceToInnerCorner = std::hypot((minR + maxR) / 2 - minR * std::cos(deltaPhi/2),
+                                  minR * std::sin(deltaPhi/2));
+	ActsScalar thickness = maxR - minR;
         ACTS_DEBUG("cast good: drift cell has minR = "
                    << minR << ", maxR = " << maxR << " and deltaPhi "
                    << deltaPhi << " (deg) and thickness " << thickness);
+        //std::cout<<"distanceToOuterCorner = " << distanceToOuterCorner <<", distanceToInnerConer = " << distanceToInnerCorner <<", thickness/2 = " << thickness/2 << std::endl; 
 
         // The relative position of cell w.r.t. layer
         const TGeoMatrix* cmatrix = node->GetMatrix();
@@ -107,7 +110,8 @@ Acts::TGeoDriftChamberLayerSplitter::split(
                 auto etrf = TGeoPrimitivesHelper::makeTransform(cx, cy, cz, t);
 
                 // make a lineBounds
-                auto tgWire = std::make_shared<Acts::LineBounds>(r*1.5, halfZ);
+                //auto tgWire = std::make_shared<Acts::LineBounds>(distanceToOuterCorner, halfZ);
+                auto tgWire = std::make_shared<Acts::LineBounds>(thickness/2, halfZ);
 
                 // Create a new detector element per split
                 auto tgDetectorElement =

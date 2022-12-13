@@ -51,8 +51,8 @@ void setThisHistStyle(T* hist, short color = 1, short marker = 20,
   hist->SetMarkerSize(1.0);
   hist->SetLineWidth(2);
   hist->SetTitle("");
-  //hist->SetLineColor(color);
-  hist->SetLineColor(0);
+  hist->SetLineColor(color);
+  //hist->SetLineColor(0);
   //hist->SetLineColorAlpha(0, 1); 
   //hist->SetLineStyle(0); 
   hist->SetMarkerColor(color);
@@ -85,15 +85,22 @@ void anaHisto(TH1F* inputHist, int j, TH1F* meanHist, TH1F* widthHist,
   assert(inputHist != nullptr);
   if (inputHist->GetEntries() > 0) {
     if (fit) {
+      //TFitResultPtr r = inputHist->Fit("gaus", "QS0");
       TFitResultPtr r = inputHist->Fit("gaus", "QS0");
+      r = inputHist->Fit("gaus", "QS0");
       if (r.Get() and ((r->Status() % 1000) == 0)) {
+      //if (r.Get()) {
         // fill the mean and width into 'j'th bin of the meanHist and widthHist,
         // respectively
         meanHist->SetBinContent(j, r->Parameter(1));
         meanHist->SetBinError(j, r->ParError(1));
         widthHist->SetBinContent(j, r->Parameter(2)*scale);
         widthHist->SetBinError(j, r->ParError(2));
-      }
+        if(scale!=1) 
+	  std::cout<<"hist "<<widthHist->GetName() <<" width = "<< r->Parameter(2)*scale << std::endl; 
+        }else {
+         std::cout<<"Fitting failed " << std::endl;	
+	}
     } else {
       meanHist->SetBinContent(j, inputHist->GetMean());
       meanHist->SetBinError(j, inputHist->GetMeanError());
@@ -107,13 +114,15 @@ void anaHisto(TH1F* inputHist, int j, TH1F* meanHist, TH1F* widthHist,
 
 
 void comparePerigee_v3(
-       std::string inputPath = "/home/xiaocong/Software/Oscar/acts/RunSpace/scan/v1.1.testLandauLowPt",
+       std::string inputPath = "/nfs/xiaocong/acts_workspace/scan/CKF.estimated.chi2Cut15.maxPropSteps330.NoStepAjustError.maxSeeds2",
        std::string particle = "mu-",
        std::vector<std::string> degs = {"90","60","30"},
+       //std::vector<std::string> degs = {"90"},
        //in GeV
        bool usePt = true, 
-       std::vector<double> ps = {0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8},
-              
+       std::vector<double> ps = {0.1, 0.125, 0.15, 0.175, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8},
+       //std::vector<double> ps = {0.175, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8},
+       bool savePlot  = false, 
     double absEtaMin = 0, double absEtaMax = 1.75, double ptMin = 0.05,
     double ptMax = 1.8, bool saveAs = false, bool showEta = false,
     bool showPt = true, bool fit = true, bool plotResidual = true,
@@ -121,9 +130,9 @@ void comparePerigee_v3(
     int plotType = 1, bool plotResidualRatio = false, bool absEta = true,
     bool variablePtBin = true, 
     std::map<std::string, std::string> tags = {
-     {"90","muon (#theta=90 deg)"},
-     {"60","muon (#theta=60 deg)"},
-     {"30","muon (#theta=30 deg)"},
+     {"90","|cos#theta|=0"},
+     {"60","|cos#theta|=0.5"},
+     {"30","|cos#theta|=0.87"},
     },
     std::vector<int> colors = {872, 866, 854, 896}, std::vector<int> markers ={24, 26, 20, 22}) {
  
@@ -136,6 +145,8 @@ void comparePerigee_v3(
   gStyle->SetNdivisions(510, "y");
   gStyle->SetPadTickX(1);
   gStyle->SetPadTickY(1);
+
+  std::string saveTag ="STCF_" + particle + "_res"; 
 
   if (plotType == 2 or not plotResidual)
     plotResidualRatio = false;
@@ -237,10 +248,11 @@ void comparePerigee_v3(
 
   for(int i=0; i<degs.size(); ++i){
     for(int j=0; j<names.size(); ++j){
-      
       means[degs[i]].push_back(new TH1F(Form("%s_%s_mean", names[j].c_str(), degs[i].c_str()), "", ptbins.size()-1, ptbins.data() )); 
       widths[degs[i]].push_back(new TH1F(Form("%s_%s_width", names[j].c_str(), degs[i].c_str()), "", ptbins.size()-1, ptbins.data() )); 
     }
+    means[degs[i]].push_back(new TH1F(Form("pt_%s_mean", degs[i].c_str()), "", ptbins.size()-1, ptbins.data() )); 
+    widths[degs[i]].push_back(new TH1F(Form("pt_%s_width", degs[i].c_str()), "", ptbins.size()-1, ptbins.data() )); 
   }
 
 
@@ -344,6 +356,24 @@ void comparePerigee_v3(
   for(const auto& [deg, cs] : chains){
     for (int i = 0;i < cs.size(); ++i) {
        auto& chain = cs[i];
+       
+       double degVal;
+       if(deg=="90"){
+         degVal= 90./180*M_PI;
+       } else if(deg=="60"){
+         degVal= 60./180*M_PI;
+       } else if (deg=="30"){
+         degVal= 30./180*M_PI;
+       }
+       double p_;
+       if(usePt){
+          p_ = ps[i]/sin(degVal);
+       } else {
+          p_ = ps[i];
+       }
+       
+       std::string prefix = plotResidual?"res_":"pull_";
+
        for (int j = 0;j < names.size(); ++j) {
          const auto& name = names[j];
 
@@ -353,49 +383,55 @@ void comparePerigee_v3(
            yRange = resRanges[j];
          }
 
-	 if(name=="qop" and ps[j] < 0.13){
+	 if(name=="qop" and ps[i] < 0.13){
            yRange = {-0.5, 0.5};
 	 }
+	 //if(name=="qop"){
+         //  std::cout<<yRange.first  << std::endl;
+         //}
 
 
-         std::string prefix = plotResidual?"res_":"pull_";
          std::string draw = prefix + stores[j] + "_fit";
          
          //TH1F* temp = new TH1F(Form("%s_ptbin%i_%s", deg.c_str(), i, name.c_str()), "", 100, yRange.first, yRange.second);
-         cs[i]->Draw(Form("%s>>temp(200,%f,%f)", draw.c_str(), yRange.first, yRange.second),"nMeasurements>=5&&nHoles<=1");
+         //cs[i]->Draw(Form("%s>>temp(200,%f,%f)", draw.c_str(), yRange.first, yRange.second),"nMeasurements>=5&&nHoles<=1");
+         cs[i]->Draw(Form("%s>>temp(200,%f,%f)", draw.c_str(), yRange.first, yRange.second),"nMeasurements>=5");
          TH1F* temp = (TH1F*)gDirectory->Get("temp"); 
 
-	 //double scale = (name!="qop")? 1 : ps[i]*100; 
-	 double degVal; 
-	 if(deg=="90"){
-	   degVal= 90./180*M_PI; 
-	 } else if(deg=="60"){
-	   degVal= 60./180*M_PI; 
-	 } else if (deg=="30"){
-	   degVal= 30./180*M_PI; 
-	 } 
-	 double scale = (name!="qop")? 1 : ps[i]/sin(degVal)*100; 
+	 double scale = (name!="qop")? 1 : p_*100; 
          anaHisto(temp, i+1, means[deg][j], widths[deg][j], fit, scale);
+      }
+
+      {
+        std::string draw_ = "abs(1./eQOP_fit)*sin(eTHETA_fit) - t_p*sin(t_theta)";
+        std::pair<double, double> yRange_ = {-0.01, 0.01};
+        if(ps[i]>0.13) yRange_ = {-0.03, 0.03};	
+         std::cout<<yRange_.first  << std::endl;
+        cs[i]->Draw(Form("%s>>temp_(100,%f,%f)", draw_.c_str(), yRange_.first, yRange_.second),"nMeasurements>=5");
+        TH1F* temp_ = (TH1F*)gDirectory->Get("temp_");
+	double scale_ = (usePt)? 100./ps[i] : 100./(ps[i]*sin(degVal));
+	anaHisto(temp_, i+1, means[deg][6], widths[deg][6], fit, scale_);
       }
     }
   }
 
 
   std::vector<TLegend*> legs;
-  for(int i=0; i<names.size(); ++i){
-   legs.push_back(new TLegend(0.6, 0.7, 0.9, 0.85));
+  for(int i=0; i<names.size()+1; ++i){
+   legs.push_back(new TLegend(0.3, 0.7, 0.6, 0.85));
    legs[i]->SetLineStyle(0);
    legs[i]->SetBorderSize(0);
-   legs[i]->SetFillStyle(0);
+   //legs[i]->SetFillStyle(0);
   }
 
   std::string xAxisTitle = (usePt)? "p_{T} [GeV]" :  "p [GeV]";
+  std::string plotName = (usePt)? "pt":"p";
 
   TCanvas *c1 = new TCanvas("c1", "", 600, 500); 
   c1->SetGrid();  
   int i=0; 
   for(const auto& [deg, hists] : widths){
-    hists[0]->Draw("same");
+    hists[0]->Draw("EsameX0");
     setThisHistStyle(hists[0], colors[i], markers[i], xTitleSize, yTitleSize,
                          xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
     hists[0]->GetXaxis()->SetTitle(xAxisTitle.c_str()); 
@@ -405,13 +441,14 @@ void comparePerigee_v3(
     i++; 
   }
   legs[0]->Draw();
-
+  if(savePlot) 
+  c1->SaveAs(Form("%s_d0_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
 
   i=0; 
   TCanvas *c2 = new TCanvas("c2", "", 600, 500); 
   c2->SetGrid();  
   for(const auto& [deg, hists] : widths){
-    hists[1]->Draw("same");
+    hists[1]->Draw("EsameX0");
     setThisHistStyle(hists[1], colors[i], markers[i], xTitleSize, yTitleSize,
                          xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
     hists[1]->GetXaxis()->SetTitle(xAxisTitle.c_str()); 
@@ -421,12 +458,14 @@ void comparePerigee_v3(
     i++; 
   }
   legs[1]->Draw();
+  if(savePlot) 
+  c2->SaveAs(Form("%s_z0_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
 
   i=0;
   TCanvas *c3 = new TCanvas("c3", "", 600, 500);
   c3->SetGrid();  
   for(const auto& [deg, hists] : widths){
-    hists[4]->Draw("same");
+    hists[4]->Draw("EsameX0");
     setThisHistStyle(hists[4], colors[i], markers[i], xTitleSize, yTitleSize,
                          xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
     hists[4]->GetXaxis()->SetTitle(xAxisTitle.c_str());
@@ -436,6 +475,25 @@ void comparePerigee_v3(
     i++;
   }
   legs[4]->Draw();
+  if(savePlot) 
+  c3->SaveAs(Form("%s_p_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
+
+  i=0;
+  TCanvas *c4 = new TCanvas("c4", "", 600, 500);
+  c4->SetGrid();
+  for(const auto& [deg, hists] : widths){
+    hists[6]->Draw("EsameX0");
+    setThisHistStyle(hists[6], colors[i], markers[i], xTitleSize, yTitleSize,
+                         xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
+    hists[6]->GetXaxis()->SetTitle(xAxisTitle.c_str());
+    hists[6]->GetYaxis()->SetTitle("#sigma(p_{T})/p_{T} [%]");
+    hists[6]->GetYaxis()->SetRangeUser(0.2, 1.6);
+    legs[6]->AddEntry(hists[4],tags[deg].c_str(), "APL");
+    i++;
+  }
+  legs[6]->Draw();
+  if(savePlot) 
+  c4->SaveAs(Form("%s_pt_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
 
 
 }

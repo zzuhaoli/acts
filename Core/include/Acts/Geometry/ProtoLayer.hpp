@@ -100,6 +100,11 @@ struct ProtoLayer {
 
   /// Store the list of surfaces used for this proto layer
   std::vector<const Surface*> m_surfaces = {};
+
+  ActsScalar m_rMin = std::numeric_limits<double>::max();
+  ActsScalar m_rMax = std::numeric_limits<double>::min();
+  ActsScalar m_zMin = std::numeric_limits<double>::max();
+  ActsScalar m_zMax = std::numeric_limits<double>::min();
 };
 
 inline const std::vector<const Surface*>& ProtoLayer::surfaces() const {

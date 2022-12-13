@@ -7,9 +7,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "ActsExamples/Detector/IBaseDetector.hpp"
-#ifdef ACTS_PLUGIN_ONNX
-#include "Acts/Plugins/Onnx/MLTrackClassifier.hpp"
-#endif
 #include "ActsExamples/Framework/Sequencer.hpp"
 #include "ActsExamples/Framework/WhiteBoard.hpp"
 #include "ActsExamples/Geometry/CommonGeometry.hpp"
@@ -70,6 +67,16 @@ void addRecCKFOptions(ActsExamples::Options::Description& desc) {
       value<ActsExamples::Options::Reals<3>>()->default_value({{20, 0.0, 2.0}}),
       "pT bins, min and max for plotting the performance, must be "
       "of form i:j.");
+ opt("ckf-prop-steps", value<int>()->default_value(10000),
+                    "The max propagation steps during ckf.");
+ opt("seed-sigma-scattering", value<double>()->default_value(200),
+                    "The seeding sigma scattering.");
+ opt("seed-max-seeds", value<int>()->default_value(2),
+                    "The maximum number of seeds per event");
+ opt("ckf-prop-tolerance", value<double>()->default_value(0.0001),
+                    "The stepper tolerance during ckf.");
+ opt("ckf-prop-mass", value<double>()->default_value(139.57018),
+                    "The particle mass during ckf.");
 }
 
 int main(int argc, char* argv[]) {
@@ -182,6 +189,10 @@ int main(int argc, char* argv[]) {
       trackFinderCfg.inputParticles = inputParticles;
       trackFinderCfg.inputMeasurementParticlesMap =
           STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
+      trackFinderCfg.inputMeasurementSimHitsMap =
+      STCFMeasurementReaderCfg.outputMeasurementSimHitsMap;
+      trackFinderCfg.inputSimulatedHits = STCFMeasurementReaderCfg.outputSimHits;
+ 
       trackFinderCfg.outputProtoTracks = "prototracks";
       sequencer.addAlgorithm(
           std::make_shared<TruthTrackFinder>(trackFinderCfg, logLevel));
@@ -198,7 +209,7 @@ int main(int argc, char* argv[]) {
       seedingCfg.gridConfig.rMax = 200._mm;
       seedingCfg.seedFinderConfig.rMax = seedingCfg.gridConfig.rMax;
 
-      seedingCfg.seedFilterConfig.deltaRMin = 1_mm;
+      seedingCfg.seedFilterConfig.deltaRMin = 20._mm;
       seedingCfg.seedFinderConfig.deltaRMin =
           seedingCfg.seedFilterConfig.deltaRMin;
       // seedingCfg.seedFinderConfig.deltaZMax = 20_mm;
@@ -222,10 +233,12 @@ int main(int argc, char* argv[]) {
       seedingCfg.seedFinderConfig.cotThetaMax =
           seedingCfg.gridConfig.cotThetaMax;
 
-      // seedingCfg.seedFinderConfig.sigmaScattering = 50;
-      seedingCfg.seedFinderConfig.sigmaScattering = 50;
+       seedingCfg.seedFinderConfig.sigmaScattering = vm["seed-sigma-scattering"].template as<double>();
+      //seedingCfg.seedFinderConfig.sigmaScattering = 10;
+      //seedingCfg.seedFinderConfig.sigmaScattering = 2; // 2 for 75 and 100 mev
       seedingCfg.seedFinderConfig.radLengthPerSeed = 0.1;
-
+      seedingCfg.maxSeeds = vm["seed-max-seeds"].template as<int>();
+      
       seedingCfg.gridConfig.minPt = 40._MeV;
       seedingCfg.seedFinderConfig.minPt = seedingCfg.gridConfig.minPt;
 
@@ -288,7 +301,7 @@ int main(int argc, char* argv[]) {
     paramsEstimationCfg.deltaRMax = 100._mm;
     paramsEstimationCfg.deltaRMin = 30._mm;
     paramsEstimationCfg.sigmaLoc0 = 100._um;
-    paramsEstimationCfg.sigmaLoc1 = 500._um;
+    paramsEstimationCfg.sigmaLoc1 = 400._um;
     paramsEstimationCfg.sigmaPhi = 0.2_degree;
     paramsEstimationCfg.sigmaTheta = 0.2_degree;
     paramsEstimationCfg.sigmaQOverP = 0.1 / 1._GeV;
@@ -313,6 +326,9 @@ int main(int argc, char* argv[]) {
   trackFindingCfg.outputTrajectories = "trajectories";
   trackFindingCfg.outputTrackParameters = "parameters";
   trackFindingCfg.computeSharedHits = true;
+  trackFindingCfg.maxPropSteps = vm["ckf-prop-steps"].template as<int>(); 
+  trackFindingCfg.tolerance = vm["ckf-prop-tolerance"].template as<double>(); 
+  trackFindingCfg.mass = vm["ckf-prop-mass"].template as<double>(); 
   trackFindingCfg.findTracks = TrackFindingAlgorithm::makeTrackFinderFunction(
       trackingGeometry, magneticField);
   sequencer.addAlgorithm(

@@ -7,6 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "Acts/TrackFitting/GainMatrixUpdater.hpp"
+#include "Acts/Surfaces/Surface.hpp"
 
 namespace Acts {
 
@@ -29,6 +30,7 @@ std::tuple<double, std::error_code> GainMatrixUpdater::visitMeasurement(
         ACTS_VERBOSE("Calibrated measurement: " << calibrated.transpose());
         ACTS_VERBOSE("Calibrated measurement covariance:\n"
                      << calibratedCovariance);
+	//std::cout<<"Calibrated measurement: " << calibrated.transpose() << std::endl;
 
         const auto H =
             trackState.projector
@@ -37,6 +39,7 @@ std::tuple<double, std::error_code> GainMatrixUpdater::visitMeasurement(
 
         ACTS_VERBOSE("Measurement projector H:\n" << H);
 
+        //std::cout<<"predictedCovariance:\n" << trackState.predictedCovariance << std::endl;
         const auto K = (trackState.predictedCovariance * H.transpose() *
                         (H * trackState.predictedCovariance * H.transpose() +
                          calibratedCovariance)
@@ -44,6 +47,7 @@ std::tuple<double, std::error_code> GainMatrixUpdater::visitMeasurement(
                            .eval();
 
         ACTS_VERBOSE("Gain Matrix K:\n" << K);
+	//std::cout<<"Gain Matrix K:\n" << K << std::endl;
 
         if (K.hasNaN()) {
           error =
@@ -52,6 +56,14 @@ std::tuple<double, std::error_code> GainMatrixUpdater::visitMeasurement(
                   : KalmanFitterError::BackwardUpdateFailed;  // set to error
           return false;                                       // abort execution
         }
+
+        //auto surface = trackState.referenceSurface;
+        //auto updatedCalibrated = calibrated;
+        //if(surface->type() == Surface::SurfaceType::Straw){
+        //   auto localParameters = H * trackState.predicted;
+        //  updatedCalibrated[eBoundLoc0] = std::copysign(calibrated[eBoundLoc0], localParameters[eBoundLoc0]);
+        //  std::cout<<"filter straw surface" << std::endl;
+        //}
 
         trackState.filtered =
             trackState.predicted + K * (calibrated - H * trackState.predicted);
@@ -71,6 +83,7 @@ std::tuple<double, std::error_code> GainMatrixUpdater::visitMeasurement(
         ParametersVector residual;
         residual = calibrated - H * trackState.filtered;
         ACTS_VERBOSE("Residual: " << residual.transpose());
+	//std::cout<<"Residual: " << residual.transpose() << std::endl;
 
         chi2 = (residual.transpose() *
                 ((CovarianceMatrix::Identity() - H * K) * calibratedCovariance)

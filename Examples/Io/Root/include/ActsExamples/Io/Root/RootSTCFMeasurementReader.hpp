@@ -148,6 +148,8 @@ class RootSTCFMeasurementReader : public IReader {
   TTreeReaderArray<Acts::ActsScalar>* ITDmomentumX = nullptr;
   TTreeReaderArray<Acts::ActsScalar>* ITDmomentumY = nullptr;
   TTreeReaderArray<Acts::ActsScalar>* ITDmomentumZ = nullptr;
+  TTreeReaderArray<Acts::ActsScalar>* ITDtime = nullptr;
+  TTreeReaderArray<double>* ITDmass = nullptr;
   
   TTreeReaderArray<int>* MDCcellID = nullptr;
   TTreeReaderArray<int>* MDClayerID = nullptr;
@@ -166,6 +168,8 @@ class RootSTCFMeasurementReader : public IReader {
   TTreeReaderArray<Acts::ActsScalar>* MDCwirePoint2X = nullptr;
   TTreeReaderArray<Acts::ActsScalar>* MDCwirePoint2Y = nullptr;
   TTreeReaderArray<Acts::ActsScalar>* MDCwirePoint2Z = nullptr;
+  TTreeReaderArray<Acts::ActsScalar>* MDCtime = nullptr;
+  TTreeReaderArray<float>* MDCmass = nullptr;
 };
 
 }  // namespace ActsExamples

@@ -13,6 +13,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <iostream>
 
 using namespace Acts::UnitLiterals;
 
@@ -164,6 +165,10 @@ float Acts::computeEnergyLossBethe(const MaterialSlab& slab, int /* unused */,
   // identical to the prefactor epsilon for the most probable value.
   const auto running =
       0.5f * std::log(u / I) + 0.5f * std::log(wmax / I) - rq.beta2 - dhalf;
+  //GenFit ? 
+  //const auto running =
+  //    2 * ( std::log(wmax / I) - rq.beta2);
+  //std::cout<<"Acts::computeEnergyLossBethe eps = " << eps <<" eps*running = " << eps * running << std::endl; 
   return eps * running;
 }
 
@@ -223,9 +228,12 @@ float Acts::computeEnergyLossLandau(const MaterialSlab& slab, int /* unused */,
   const auto eps = computeEpsilon(Ne, thickness, rq);
   const auto dhalf = computeDeltaHalf(I, Ne, rq);
   const auto t = computeMassTerm(m, rq);
+  //std::cout<<"Acts::computeEnergyLossLandau slab.material().meanExcitationEnergy() = " << I << ", slab.material().molarElectronDensity() = " << Ne <<", slab.thickness() = "<< thickness << std::endl; 
+  //std::cout<<"materal meanExcitationEnergy " << I <<", molarElectronDensity "<< Ne <<", A " << slab.material().Ar() <<", Z " << slab.material().Z() <<", massDensity " << slab.material().massDensity() <<", molarDensity "<< slab.material().molarDensity() << ", thickness = " << thickness <<", thicknessInX0 " << slab.thicknessInX0() << std::endl;  
   // uses RPP2018 eq. 33.11
   const auto running =
       std::log(t / I) + std::log(eps / I) + 0.2f - rq.beta2 - 2 * dhalf;
+  //std::cout<<"Acts::computeEnergyLossLandau eps = " << eps <<" eps*running = " << eps * running << std::endl; 
   return eps * running;
 }
 

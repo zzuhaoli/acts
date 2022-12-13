@@ -119,12 +119,14 @@ class TrackFittingAlgorithm final : public BareAlgorithm {
   /// @param multipleScattering correct for MCS (mainly for debugging)
   /// @param energyLoss correct for e-loss
   /// @param reverseFilteringMomThreshold at which threshold
+  /// @param chi2Cut at which threshold
   /// @param freeToBoundCorrection Correction for non-linearity effect during transform from free to bound
   static std::shared_ptr<TrackFitterFunction> makeKalmanFitterFunction(
       std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry,
       std::shared_ptr<const Acts::MagneticFieldProvider> magneticField,
       bool multipleScattering = true, bool energyLoss = true,
       double reverseFilteringMomThreshold = 0.0,
+      double chi2Cut = 15,
       Acts::FreeToBoundCorrection freeToBoundCorrection =
           Acts::FreeToBoundCorrection());
 
@@ -132,6 +134,7 @@ class TrackFittingAlgorithm final : public BareAlgorithm {
       std::shared_ptr<const Acts::MagneticFieldProvider> magneticField,
       bool multipleScattering = true, bool energyLoss = true,
       double reverseFilteringMomThreshold = 0.0,
+      double chi2Cut = 15,
       Acts::FreeToBoundCorrection freeToBoundCorrection =
           Acts::FreeToBoundCorrection());
 
