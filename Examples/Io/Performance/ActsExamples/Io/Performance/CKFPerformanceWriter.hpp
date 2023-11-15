@@ -52,9 +52,9 @@ class CKFPerformanceWriter final : public WriterT<TrajectoriesContainer> {
     /// Min reco-truth matching probability
     double truthMatchProbMin = 0.5;
     /// Min number of measurements
-    size_t nMeasurementsMin = 9;
+    size_t nMeasurementsMin = 5;
     /// Min transverse momentum
-    double ptMin = 1 * Acts::UnitConstants::GeV;
+    double ptMin = 0.05 * Acts::UnitConstants::GeV;
     /// function to check if neural network predicted track label is duplicate
     std::function<bool(std::vector<float>&)> duplicatedPredictor = nullptr;
   };
@@ -74,6 +74,7 @@ class CKFPerformanceWriter final : public WriterT<TrajectoriesContainer> {
   /// Mutex used to protect multi-threaded writes.
   std::mutex m_writeMutex;
   TFile* m_outputFile{nullptr};
+  TEfficiency* m_perfSummary; 
   /// Plot tool for efficiency
   EffPlotTool m_effPlotTool;
   EffPlotTool::EffPlotCache m_effPlotCache;

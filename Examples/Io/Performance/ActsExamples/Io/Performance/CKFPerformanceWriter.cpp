@@ -52,6 +52,7 @@ ActsExamples::CKFPerformanceWriter::CKFPerformanceWriter(
   m_fakeRatePlotTool.book(m_fakeRatePlotCache);
   m_duplicationPlotTool.book(m_duplicationPlotCache);
   m_trackSummaryPlotTool.book(m_trackSummaryPlotCache);
+  m_perfSummary = new TEfficiency("perf", ";Merit;Rate", 3, -0.5, 2.5);
 }
 
 ActsExamples::CKFPerformanceWriter::~CKFPerformanceWriter() {
@@ -59,6 +60,7 @@ ActsExamples::CKFPerformanceWriter::~CKFPerformanceWriter() {
   m_fakeRatePlotTool.clear(m_fakeRatePlotCache);
   m_duplicationPlotTool.clear(m_duplicationPlotCache);
   m_trackSummaryPlotTool.clear(m_trackSummaryPlotCache);
+  delete m_perfSummary; 
   if (m_outputFile != nullptr) {
     m_outputFile->Close();
   }
@@ -71,6 +73,7 @@ ActsExamples::ProcessCode ActsExamples::CKFPerformanceWriter::endRun() {
     m_fakeRatePlotTool.write(m_fakeRatePlotCache);
     m_duplicationPlotTool.write(m_duplicationPlotCache);
     m_trackSummaryPlotTool.write(m_trackSummaryPlotCache);
+    m_perfSummary->Write(); 
     ACTS_INFO("Wrote performance plots to '" << m_outputFile->GetPath() << "'");
   }
   return ProcessCode::SUCCESS;
@@ -175,6 +178,7 @@ ActsExamples::ProcessCode ActsExamples::CKFPerformanceWriter::writeT(
       }
       // Fill fake rate plots
       m_fakeRatePlotTool.fill(m_fakeRatePlotCache, fittedParameters, isFake);
+      m_perfSummary->Fill(isFake, 1);
 
       // Use neural network classification for duplication rate plots
       // Currently, the network used for this example can only handle
@@ -211,6 +215,7 @@ ActsExamples::ProcessCode ActsExamples::CKFPerformanceWriter::writeT(
         // Fill the duplication rate
         m_duplicationPlotTool.fill(m_duplicationPlotCache, fittedParameters,
                                    isDuplicated);
+        m_perfSummary->Fill(isDuplicated, 2);
       }
     }
   }
@@ -232,6 +237,7 @@ ActsExamples::ProcessCode ActsExamples::CKFPerformanceWriter::writeT(
     }
     // Fill efficiency plots
     m_effPlotTool.fill(m_effPlotCache, particle, isReconstructed);
+    m_perfSummary->Fill(isReconstructed, 0);
     // Fill number of duplicated tracks for this particle
     m_duplicationPlotTool.fill(m_duplicationPlotCache, particle,
                                nMatchedTracks - 1);
