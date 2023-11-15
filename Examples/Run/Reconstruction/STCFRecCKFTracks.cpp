@@ -71,6 +71,18 @@ void addRecCKFOptions(ActsExamples::Options::Description& desc) {
                     "The max propagation steps during ckf.");
  opt("seed-sigma-scattering", value<double>()->default_value(200),
                     "The seeding sigma scattering.");
+ opt("seed-rad-length-per-seed", value<double>()->default_value(0.1),
+                    "The seeding radLengthPerSeed.");
+ opt("seed-max-ptscattering", value<double>()->default_value(10),
+                    "The seeding maxPtScattering.");
+ opt("seed-impact-max", value<double>()->default_value(10),
+                    "The seeding2impactMax.");
+ opt("seed-deltar-max", value<double>()->default_value(80),
+                    "The seeding deltaRMax.");
+ opt("seed-deltar-min", value<double>()->default_value(20),
+                    "The seeding deltaRMin.");
+ opt("seed-cottheta-max", value<double>()->default_value(2.74),
+                    "The seeding cotThetaMax.");
  opt("seed-max-seeds", value<int>()->default_value(2),
                     "The maximum number of seeds per event");
  opt("ckf-prop-tolerance", value<double>()->default_value(0.0001),
@@ -209,13 +221,15 @@ int main(int argc, char* argv[]) {
       seedingCfg.gridConfig.rMax = 200._mm;
       seedingCfg.seedFinderConfig.rMax = seedingCfg.gridConfig.rMax;
 
-      seedingCfg.seedFilterConfig.deltaRMin = 20._mm;
+      seedingCfg.seedFilterConfig.deltaRMin = 1._mm*vm["seed-deltar-min"].template as<double>();
       seedingCfg.seedFinderConfig.deltaRMin =
           seedingCfg.seedFilterConfig.deltaRMin;
       // seedingCfg.seedFinderConfig.deltaZMax = 20_mm;
 
-      seedingCfg.gridConfig.deltaRMax = 80._mm;
+      seedingCfg.gridConfig.deltaRMax = 1._mm*vm["seed-deltar-max"].template as<double>();
       seedingCfg.seedFinderConfig.deltaRMax = seedingCfg.gridConfig.deltaRMax;
+      
+      seedingCfg.seedFinderConfig.maxPtScattering = vm["seed-max-ptscattering"].template as<double>() * Acts::UnitConstants::GeV;
 
       seedingCfg.seedFinderConfig.collisionRegionMin = -250_mm;
       seedingCfg.seedFinderConfig.collisionRegionMax = 250._mm;
@@ -229,14 +243,14 @@ int main(int argc, char* argv[]) {
       seedingCfg.seedFinderConfig.maxSeedsPerSpM =
           seedingCfg.seedFilterConfig.maxSeedsPerSpM;
 
-      seedingCfg.gridConfig.cotThetaMax = 2.74;  // 1.75 eta
+      seedingCfg.gridConfig.cotThetaMax = vm["seed-cottheta-max"].template as<double>();  // 1.75 eta
       seedingCfg.seedFinderConfig.cotThetaMax =
           seedingCfg.gridConfig.cotThetaMax;
 
        seedingCfg.seedFinderConfig.sigmaScattering = vm["seed-sigma-scattering"].template as<double>();
       //seedingCfg.seedFinderConfig.sigmaScattering = 10;
       //seedingCfg.seedFinderConfig.sigmaScattering = 2; // 2 for 75 and 100 mev
-      seedingCfg.seedFinderConfig.radLengthPerSeed = 0.1;
+      seedingCfg.seedFinderConfig.radLengthPerSeed = vm["seed-rad-length-per-seed"].template as<double>();
       seedingCfg.maxSeeds = vm["seed-max-seeds"].template as<int>();
       
       seedingCfg.gridConfig.minPt = 40._MeV;
@@ -248,7 +262,7 @@ int main(int argc, char* argv[]) {
       seedingCfg.seedFinderConfig.beamPos = {0_mm, 0_mm};
 
       // seedingCfg.seedFinderConfig.impactMax = 3._mm;
-      seedingCfg.seedFinderConfig.impactMax = 10._mm;
+      seedingCfg.seedFinderConfig.impactMax = vm["seed-impact-max"].template as<double>()*1._mm;
 
       sequencer.addAlgorithm(
           std::make_shared<SeedingAlgorithm>(seedingCfg, logLevel));
@@ -336,6 +350,7 @@ int main(int argc, char* argv[]) {
 
   std::cout << "Added CKF " << std::endl;
 
+/*
   // write track states from CKF
   RootTrajectoryStatesWriter::Config trackStatesWriter;
   trackStatesWriter.inputTrajectories = trackFindingCfg.outputTrajectories;
@@ -353,6 +368,7 @@ int main(int argc, char* argv[]) {
   trackStatesWriter.treeName = "trackstates";
   sequencer.addWriter(std::make_shared<RootTrajectoryStatesWriter>(
       trackStatesWriter, logLevel));
+*/
 
   // write track summary from CKF
   RootTrajectorySummaryWriter::Config trackSummaryWriter;
