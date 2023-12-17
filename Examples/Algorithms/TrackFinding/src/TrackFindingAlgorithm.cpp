@@ -116,6 +116,10 @@ ActsExamples::ProcessCode ActsExamples::TrackFindingAlgorithm::execute(
                                 trackFindingOutput.fittedParameters);
 
       const auto& traj = trajectories.back();
+      /////////////////////////////////
+      auto q_p = initialParameters[iseed].get_qp();
+      std::cout<<"q_p ="<<q_p<<std::endl;
+      /////////////////////////////////
       for (const auto tip : traj.tips()) {
         if (traj.hasTrackParameters(tip)) {
           trackParametersContainer.push_back(traj.trackParameters(tip));

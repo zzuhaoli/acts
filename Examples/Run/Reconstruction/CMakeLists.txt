@@ -69,6 +69,22 @@ target_link_libraries(
     ActsExamplesIoPerformance 
     )
 
+#**********************************************
+# CKF reco for STCF detector and houghtransform
+add_executable(
+        ActsExampleCKFTracksSTCF_houghseed
+        STCFRecCKFTracks_houghseed.cpp)
+target_link_libraries(
+        ActsExampleCKFTracksSTCF_houghseed
+  PRIVATE
+    ActsExamplesDetectorTGeo
+    ActsExamplesFramework
+    ActsExamplesCommon
+    ActsExamplesMagneticField
+    ActsExamplesIoPerformance
+    )
+#***********************************************
+
 # CKF reco for TGeo detector 
 add_executable(
   ActsExampleCKFTracksTGeo

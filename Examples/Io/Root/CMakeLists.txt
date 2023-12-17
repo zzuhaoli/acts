@@ -17,6 +17,7 @@ add_library(
   src/RootVertexPerformanceWriter.cpp
   src/RootSTCFMeasurementReader.cpp 
   src/RootBFieldWriter.cpp
+  src/RootHoughCanTracksReader.cpp
 )
 target_include_directories(
   ActsExamplesIoRoot

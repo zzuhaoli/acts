@@ -199,7 +199,7 @@ class SingleBoundTrackParameters {
   }
   /// Time coordinate.
   Scalar time() const { return m_params[eBoundTime]; }
-
+  
   /// Unit direction three-vector, i.e. the normalized momentum
   /// three-vector.
   Vector3 unitDirection() const {
@@ -235,6 +235,12 @@ class SingleBoundTrackParameters {
   RotationMatrix3 referenceFrame(const GeometryContext& geoCtx) const {
     return m_surface->referenceFrame(geoCtx, position(geoCtx), momentum());
   }
+
+  /////////////////////
+  Scalar get_qp() const{
+     return m_params[eBoundQOverP];
+  }
+  ////////////////////
 
  private:
   BoundVector m_params;

@@ -114,9 +114,9 @@ class RootSTCFMeasurementReader : public IReader {
   9408,9760,10112,10464,10816,11168};
 
   std::array<int, 2> m_volumeIDs = {9,11};
-  //std::array<Acts::ActsScalar, 3> m_ITDRadius = {65.2276,115.228,165.228};
-  std::array<Acts::ActsScalar, 3> m_ITDRadius = {65.1125,115.113,165.112};
-//  std::map<int, std::pair<Acts::ActsScalar, Acts::ActsScalar>> m_ITDVariances = {
+  //std::array<Acts::ActsScalar, 3> m_ITKRadius = {65.2276,115.228,165.228};
+  std::array<Acts::ActsScalar, 3> m_ITKRadius = {65.1125,115.113,165.112};
+//  std::map<int, std::pair<Acts::ActsScalar, Acts::ActsScalar>> m_ITKVariances = {
 //	  {0, {}}, 
 //	  {1, {}},
 //	  {2, {}},
@@ -139,17 +139,17 @@ class RootSTCFMeasurementReader : public IReader {
   TTreeReaderArray<float>* particleMomentumZ = nullptr;
 
 
-  TTreeReaderArray<int>* ITDlayerID = nullptr;
-  TTreeReaderArray<int>* ITDparentID = nullptr;
-  TTreeReaderArray<int>* ITDparticleId = nullptr;
-  TTreeReaderArray<Acts::ActsScalar>* ITDpositionX = nullptr;
-  TTreeReaderArray<Acts::ActsScalar>* ITDpositionY = nullptr;
-  TTreeReaderArray<Acts::ActsScalar>* ITDpositionZ = nullptr;
-  TTreeReaderArray<Acts::ActsScalar>* ITDmomentumX = nullptr;
-  TTreeReaderArray<Acts::ActsScalar>* ITDmomentumY = nullptr;
-  TTreeReaderArray<Acts::ActsScalar>* ITDmomentumZ = nullptr;
-  TTreeReaderArray<Acts::ActsScalar>* ITDtime = nullptr;
-  TTreeReaderArray<double>* ITDmass = nullptr;
+  TTreeReaderArray<int>* ITKlayerID = nullptr;
+  TTreeReaderArray<int>* ITKparentID = nullptr;
+  TTreeReaderArray<int>* ITKparticleId = nullptr;
+  TTreeReaderArray<Acts::ActsScalar>* ITKpositionX = nullptr;
+  TTreeReaderArray<Acts::ActsScalar>* ITKpositionY = nullptr;
+  TTreeReaderArray<Acts::ActsScalar>* ITKpositionZ = nullptr;
+  TTreeReaderArray<Acts::ActsScalar>* ITKmomentumX = nullptr;
+  TTreeReaderArray<Acts::ActsScalar>* ITKmomentumY = nullptr;
+  TTreeReaderArray<Acts::ActsScalar>* ITKmomentumZ = nullptr;
+  TTreeReaderArray<Acts::ActsScalar>* ITKtime = nullptr;
+  TTreeReaderArray<double>* ITKmass = nullptr;
   
   TTreeReaderArray<int>* MDCcellID = nullptr;
   TTreeReaderArray<int>* MDClayerID = nullptr;

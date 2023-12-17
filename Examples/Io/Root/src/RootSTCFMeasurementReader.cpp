@@ -81,28 +81,28 @@ ActsExamples::RootSTCFMeasurementReader::RootSTCFMeasurementReader(
   //particleTime  = new TTreeReaderArray<int>(*m_treeReader,"MCParticleCol.time"); 
   
   
-  ITDlayerID = new TTreeReaderArray<int>(*m_treeReader,"ITDHitCol.layerID");
-  ITDparentID = new TTreeReaderArray<int>(*m_treeReader,"ITDHitCol.parentID");
-  ITDparticleId = new TTreeReaderArray<int>(*m_treeReader,"ITDHitCol.mcParticleIndex");
-  ITDpositionX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITDHitCol.position.x");
-  ITDpositionY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITDHitCol.position.y");
-  ITDpositionZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITDHitCol.position.z");
-  ITDmomentumX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITDHitCol.momentum.x");
-  ITDmomentumY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITDHitCol.momentum.y");
-  ITDmomentumZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITDHitCol.momentum.z");
-  ITDtime = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITDHitCol.time");
-  ITDmass = new TTreeReaderArray<double>(*m_treeReader,"ITDHitCol.mass");
+  ITKlayerID = new TTreeReaderArray<int>(*m_treeReader,"ITKHitCol.layerID");
+  ITKparentID = new TTreeReaderArray<int>(*m_treeReader,"ITKHitCol.parentID");
+  ITKparticleId = new TTreeReaderArray<int>(*m_treeReader,"ITKHitCol.mcParticleIndex");
+  ITKpositionX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.position.x");
+  ITKpositionY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.position.y");
+  ITKpositionZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.position.z");
+  ITKmomentumX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.momentum.x");
+  ITKmomentumY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.momentum.y");
+  ITKmomentumZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.momentum.z");
+  ITKtime = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.time");
+  ITKmass = new TTreeReaderArray<double>(*m_treeReader,"ITKHitCol.mass");
   
   MDCcellID = new TTreeReaderArray<int>(*m_treeReader,"MDCHitCol.cellID");
   MDClayerID = new TTreeReaderArray<int>(*m_treeReader,"MDCHitCol.layerID");
   MDCparentID = new TTreeReaderArray<int>(*m_treeReader,"MDCHitCol.parentID");
   MDCparticleId = new TTreeReaderArray<int>(*m_treeReader,"MDCHitCol.mcParticleIndex");
-  MDCpositionX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.position.x");
-  MDCpositionY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.position.y");
-  MDCpositionZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.position.z");
-  MDCmomentumX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.momentum.x");
-  MDCmomentumY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.momentum.y");
-  MDCmomentumZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.momentum.z");
+  MDCpositionX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.posIn.x");
+  MDCpositionY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.posIn.y");
+  MDCpositionZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.posIn.z");
+  MDCmomentumX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.momIn.x");
+  MDCmomentumY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.momIn.y");
+  MDCmomentumZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.momIn.z");
   MDCdriftDistance = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.driftDistance");
   MDCwirePoint1X = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.wirePoint1.x");
   MDCwirePoint1Y = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.wirePoint1.y");
@@ -139,17 +139,17 @@ ActsExamples::RootSTCFMeasurementReader::~RootSTCFMeasurementReader() {
   delete particleMomentumY;  
   delete particleMomentumZ;  
   
-  delete ITDlayerID;
-  delete ITDparentID;
-  delete ITDparticleId;
-  delete ITDpositionX; 
-  delete ITDpositionY; 
-  delete ITDpositionZ; 
-  delete ITDmomentumX; 
-  delete ITDmomentumY; 
-  delete ITDmomentumZ; 
-  delete ITDtime;
-  delete ITDmass;
+  delete ITKlayerID;
+  delete ITKparentID;
+  delete ITKparticleId;
+  delete ITKpositionX; 
+  delete ITKpositionY; 
+  delete ITKpositionZ; 
+  delete ITKmomentumX; 
+  delete ITKmomentumY; 
+  delete ITKmomentumZ; 
+  delete ITKtime;
+  delete ITKmass;
 
   delete MDCcellID;
   delete MDClayerID;
@@ -205,24 +205,24 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
      if(m_treeReader->Next()){
       std::cout << "Reading event " << m_evtCounter++ << std::endl;
       int nParticles = 0; 
-      int nITDHits = 0;
+      int nITKHits = 0;
       int nMDCHits = 0;
     
       // The index of the sim hit among all the sim hits from this particle 
       std::map<int, int> particleHitIdx;
-      std::map<int, int> particleITDHitIdx;
+      std::map<int, int> particleITKHitIdx;
       
-      //Reading ITD hits
-      for(size_t i=0; i< ITDpositionX->GetSize(); ++i){
-        int parentID = (*ITDparentID)[i]; 
+      //Reading ITK hits
+      for(size_t i=0; i< ITKpositionX->GetSize(); ++i){
+        int parentID = (*ITKparentID)[i]; 
         if(parentID!=0) continue;
-        nITDHits++;
+        nITKHits++;
 
-	Acts::Vector3 pos((*ITDpositionX)[i], (*ITDpositionY)[i], (*ITDpositionZ)[i]); 
-	Acts::Vector3 mom((*ITDmomentumX)[i], (*ITDmomentumY)[i], (*ITDmomentumZ)[i]); 
+	Acts::Vector3 pos((*ITKpositionX)[i], (*ITKpositionY)[i], (*ITKpositionZ)[i]); 
+	Acts::Vector3 mom((*ITKmomentumX)[i], (*ITKmomentumY)[i], (*ITKmomentumZ)[i]); 
 	
-	//std::cout<<"r = " << std::hypot((*ITDpositionX)[i], (*ITDpositionY)[i]) <<", phi = " << std::atan2((*ITDpositionY)[i], (*ITDpositionX)[i]) << std::endl; 
-        int layerID = (*ITDlayerID)[i]; 
+	//std::cout<<"r = " << std::hypot((*ITKpositionX)[i], (*ITKpositionY)[i]) <<", phi = " << std::atan2((*ITKpositionY)[i], (*ITKpositionX)[i]) << std::endl; 
+        int layerID = (*ITKlayerID)[i]; 
 	Acts::GeometryIdentifier geoId = Acts::GeometryIdentifier().setVolume(m_volumeIDs[0]).setLayer(2*(layerID+1)).setSensitive(1);  
       
         const Acts::Surface* surfacePtr =
@@ -232,22 +232,22 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
 
 	auto cylinderSurface = dynamic_cast<const Acts::CylinderSurface*>(surfacePtr);
         if(cylinderSurface==nullptr){
-          std::cout<<"Cast ITD surface to cylinder surface failed " << std::endl;
+          std::cout<<"Cast ITK surface to cylinder surface failed " << std::endl;
 	} else {
            auto bounds = cylinderSurface->bounds();
            auto values = bounds.values();
-           //std::cout<<"ITD surface r = "<< values[0] << std::endl;	
+           //std::cout<<"ITK surface r = "<< values[0] << std::endl;	
 	}
 
-	int particleId = (*ITDparticleId)[i];   
+	int particleId = (*ITKparticleId)[i];   
 
         ActsFatras::Hit::Vector4 pos4{
            posUpdated.x() * Acts::UnitConstants::mm,
            posUpdated.y() * Acts::UnitConstants::mm,
            posUpdated.z() * Acts::UnitConstants::mm,
-           (*ITDtime)[i] * Acts::UnitConstants::ns,
+           (*ITKtime)[i] * Acts::UnitConstants::ns,
         };
-	auto energy = std::sqrt(mom.x()*mom.x()+mom.y()*mom.y() + mom.z()*mom.z() + (*ITDmass)[i]*(*ITDmass)[i]);
+	auto energy = std::sqrt(mom.x()*mom.x()+mom.y()*mom.y() + mom.z()*mom.z() + (*ITKmass)[i]*(*ITKmass)[i]);
         ActsFatras::Hit::Vector4 mom4{
            mom.x()/1000 * Acts::UnitConstants::GeV,
            mom.y()/1000 * Acts::UnitConstants::GeV,
@@ -267,7 +267,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
         unordered_hits.push_back(std::move(hit));
 	
         particleHitIdx[particleId]++;	
-        particleITDHitIdx[particleId]++;	
+        particleITKHitIdx[particleId]++;	
       } 
 
       //Reading MDC hits 
@@ -368,7 +368,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
           if(surfacePtr->type()== Acts::Surface::SurfaceType::Cylinder){
             std::array<Acts::BoundIndices, 2> indices = { Acts::eBoundLoc0, Acts::eBoundLoc1};
              
-            Acts::ActsVector<2> par{m_ITDRadius[moduleGeoId.layer()/2-1]*Acts::VectorHelpers::phi(pos) + 0.1*stdNormal(rng), pos.z() + 0.4*stdNormal(rng)};
+            Acts::ActsVector<2> par{m_ITKRadius[moduleGeoId.layer()/2-1]*Acts::VectorHelpers::phi(pos) + 0.1*stdNormal(rng), pos.z() + 0.4*stdNormal(rng)};
             Acts::ActsSymMatrix<2> cov = Acts::ActsSymMatrix<2>::Identity();
             cov(0,0) = 0.1*0.1;	
             cov(1,1) = 0.4*0.4;	
@@ -427,7 +427,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
 
       //Reading truth particles
       for(size_t i=0; i< particlePDG->GetSize(); ++i){
-        if(particleITDHitIdx[i]<3){
+        if(particleITKHitIdx[i]<3){
           continue;	
 	};
         nParticles++;
@@ -457,10 +457,10 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
       }
 
       for(const auto& [ particleIndex, nHits ] : particleHitIdx){
-        std::cout<<"particle " << particleIndex  <<" has " << nHits << " nHits"<< ", nITDHits = " << particleITDHitIdx[particleIndex] << std::endl;
+        std::cout<<"particle " << particleIndex  <<" has " << nHits << " nHits"<< ", nITKHits = " << particleITKHitIdx[particleIndex] << std::endl;
       }
 
-      std::cout<<"nITDHits = " << nITDHits <<", nMDCHits = " << nMDCHits << ", nParticles (nITDHits>=3) = " << nParticles << std::endl;
+      std::cout<<"nITKHits = " << nITKHits <<", nMDCHits = " << nMDCHits << ", nParticles (nITKHits>=3) = " << nParticles << std::endl;
    }
    
    // Write the collections to the EventStore

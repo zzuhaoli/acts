@@ -57,10 +57,15 @@ ActsExamples::SimParticleContainer ActsExamples::Pythia8Generator::operator()(
   // pythia8 is not thread safe and generation needs to be protected
   std::lock_guard<std::mutex> lock(m_pythia8Mutex);
   // use per-thread random engine also in pythia
+  // ******************************************
   FrameworkRndmEngine rndmEngine(rng);
-  m_pythia8->rndm.rndmEnginePtr(&rndmEngine);
+  //m_pythia8->rndm.rndmEnginePtr(&rndmEngine);
+  //*******************************************
+  //The code after modfiied  
+  auto rndmEnginePtr = std::make_shared<FrameworkRndmEngine>(rndmEngine);
+  m_pythia8->rndm.rndmEnginePtr(rndmEnginePtr);
   m_pythia8->next();
-
+  
   // convert generated final state particles into internal format
   for (int ip = 0; ip < m_pythia8->event.size(); ++ip) {
     const auto& genParticle = m_pythia8->event[ip];

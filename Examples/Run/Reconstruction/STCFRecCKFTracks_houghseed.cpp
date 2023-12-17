@@ -40,8 +40,9 @@
 #include <Acts/Definitions/Units.hpp>
 
 #include <memory>
-
 #include <boost/filesystem.hpp>
+
+#include "ActsExamples/Io/Root/RootHoughCanTracksReader.hpp"
 
 using namespace Acts::UnitLiterals;
 using namespace ActsExamples;
@@ -122,12 +123,14 @@ int main(int argc, char* argv[]) {
   // Read some standard options
   auto logLevel = Options::readLogLevel(vm);
   auto inputDir = vm["input-dir"].as<std::string>();
+  //*****************************************************************
   auto inputfiles = vm["input-files"].template as<std::vector<std::string>>();
-  if (inputfiles.size() > 1) {
-    throw std::invalid_argument("Sorry, only one input file is possible here");
-  } else if (inputfiles.size() < 1) {
-    throw std::invalid_argument("Sorry, please provide one input file");
+  if (inputfiles.size() > 2) {
+    throw std::invalid_argument("Sorry, only two input files are possible here");
+  } else if (inputfiles.size() < 2) {
+    throw std::invalid_argument("Sorry, please provide two input files");
   }
+  //*******************************************************************
   auto outputDir = ensureWritableDirectory(vm["output-dir"].as<std::string>());
   auto rnd = std::make_shared<ActsExamples::RandomNumbers>(
       Options::readRandomNumbersConfig(vm));
@@ -146,7 +149,15 @@ int main(int argc, char* argv[]) {
   }
   // Setup the magnetic field
   auto magneticField = Options::readMagneticField(vm);
-
+  //****************************************************
+  // Read seed after houghtransform from CSV files
+  RootHoughCanTracksReader::Config RootHoughCanTracksReaderCfg;
+  RootHoughCanTracksReaderCfg.outputcantrackparameters="initialtracks_parameters";
+  RootHoughCanTracksReaderCfg.filePath=inputDir + "/" + inputfiles.at(1);
+  RootHoughCanTracksReaderCfg.randomNumbers = rnd;
+  sequencer.addReader(std::make_shared<RootHoughCanTracksReader>(
+      RootHoughCanTracksReaderCfg, logLevel));
+  //*****************************************************
   // Read truth hits from CSV files
   RootSTCFMeasurementReader::Config STCFMeasurementReaderCfg;
   STCFMeasurementReaderCfg.filePath = inputDir + "/" + inputfiles.front();
@@ -156,7 +167,9 @@ int main(int argc, char* argv[]) {
   STCFMeasurementReaderCfg.randomNumbers = rnd;
   sequencer.addReader(std::make_shared<RootSTCFMeasurementReader>(
       STCFMeasurementReaderCfg, logLevel));
-
+  
+  //****************************************************
+  
   // Run the particle selection
   // The pre-selection will select truth particles satisfying provided criteria
   // from all particles read in by particle reader for further processing. It
@@ -174,161 +187,6 @@ int main(int argc, char* argv[]) {
   // The selected particles
   const auto& inputParticles = particleSelectorCfg.outputParticles;
 
-  // Create starting parameters from either particle smearing or combined seed
-  // finding and track parameters estimation
-  std::string outputTrackParameters;
-  if (truthSmearedSeeded) {
-    // Run the particle smearing
-    auto particleSmearingCfg =
-        setupParticleSmearing(vm, sequencer, rnd, inputParticles);
-    outputTrackParameters = particleSmearingCfg.outputTrackParameters;
-  } else {
-    // Create space points
-    SpacePointMaker::Config spCfg = Options::readSpacePointMakerConfig(vm);
-    spCfg.inputSourceLinks = STCFMeasurementReaderCfg.outputSourceLinks;
-    spCfg.inputMeasurements = STCFMeasurementReaderCfg.outputMeasurements;
-    spCfg.outputSpacePoints = "spacepoints";
-    spCfg.trackingGeometry = trackingGeometry;
-    sequencer.addAlgorithm(std::make_shared<SpacePointMaker>(spCfg, logLevel));
-
-    // Create seeds (i.e. proto tracks) using either truth track finding or seed
-    // finding algorithm
-    std::string inputProtoTracks = "";
-    std::string inputSeeds = "";
-    if (truthEstimatedSeeded) {
-      // Truth track finding algorithm
-      TruthTrackFinder::Config trackFinderCfg;
-      trackFinderCfg.inputParticles = inputParticles;
-      trackFinderCfg.inputMeasurementParticlesMap =
-          STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
-      trackFinderCfg.inputMeasurementSimHitsMap =
-      STCFMeasurementReaderCfg.outputMeasurementSimHitsMap;
-      trackFinderCfg.inputSimulatedHits = STCFMeasurementReaderCfg.outputSimHits;
- 
-      trackFinderCfg.outputProtoTracks = "prototracks";
-      sequencer.addAlgorithm(
-          std::make_shared<TruthTrackFinder>(trackFinderCfg, logLevel));
-      inputProtoTracks = trackFinderCfg.outputProtoTracks;
-    } else {
-      // Seeding algorithm
-      SeedingAlgorithm::Config seedingCfg;
-      seedingCfg.inputSpacePoints = {
-          spCfg.outputSpacePoints,
-      };
-      seedingCfg.outputSeeds = "seeds";
-      seedingCfg.outputProtoTracks = "prototracks";
-
-      seedingCfg.gridConfig.rMax = 200._mm;
-      seedingCfg.seedFinderConfig.rMax = seedingCfg.gridConfig.rMax;
-
-      seedingCfg.seedFilterConfig.deltaRMin = 1._mm*vm["seed-deltar-min"].template as<double>();
-      seedingCfg.seedFinderConfig.deltaRMin =
-          seedingCfg.seedFilterConfig.deltaRMin;
-      // seedingCfg.seedFinderConfig.deltaZMax = 20_mm;
-
-      seedingCfg.gridConfig.deltaRMax = 1._mm*vm["seed-deltar-max"].template as<double>();
-      seedingCfg.seedFinderConfig.deltaRMax = seedingCfg.gridConfig.deltaRMax;
-      
-      seedingCfg.seedFinderConfig.maxPtScattering = vm["seed-max-ptscattering"].template as<double>() * Acts::UnitConstants::GeV;
-
-      seedingCfg.seedFinderConfig.collisionRegionMin = -250_mm;
-      seedingCfg.seedFinderConfig.collisionRegionMax = 250._mm;
-
-      seedingCfg.gridConfig.zMin = -500._mm;
-      seedingCfg.gridConfig.zMax = 500._mm;
-      seedingCfg.seedFinderConfig.zMin = seedingCfg.gridConfig.zMin;
-      seedingCfg.seedFinderConfig.zMax = seedingCfg.gridConfig.zMax;
-
-      seedingCfg.seedFilterConfig.maxSeedsPerSpM = 1;
-      seedingCfg.seedFinderConfig.maxSeedsPerSpM =
-          seedingCfg.seedFilterConfig.maxSeedsPerSpM;
-
-      seedingCfg.gridConfig.cotThetaMax = vm["seed-cottheta-max"].template as<double>();  // 1.75 eta
-      seedingCfg.seedFinderConfig.cotThetaMax =
-          seedingCfg.gridConfig.cotThetaMax;
-
-       seedingCfg.seedFinderConfig.sigmaScattering = vm["seed-sigma-scattering"].template as<double>();
-      //seedingCfg.seedFinderConfig.sigmaScattering = 10;
-      //seedingCfg.seedFinderConfig.sigmaScattering = 2; // 2 for 75 and 100 mev
-      seedingCfg.seedFinderConfig.radLengthPerSeed = vm["seed-rad-length-per-seed"].template as<double>();
-      seedingCfg.maxSeeds = vm["seed-max-seeds"].template as<int>();
-      
-      seedingCfg.gridConfig.minPt = 40._MeV;
-      seedingCfg.seedFinderConfig.minPt = seedingCfg.gridConfig.minPt;
-
-      seedingCfg.gridConfig.bFieldInZ = 1.0_T;
-      seedingCfg.seedFinderConfig.bFieldInZ = seedingCfg.gridConfig.bFieldInZ;
-
-      seedingCfg.seedFinderConfig.beamPos = {0_mm, 0_mm};
-
-      // seedingCfg.seedFinderConfig.impactMax = 3._mm;
-      seedingCfg.seedFinderConfig.impactMax = vm["seed-impact-max"].template as<double>()*1._mm;
-
-      sequencer.addAlgorithm(
-          std::make_shared<SeedingAlgorithm>(seedingCfg, logLevel));
-      inputProtoTracks = seedingCfg.outputProtoTracks;
-      inputSeeds = seedingCfg.outputSeeds;
-    }
-
-    // write track finding/seeding performance
-    TrackFinderPerformanceWriter::Config tfPerfCfg;
-    tfPerfCfg.inputProtoTracks = inputProtoTracks;
-    // using selected particles
-    tfPerfCfg.inputParticles = inputParticles;
-    tfPerfCfg.inputMeasurementParticlesMap =
-        STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
-    tfPerfCfg.filePath = outputDir + "/performance_seeding_trees.root";
-    sequencer.addWriter(
-        std::make_shared<TrackFinderPerformanceWriter>(tfPerfCfg, logLevel));
-
-    SeedingPerformanceWriter::Config seedPerfCfg;
-    seedPerfCfg.inputProtoTracks = inputProtoTracks;
-    seedPerfCfg.inputParticles = inputParticles;
-    seedPerfCfg.inputMeasurementParticlesMap =
-        STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
-    seedPerfCfg.filePath = outputDir + "/performance_seeding_hists.root";
-    seedPerfCfg.effPlotToolConfig.varBinning["Eta"] =
-        PlotHelpers::Binning("#eta", etaRange[0], etaRange[1], etaRange[2]);
-    seedPerfCfg.effPlotToolConfig.varBinning["Pt"] =
-        PlotHelpers::Binning("pT [GeV/c]", ptRange[0], ptRange[1], ptRange[2]);
-    seedPerfCfg.duplicationPlotToolConfig.varBinning["Eta"] =
-        PlotHelpers::Binning("#eta", etaRange[0], etaRange[1], etaRange[2]);
-    seedPerfCfg.duplicationPlotToolConfig.varBinning["Pt"] =
-        PlotHelpers::Binning("pT [GeV/c]", ptRange[0], ptRange[1], ptRange[2]);
-    sequencer.addWriter(
-        std::make_shared<SeedingPerformanceWriter>(seedPerfCfg, logLevel));
-
-    // Algorithm estimating track parameter from seed
-    TrackParamsEstimationAlgorithm::Config paramsEstimationCfg;
-    paramsEstimationCfg.inputSeeds = inputSeeds;
-    paramsEstimationCfg.inputProtoTracks = inputProtoTracks;
-    paramsEstimationCfg.inputSpacePoints = {
-        spCfg.outputSpacePoints,
-    };
-    paramsEstimationCfg.inputSourceLinks =
-        STCFMeasurementReaderCfg.outputSourceLinks;
-    paramsEstimationCfg.outputTrackParameters = "estimatedparameters";
-    paramsEstimationCfg.outputProtoTracks = "prototracks_estimated";
-    paramsEstimationCfg.trackingGeometry = trackingGeometry;
-    paramsEstimationCfg.magneticField = magneticField;
-    paramsEstimationCfg.bFieldMin = 0.1_T;
-    paramsEstimationCfg.deltaRMax = 100._mm;
-    paramsEstimationCfg.deltaRMin = 30._mm;
-    paramsEstimationCfg.sigmaLoc0 = 100._um;
-    paramsEstimationCfg.sigmaLoc1 = 400._um;
-    paramsEstimationCfg.sigmaPhi = 0.2_degree;
-    paramsEstimationCfg.sigmaTheta = 0.2_degree;
-    paramsEstimationCfg.sigmaQOverP = 0.1 / 1._GeV;
-    paramsEstimationCfg.sigmaT0 = 1400._s;
-    paramsEstimationCfg.initialVarInflation =
-        vm["ckf-initial-variance-inflation"].template as<Options::Reals<6>>();
-
-    sequencer.addAlgorithm(std::make_shared<TrackParamsEstimationAlgorithm>(
-        paramsEstimationCfg, logLevel));
-
-    outputTrackParameters = paramsEstimationCfg.outputTrackParameters;
-  }
-
   // Setup the track finding algorithm with CKF
   // It takes all the source links created from truth hit smearing, seeds from
   // truth particle smearing and source link selection config
@@ -336,13 +194,13 @@ int main(int argc, char* argv[]) {
   trackFindingCfg.inputMeasurements =
       STCFMeasurementReaderCfg.outputMeasurements;
   trackFindingCfg.inputSourceLinks = STCFMeasurementReaderCfg.outputSourceLinks;
-  trackFindingCfg.inputInitialTrackParameters = outputTrackParameters;
+  trackFindingCfg.inputInitialTrackParameters = RootHoughCanTracksReaderCfg.outputcantrackparameters;//initialtracks_parameters from houghtransform
   trackFindingCfg.outputTrajectories = "trajectories";
   trackFindingCfg.outputTrackParameters = "parameters";
   trackFindingCfg.computeSharedHits = true;
-  trackFindingCfg.maxPropSteps = vm["ckf-prop-steps"].template as<int>(); 
-  trackFindingCfg.tolerance = vm["ckf-prop-tolerance"].template as<double>(); 
-  trackFindingCfg.mass = vm["ckf-prop-mass"].template as<double>(); 
+  trackFindingCfg.maxPropSteps = vm["ckf-prop-steps"].template as<int>();
+  trackFindingCfg.tolerance = vm["ckf-prop-tolerance"].template as<double>();
+  trackFindingCfg.mass = vm["ckf-prop-mass"].template as<double>();
   trackFindingCfg.findTracks = TrackFindingAlgorithm::makeTrackFinderFunction(
       trackingGeometry, magneticField);
   sequencer.addAlgorithm(
@@ -377,17 +235,17 @@ int main(int argc, char* argv[]) {
   // since the unselected CKF track might have a majority particle not in the
   // filtered particle collection. This could be avoided when a seperate track
   // selection algorithm is used.
-  trackSummaryWriter.inputParticles = STCFMeasurementReaderCfg.outputParticles;
+  trackSummaryWriter.inputParticles = inputParticles;//after particleSelect
   trackSummaryWriter.inputMeasurementParticlesMap =
       STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
-  trackSummaryWriter.filePath = outputDir + "/tracksummary_ckf.root";
-  trackSummaryWriter.treeName = "tracksummary";
+  trackSummaryWriter.filePath = outputDir + "/tracksummary_ckf_houghseed.root";
+  trackSummaryWriter.treeName = "tracksummary_houghseed";
   sequencer.addWriter(std::make_shared<RootTrajectorySummaryWriter>(
       trackSummaryWriter, logLevel));
 
   // Write CKF performance data
   CKFPerformanceWriter::Config perfWriterCfg;
-  perfWriterCfg.inputParticles = inputParticles;//after select
+  perfWriterCfg.inputParticles = STCFMeasurementReaderCfg.outputParticles;
   perfWriterCfg.inputTrajectories = trackFindingCfg.outputTrajectories;
   perfWriterCfg.inputMeasurementParticlesMap =
       STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
@@ -413,7 +271,7 @@ int main(int argc, char* argv[]) {
       PlotHelpers::Binning("pT [GeV/c]", ptRange[0], ptRange[1], ptRange[2]);
   perfWriterCfg.trackSummaryPlotToolConfig.varBinning["Num"] =
       PlotHelpers::Binning("N", 60, -0.5, 59.5);
-  perfWriterCfg.filePath = outputDir + "/performance_ckf.root";
+  perfWriterCfg.filePath = outputDir + "/performance_ckf_houghseed.root";
   sequencer.addWriter(
       std::make_shared<CKFPerformanceWriter>(perfWriterCfg, logLevel));
 
@@ -430,3 +288,8 @@ int main(int argc, char* argv[]) {
 
   return sequencer.run();
 }
+
+
+
+
+
