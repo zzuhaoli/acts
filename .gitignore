@@ -18,6 +18,7 @@ x86_64-slc6-gcc49-opt
 build*
 .asetup.save
 /build/
+/install/
 
 # do not ignore changes in the requirements file
 # as they are actually important
