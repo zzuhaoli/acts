@@ -119,8 +119,8 @@ ActsExamples::ProcessCode ActsExamples::RootHoughCanTracksReader::read(const Act
 
        //caulate phi and theta
        auto p=std::sqrt(inimom.x()*inimom.x()+inimom.y()*inimom.y()+inimom.z()*inimom.z());
-       auto theta = std::acos(inimom.z()/p)*Acts::UnitConstants::degree;
-       auto phi = std::atan2(inimom.y(),inimom.x())*Acts::UnitConstants::degree;
+       auto theta = std::acos(inimom.z()/p)*180/M_PI*Acts::UnitConstants::degree;
+       auto phi = std::atan2(inimom.y(),inimom.x())*180/M_PI*Acts::UnitConstants::degree;
 
        auto q = (*Charge)[i];
        std::cout<<"P is:"<<p<<std::endl;

@@ -277,6 +277,7 @@ int main(int argc, char* argv[]) {
     tfPerfCfg.inputParticles = inputParticles;
     tfPerfCfg.inputMeasurementParticlesMap =
         STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
+    //tfPerfCfg.filePath = outputDir + "/muon_performance_seeding_trees.root";
     tfPerfCfg.filePath = outputDir + "/performance_seeding_trees.root";
     sequencer.addWriter(
         std::make_shared<TrackFinderPerformanceWriter>(tfPerfCfg, logLevel));
@@ -286,6 +287,7 @@ int main(int argc, char* argv[]) {
     seedPerfCfg.inputParticles = inputParticles;
     seedPerfCfg.inputMeasurementParticlesMap =
         STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
+    //seedPerfCfg.filePath = outputDir + "/muon_performance_seeding_hists.root";
     seedPerfCfg.filePath = outputDir + "/performance_seeding_hists.root";
     seedPerfCfg.effPlotToolConfig.varBinning["Eta"] =
         PlotHelpers::Binning("#eta", etaRange[0], etaRange[1], etaRange[2]);
@@ -350,7 +352,7 @@ int main(int argc, char* argv[]) {
 
   std::cout << "Added CKF " << std::endl;
 
-/*
+/*生成的trackststes_ckf文件
   // write track states from CKF
   RootTrajectoryStatesWriter::Config trackStatesWriter;
   trackStatesWriter.inputTrajectories = trackFindingCfg.outputTrajectories;
@@ -380,6 +382,7 @@ int main(int argc, char* argv[]) {
   trackSummaryWriter.inputParticles = STCFMeasurementReaderCfg.outputParticles;
   trackSummaryWriter.inputMeasurementParticlesMap =
       STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
+  //trackSummaryWriter.filePath = outputDir + "/muon_tracksummary_ckf.root";
   trackSummaryWriter.filePath = outputDir + "/tracksummary_ckf.root";
   trackSummaryWriter.treeName = "tracksummary";
   sequencer.addWriter(std::make_shared<RootTrajectorySummaryWriter>(
@@ -413,6 +416,7 @@ int main(int argc, char* argv[]) {
       PlotHelpers::Binning("pT [GeV/c]", ptRange[0], ptRange[1], ptRange[2]);
   perfWriterCfg.trackSummaryPlotToolConfig.varBinning["Num"] =
       PlotHelpers::Binning("N", 60, -0.5, 59.5);
+  //perfWriterCfg.filePath = outputDir + "/muon_performance_ckf.root";
   perfWriterCfg.filePath = outputDir + "/performance_ckf.root";
   sequencer.addWriter(
       std::make_shared<CKFPerformanceWriter>(perfWriterCfg, logLevel));

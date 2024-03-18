@@ -60,6 +60,7 @@ struct ActsExamples::TrackFinderPerformanceWriter::Impl {
   // particle identification
   ULong64_t prtEventId;
   ULong64_t prtParticleId;
+  int prtITKHits;////*****particle ITKHits
   Int_t prtParticleType;
   // particle kinematics
   // vertex position in mm
@@ -116,6 +117,7 @@ struct ActsExamples::TrackFinderPerformanceWriter::Impl {
     prtTree->SetDirectory(file);
     prtTree->Branch("event_id", &prtEventId);
     prtTree->Branch("particle_id", &prtParticleId);
+    prtTree->Branch("particle_ITKHits", &prtITKHits);///********particle ITKHits
     prtTree->Branch("particle_type", &prtParticleType);
     prtTree->Branch("vx", &prtVx);
     prtTree->Branch("vy", &prtVy);
@@ -202,6 +204,7 @@ struct ActsExamples::TrackFinderPerformanceWriter::Impl {
         prtEventId = eventId;
         prtParticleId = particle.particleId().value();
         prtParticleType = particle.pdg();
+	prtITKHits = particle.particleITKHits();/////******
         // kinematics
         prtVx = particle.position().x() / Acts::UnitConstants::mm;
         prtVy = particle.position().y() / Acts::UnitConstants::mm;

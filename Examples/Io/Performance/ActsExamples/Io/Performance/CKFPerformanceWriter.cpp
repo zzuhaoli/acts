@@ -222,10 +222,15 @@ ActsExamples::ProcessCode ActsExamples::CKFPerformanceWriter::writeT(
 
   // Loop over all truth particle seeds for efficiency plots and reco details.
   // These are filled w.r.t. truth particle seed info
-  for (const auto& particle : particles) {
+  for(const auto& particle : particles) {
     if (particle.transverseMomentum() < m_cfg.ptMin) {
       continue;
     }
+    ///*****
+    //if (abs(particle.pdg()) != 211 && (abs(particle.pdg()) != 2212 )) {
+      //continue;
+    //}
+    ///*****
     auto particleId = particle.particleId();
     // Investigate the truth-matched tracks
     size_t nMatchedTracks = 0;

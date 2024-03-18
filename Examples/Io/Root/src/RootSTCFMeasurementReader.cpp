@@ -211,7 +211,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
       // The index of the sim hit among all the sim hits from this particle 
       std::map<int, int> particleHitIdx;
       std::map<int, int> particleITKHitIdx;
-      
+      std::map<int, std::vector<int>> particleITKLayer; 
       //Reading ITK hits
       for(size_t i=0; i< ITKpositionX->GetSize(); ++i){
         int parentID = (*ITKparentID)[i]; 
@@ -267,7 +267,8 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
         unordered_hits.push_back(std::move(hit));
 	
         particleHitIdx[particleId]++;	
-        particleITKHitIdx[particleId]++;	
+        particleITKHitIdx[particleId]++;
+        particleITKLayer[particleId].push_back(layerID);	
       } 
 
       //Reading MDC hits 
@@ -427,10 +428,43 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
 
       //Reading truth particles
       for(size_t i=0; i< particlePDG->GetSize(); ++i){
-        if(particleITKHitIdx[i]<3){
-          continue;	
-	};
+       // if(particleITKHitIdx[i]<3){
+         // continue;	
+       //	};
         nParticles++;
+	int oncelayer = 0;
+	int secondlayer = 0;
+	int thirdlayer = 0;
+	int particleITKnum = 0;
+        auto particleITKlayer = particleITKLayer[i];
+	for(int j=0;j<particleITKlayer.size();j++)
+	{
+	    if(particleITKlayer[j]==0)
+	    {
+	       oncelayer++;
+	    }
+	    else if(particleITKlayer[j]==1)
+	    {
+	       secondlayer++;
+	    }
+	    else
+	    {
+	       thirdlayer++;
+	    }
+	}
+	if(oncelayer!=0 && secondlayer!=0 && thirdlayer!=0)
+	{
+	    particleITKnum = 3;
+	}
+	if(oncelayer==0 && secondlayer!=0 && thirdlayer!=0)
+	{
+	    particleITKnum = 2;
+	}
+	if(oncelayer==0 && secondlayer==0 && thirdlayer!=0)
+        {
+            particleITKnum = 1;
+        }
+
 
 	Acts::Vector3 pos((*particleVertexX)[i], (*particleVertexY)[i], (*particleVertexZ)[i]);
         Acts::Vector3 mom((*particleMomentumX)[i], (*particleMomentumY)[i], (*particleMomentumZ)[i]);
@@ -445,6 +479,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
                                   charge * Acts::UnitConstants::e,
                                   (*particleMass)[i]/1000 * Acts::UnitConstants::GeV);
         // 1 means "Undefined"
+	particle.setITKHits(particleITKnum);//////******set  particle ITKHits
         particle.setProcess(static_cast<ActsFatras::ProcessType>(1));
         particle.setPosition4(
             pos.x() * Acts::UnitConstants::mm, pos.y() * Acts::UnitConstants::mm,
