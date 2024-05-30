@@ -84,7 +84,21 @@ target_link_libraries(
     ActsExamplesIoPerformance
     )
 #***********************************************
-
+#**********************************************
+# CKF reco for STCF detector and BKG_Hits
+add_executable(
+        ActsExampleCKFTracksSTCF_BKG
+        STCFRecCKFTracks_BKG.cpp)
+target_link_libraries(
+        ActsExampleCKFTracksSTCF_BKG
+  PRIVATE
+    ActsExamplesDetectorTGeo
+    ActsExamplesFramework
+    ActsExamplesCommon
+    ActsExamplesMagneticField
+    ActsExamplesIoPerformance
+    )
+#***********************************************
 # CKF reco for TGeo detector 
 add_executable(
   ActsExampleCKFTracksTGeo

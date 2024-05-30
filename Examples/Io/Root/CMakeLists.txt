@@ -15,7 +15,8 @@ add_library(
   src/RootTrajectorySummaryReader.cpp
   src/RootTrajectorySummaryWriter.cpp
   src/RootVertexPerformanceWriter.cpp
-  src/RootSTCFMeasurementReader.cpp 
+  src/RootSTCFMeasurementReader.cpp
+  src/RootSTCFMeasurementReader_BKG.cpp 
   src/RootBFieldWriter.cpp
   src/RootHoughCanTracksReader.cpp
 )

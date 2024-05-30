@@ -239,7 +239,7 @@ int main(int argc, char* argv[]) {
   trackSummaryWriter.inputMeasurementParticlesMap =
       STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
   //trackSummaryWriter.filePath = outputDir + "/muon_tracksummary_ckf_houghseed.root";
-  trackSummaryWriter.filePath = outputDir + "/tracksummary_ckf_houghseed.root";
+  trackSummaryWriter.filePath = outputDir + "/tracksummary_ckf_houghseed20w.root";
   trackSummaryWriter.treeName = "tracksummary";
   sequencer.addWriter(std::make_shared<RootTrajectorySummaryWriter>(
       trackSummaryWriter, logLevel));
@@ -273,7 +273,7 @@ int main(int argc, char* argv[]) {
   perfWriterCfg.trackSummaryPlotToolConfig.varBinning["Num"] =
       PlotHelpers::Binning("N", 60, -0.5, 59.5);
   //perfWriterCfg.filePath = outputDir + "/muon_performance_ckf_houghseed.root";
-  perfWriterCfg.filePath = outputDir + "/performance_ckf_houghseed.root";
+  perfWriterCfg.filePath = outputDir + "/performance_ckf_houghseed20w.root";
   sequencer.addWriter(
       std::make_shared<CKFPerformanceWriter>(perfWriterCfg, logLevel));
 

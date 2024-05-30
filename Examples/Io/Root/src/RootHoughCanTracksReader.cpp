@@ -104,6 +104,11 @@ ActsExamples::ProcessCode ActsExamples::RootHoughCanTracksReader::read(const Act
    if(m_treeReader->Next())
    {
     std::cout<<"Reading event"<<m_evtCounter++<<std::endl;
+    if(m_evtCounter==94386)
+    {
+	 context.eventStore.add(m_cfg.outputcantrackparameters, std::move(trackparameters));
+         return ActsExamples::ProcessCode::SUCCESS;
+    }
     for(size_t i=0;i<trackID->GetSize();i++)
     {
        Acts::Vector3 inipos(

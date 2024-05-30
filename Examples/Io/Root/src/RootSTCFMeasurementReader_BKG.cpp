@@ -5,8 +5,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-#include "ActsExamples/Io/Root/RootSTCFMeasurementReader.hpp"
+#include "ActsExamples/Io/Root/RootSTCFMeasurementReader_BKG.hpp"
 
 #include "Acts/EventData/TrackParameters.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
@@ -24,16 +23,16 @@
 #include <TFile.h>
 #include <TMath.h>
 
-ActsExamples::RootSTCFMeasurementReader::RootSTCFMeasurementReader(
-    const ActsExamples::RootSTCFMeasurementReader::Config& config,
+ActsExamples::RootSTCFMeasurementReader_BKG::RootSTCFMeasurementReader_BKG(
+    const ActsExamples::RootSTCFMeasurementReader_BKG::Config& config,
     Acts::Logging::Level level)
     : ActsExamples::IReader(),
       m_logger{Acts::getDefaultLogger(name(), level)},
       m_cfg(config),
       m_events(0),
-      m_treeReader(nullptr) {
-  
-  if (m_cfg.filePath.empty()) {
+      m_particle_treeReader(nullptr),
+      m_simhit_treeReader(nullptr) {
+  if (m_cfg.v_filePath.empty()) {
     throw std::invalid_argument("Missing input filename");
   }
   if (m_cfg.outputParticles.empty()) {
@@ -61,73 +60,75 @@ ActsExamples::RootSTCFMeasurementReader::RootSTCFMeasurementReader(
   }
 
 
-  TFile* file = TFile::Open(m_cfg.filePath.c_str(), "READ"); 
+  TFile* MCParticle_file = TFile::Open(m_cfg.v_filePath[0].c_str(), "READ"); 
+  TFile* SimHitBKG_file = TFile::Open(m_cfg.v_filePath[1].c_str(), "READ");
 
-  m_treeReader = new TTreeReader(m_cfg.treeName.c_str(), file);
-
+  m_particle_treeReader = new TTreeReader(m_cfg.v_treeName[0].c_str(), MCParticle_file);
+  m_simhit_treeReader = new TTreeReader(m_cfg.v_treeName[1].c_str(), SimHitBKG_file);
 
   // Set the branches
  
-  particlePDG = new TTreeReaderArray<int>(*m_treeReader,"MCParticleCol.PDG"); 
-  particleCharge = new TTreeReaderArray<float>(*m_treeReader,"MCParticleCol.charge"); 
-  particleMass = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MCParticleCol.mass"); 
-  particleVertexX  = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MCParticleCol.vertex.x"); 
-  particleVertexY  = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MCParticleCol.vertex.y"); 
-  particleVertexZ  = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MCParticleCol.vertex.z"); 
-  particleMomentumX  = new TTreeReaderArray<float>(*m_treeReader,"MCParticleCol.momentum.x"); 
-  particleMomentumY  = new TTreeReaderArray<float>(*m_treeReader,"MCParticleCol.momentum.y"); 
-  particleMomentumZ  = new TTreeReaderArray<float>(*m_treeReader,"MCParticleCol.momentum.z"); 
-  particleTrackID  = new TTreeReaderArray<int>(*m_treeReader,"MCParticleCol.trackID"); 
+  particlePDG = new TTreeReaderArray<int>(*m_particle_treeReader,"MCParticleCol.PDG"); 
+  particleCharge = new TTreeReaderArray<float>(*m_particle_treeReader,"MCParticleCol.charge"); 
+  particleMass = new TTreeReaderArray<Acts::ActsScalar>(*m_particle_treeReader,"MCParticleCol.mass"); 
+  particleVertexX  = new TTreeReaderArray<Acts::ActsScalar>(*m_particle_treeReader,"MCParticleCol.vertex.x"); 
+  particleVertexY  = new TTreeReaderArray<Acts::ActsScalar>(*m_particle_treeReader,"MCParticleCol.vertex.y"); 
+  particleVertexZ  = new TTreeReaderArray<Acts::ActsScalar>(*m_particle_treeReader,"MCParticleCol.vertex.z"); 
+  particleMomentumX  = new TTreeReaderArray<float>(*m_particle_treeReader,"MCParticleCol.momentum.x"); 
+  particleMomentumY  = new TTreeReaderArray<float>(*m_particle_treeReader,"MCParticleCol.momentum.y"); 
+  particleMomentumZ  = new TTreeReaderArray<float>(*m_particle_treeReader,"MCParticleCol.momentum.z"); 
+  particleTrackID  = new TTreeReaderArray<int>(*m_particle_treeReader,"MCParticleCol.trackID"); 
   //particleTime  = new TTreeReaderArray<int>(*m_treeReader,"MCParticleCol.time"); 
   
+  ITKtype = new TTreeReaderArray<int>(*m_simhit_treeReader,"ITKhitcol_type");  
+  ITKlayerID = new TTreeReaderArray<int>(*m_simhit_treeReader,"ITKhitcol_layerId");
+  ITKparentID = new TTreeReaderArray<int>(*m_simhit_treeReader,"ITKhitcol_parentId");
+  ITKparticleId = new TTreeReaderArray<int>(*m_simhit_treeReader,"ITKhitcol_mcParticleIndex");
+  ITKpositionX = new TTreeReaderArray<float>(*m_simhit_treeReader,"ITKhitcol_positionX");
+  ITKpositionY = new TTreeReaderArray<float>(*m_simhit_treeReader,"ITKhitcol_positionY");
+  ITKpositionZ = new TTreeReaderArray<float>(*m_simhit_treeReader,"ITKhitcol_positionZ");
+  ITKmomentumX = new TTreeReaderArray<float>(*m_simhit_treeReader,"ITKhitcol_momentumX");
+  ITKmomentumY = new TTreeReaderArray<float>(*m_simhit_treeReader,"ITKhitcol_momentumY");
+  ITKmomentumZ = new TTreeReaderArray<float>(*m_simhit_treeReader,"ITKhitcol_momentumZ");
+  ITKtime = new TTreeReaderArray<Acts::ActsScalar>(*m_simhit_treeReader,"ITKhitcol_time");
+  ITKmass = new TTreeReaderArray<double>(*m_simhit_treeReader,"ITKhitcol_mass");
   
-  ITKlayerID = new TTreeReaderArray<int>(*m_treeReader,"ITKHitCol.layerID");
-  ITKparentID = new TTreeReaderArray<int>(*m_treeReader,"ITKHitCol.parentID");
-  ITKparticleId = new TTreeReaderArray<int>(*m_treeReader,"ITKHitCol.mcParticleIndex");
-  ITKpositionX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.position.x");
-  ITKpositionY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.position.y");
-  ITKpositionZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.position.z");
-  ITKmomentumX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.momentum.x");
-  ITKmomentumY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.momentum.y");
-  ITKmomentumZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.momentum.z");
-  ITKtime = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"ITKHitCol.time");
-  ITKmass = new TTreeReaderArray<double>(*m_treeReader,"ITKHitCol.mass");
-  
-  MDCcellID = new TTreeReaderArray<int>(*m_treeReader,"MDCHitCol.cellID");
-  MDClayerID = new TTreeReaderArray<int>(*m_treeReader,"MDCHitCol.layerID");
-  MDCparentID = new TTreeReaderArray<int>(*m_treeReader,"MDCHitCol.parentID");
-  MDCparticleId = new TTreeReaderArray<int>(*m_treeReader,"MDCHitCol.mcParticleIndex");
-  MDCpositionX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.posIn.x");
-  MDCpositionY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.posIn.y");
-  MDCpositionZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.posIn.z");
-  MDCmomentumX = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.momIn.x");
-  MDCmomentumY = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.momIn.y");
-  MDCmomentumZ = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.momIn.z");
-  MDCdriftDistance = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.driftDistance");
-  MDCwirePoint1X = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.wirePoint1.x");
-  MDCwirePoint1Y = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.wirePoint1.y");
-  MDCwirePoint1Z = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.wirePoint1.z");
-  MDCwirePoint2X = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.wirePoint2.x");
-  MDCwirePoint2Y = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.wirePoint2.y");
-  MDCwirePoint2Z = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.wirePoint2.z");
-  MDCtime = new TTreeReaderArray<Acts::ActsScalar>(*m_treeReader,"MDCHitCol.time");
-  MDCmass = new TTreeReaderArray<float>(*m_treeReader,"MDCHitCol.mass");
+  MDCtype = new TTreeReaderArray<int>(*m_simhit_treeReader,"MDChitcol_type");
+  MDCcellID = new TTreeReaderArray<int>(*m_simhit_treeReader,"MDChitcol_cellId");
+  MDClayerID = new TTreeReaderArray<int>(*m_simhit_treeReader,"MDChitcol_layerId");
+  MDCparentID = new TTreeReaderArray<int>(*m_simhit_treeReader,"MDChitcol_parentId");
+  MDCparticleId = new TTreeReaderArray<int>(*m_simhit_treeReader,"MDChitcol_mcParticleIndex");
+  MDCpositionX = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_positionX");
+  MDCpositionY = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_positionY");
+  MDCpositionZ = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_positionZ");
+  MDCmomentumX = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_momentumX");
+  MDCmomentumY = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_momentumY");
+  MDCmomentumZ = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_momentumZ");
+  MDCdriftDistance = new TTreeReaderArray<Acts::ActsScalar>(*m_simhit_treeReader,"MDChitcol_driftdistance");
+  MDCwirePoint1X = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_wire1X");
+  MDCwirePoint1Y = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_wire1Y");
+  MDCwirePoint1Z = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_wire1Z");
+  MDCwirePoint2X = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_wire2X");
+  MDCwirePoint2Y = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_wire2Y");
+  MDCwirePoint2Z = new TTreeReaderArray<float>(*m_simhit_treeReader,"MDChitcol_wire2Z");
+  MDCtime = new TTreeReaderArray<Acts::ActsScalar>(*m_simhit_treeReader,"MDChitcol_time");
+  MDCmass = new TTreeReaderArray<double>(*m_simhit_treeReader,"MDChitcol_mass");
 
   
 
-  ACTS_DEBUG("Adding File " << m_cfg.filePath << " to tree '" << m_cfg.treeName << "'.");
-
-  m_events = m_treeReader->GetEntries();
+  ACTS_DEBUG("Adding File " << m_cfg.v_filePath[0] << " to tree '" << m_cfg.v_treeName[0] << "'.");
+  ACTS_DEBUG("Adding File " << m_cfg.v_filePath[1] << " to tree '" << m_cfg.v_treeName[1] << "'.");
+  m_events = m_simhit_treeReader->GetEntries();
   ACTS_DEBUG("The full chain has " << m_events << " entries.");
 
 }
 
 std::pair<size_t, size_t>
-ActsExamples::RootSTCFMeasurementReader::availableEvents() const {
+ActsExamples::RootSTCFMeasurementReader_BKG::availableEvents() const {
   return {0u, m_events};
 }
 
-ActsExamples::RootSTCFMeasurementReader::~RootSTCFMeasurementReader() {
+ActsExamples::RootSTCFMeasurementReader_BKG::~RootSTCFMeasurementReader_BKG() {
   delete particlePDG;  
   delete particleCharge;  
   delete particleMass;  
@@ -138,7 +139,8 @@ ActsExamples::RootSTCFMeasurementReader::~RootSTCFMeasurementReader() {
   delete particleMomentumX;  
   delete particleMomentumY;  
   delete particleMomentumZ;  
-  
+ 
+  delete ITKtype; 
   delete ITKlayerID;
   delete ITKparentID;
   delete ITKparticleId;
@@ -151,6 +153,7 @@ ActsExamples::RootSTCFMeasurementReader::~RootSTCFMeasurementReader() {
   delete ITKtime;
   delete ITKmass;
 
+  delete MDCtype;
   delete MDCcellID;
   delete MDClayerID;
   delete MDCparentID;
@@ -172,7 +175,7 @@ ActsExamples::RootSTCFMeasurementReader::~RootSTCFMeasurementReader() {
   delete MDCmass;
 }
 
-ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
+ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
     const ActsExamples::AlgorithmContext& context) {
   ACTS_DEBUG("Trying to read STCF tracker measurements.");
 
@@ -197,43 +200,32 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
  
 
   // read in the fitted track parameters and particles
-  if (m_treeReader != nullptr && context.eventNumber < m_events) {
+  if (m_particle_treeReader != nullptr && m_simhit_treeReader != nullptr&& context.eventNumber < m_events) {
     // lock the mutex
     std::lock_guard<std::mutex> lock(m_read_mutex);
-      
+    std::map<int, std::vector<int>> particleITKLayer;
+    std::map<int, int> particleITKHitIdx;
+    std::map<int, int> particleHitIdx;  
     // now read
-     if(m_treeReader->Next()){
+     if(m_simhit_treeReader->Next()){
       std::cout << "Reading event " << m_evtCounter++ << std::endl;
-      if(m_evtCounter==94386) 
-      {       
-       context.eventStore.add(m_cfg.outputSourceLinks, std::move(sourceLinks));
-       context.eventStore.add(m_cfg.outputSourceLinks + "__storage",
-                     std::move(sourceLinkStorage));
-       context.eventStore.add(m_cfg.outputMeasurements, std::move(measurements));
-       context.eventStore.add(m_cfg.outputMeasurementParticlesMap,
-                     std::move(measurementParticlesMap));
-       context.eventStore.add(m_cfg.outputMeasurementSimHitsMap,
-                     std::move(measurementSimHitsMap));
-
-       particles.insert(unordered_particles.begin(), unordered_particles.end());
-       context.eventStore.add(m_cfg.outputParticles, std::move(particles));
-
-       context.eventStore.add(m_cfg.outputSimHits, std::move(simHits));
-       return ActsExamples::ProcessCode::SUCCESS;}
-      int nParticles = 0; 
+      //int nParticles = 0; 
       int nITKHits = 0;
       int nMDCHits = 0;
-    
       // The index of the sim hit among all the sim hits from this particle 
-      std::map<int, int> particleHitIdx;
-      std::map<int, int> particleITKHitIdx;
-      std::map<int, std::vector<int>> particleITKLayer; 
+      particleITKHitIdx.clear();
+      particleITKLayer.clear();
+      particleHitIdx.clear();
+
       //Reading ITK hits
       for(size_t i=0; i< ITKpositionX->GetSize(); ++i){
         int parentID = (*ITKparentID)[i]; 
         if(parentID!=0) continue;
+        int type = (*ITKtype)[i];
+	std::cout<<"ITK type is :"<<type<<std::endl;
+	//if(type == -1) continue;
         nITKHits++;
-
+        std::cout<<"ITK hits"<<nITKHits<<std::endl;
 	Acts::Vector3 pos((*ITKpositionX)[i], (*ITKpositionY)[i], (*ITKpositionZ)[i]); 
 	Acts::Vector3 mom((*ITKmomentumX)[i], (*ITKmomentumY)[i], (*ITKmomentumZ)[i]); 
 	
@@ -291,6 +283,9 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
       for(size_t i=0; i< MDCcellID->GetSize(); ++i){
         int parentID = (*MDCparentID)[i]; 
         if(parentID!=0) continue; 
+	int type = (*MDCtype)[i];
+	 std::cout<<"MDC type is :"<<type<<std::endl;
+        //if(type == -1) continue;
         nMDCHits++;
 	
 	Acts::Vector3 pos((*MDCpositionX)[i], (*MDCpositionY)[i], (*MDCpositionZ)[i]); 
@@ -434,19 +429,20 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
         }
 
       }
-
-
-
       for(size_t i=0; i< measurements.size(); i++){ 
         const auto sourceLink_ = sourceLinks.nth(i); 
         auto geoId_ = sourceLink_->get().geometryId();
       }
-
+      std::cout<<"nITKHits = " << nITKHits <<", nMDCHits = " << nMDCHits <<std::endl;
+    }
+    int nParticles = 0;     
+    if(m_particle_treeReader->Next()){
+          //std::cout << "Reading event " << m_evtCounter++ << std::endl;
       //Reading truth particles
       for(size_t i=0; i< particlePDG->GetSize(); ++i){
-       // if(particleITKHitIdx[i]<3){
-         // continue;	
-       //	};
+        if(particleITKHitIdx[i]<3){
+          continue;	
+       	};
         nParticles++;
 	int oncelayer = 0;
 	int secondlayer = 0;
@@ -510,10 +506,8 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
       for(const auto& [ particleIndex, nHits ] : particleHitIdx){
         std::cout<<"particle " << particleIndex  <<" has " << nHits << " nHits"<< ", nITKHits = " << particleITKHitIdx[particleIndex] << std::endl;
       }
-
-      std::cout<<"nITKHits = " << nITKHits <<", nMDCHits = " << nMDCHits << ", nParticles (nITKHits>=3) = " << nParticles << std::endl;
-   }
-   
+      std::cout<<"nParticles = " << nParticles << std::endl;
+   }    
    // Write the collections to the EventStore
    context.eventStore.add(m_cfg.outputSourceLinks, std::move(sourceLinks));
    context.eventStore.add(m_cfg.outputSourceLinks + "__storage",
@@ -531,8 +525,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
   } 
   else {
     ACTS_WARNING("Could not read in event.");
-  }
-  
+  } 
   // Return success flag
   return ActsExamples::ProcessCode::SUCCESS;
 }

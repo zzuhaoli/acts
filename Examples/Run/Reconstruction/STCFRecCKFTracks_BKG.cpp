@@ -18,7 +18,7 @@
 #include "ActsExamples/Io/Performance/CKFPerformanceWriter.hpp"
 #include "ActsExamples/Io/Performance/SeedingPerformanceWriter.hpp"
 #include "ActsExamples/Io/Performance/TrackFinderPerformanceWriter.hpp"
-#include "ActsExamples/Io/Root/RootSTCFMeasurementReader.hpp"
+#include "ActsExamples/Io/Root/RootSTCFMeasurementReader_BKG.hpp"
 #include "ActsExamples/Io/Root/RootTrajectoryStatesWriter.hpp"
 #include "ActsExamples/Io/Root/RootTrajectorySummaryWriter.hpp"
 #include "ActsExamples/MagneticField/MagneticFieldOptions.hpp"
@@ -123,10 +123,10 @@ int main(int argc, char* argv[]) {
   auto logLevel = Options::readLogLevel(vm);
   auto inputDir = vm["input-dir"].as<std::string>();
   auto inputfiles = vm["input-files"].template as<std::vector<std::string>>();
-  if (inputfiles.size() > 1) {
-    throw std::invalid_argument("Sorry, only one input file is possible here");
-  } else if (inputfiles.size() < 1) {
-    throw std::invalid_argument("Sorry, please provide one input file");
+  if (inputfiles.size() > 2) {
+    throw std::invalid_argument("Sorry, only two input files are possible here");
+  } else if (inputfiles.size() < 2) {
+    throw std::invalid_argument("Sorry, please provide two input file");
   }
   auto outputDir = ensureWritableDirectory(vm["output-dir"].as<std::string>());
   auto rnd = std::make_shared<ActsExamples::RandomNumbers>(
@@ -148,13 +148,14 @@ int main(int argc, char* argv[]) {
   auto magneticField = Options::readMagneticField(vm);
 
   // Read truth hits from CSV files
-  RootSTCFMeasurementReader::Config STCFMeasurementReaderCfg;
-  STCFMeasurementReaderCfg.filePath = inputDir + "/" + inputfiles.front();
+  RootSTCFMeasurementReader_BKG::Config STCFMeasurementReaderCfg;
+  STCFMeasurementReaderCfg.v_filePath.push_back(inputDir + "/" + inputfiles.front());
+  STCFMeasurementReaderCfg.v_filePath.push_back(inputDir + "/" + inputfiles.at(1));
   STCFMeasurementReaderCfg.outputSimHits = "hits";
   STCFMeasurementReaderCfg.outputParticles = "particles";
   STCFMeasurementReaderCfg.trackingGeometry = trackingGeometry;
   STCFMeasurementReaderCfg.randomNumbers = rnd;
-  sequencer.addReader(std::make_shared<RootSTCFMeasurementReader>(
+  sequencer.addReader(std::make_shared<RootSTCFMeasurementReader_BKG>(
       STCFMeasurementReaderCfg, logLevel));
 
   // Run the particle selection
@@ -231,7 +232,7 @@ int main(int argc, char* argv[]) {
       
       seedingCfg.seedFinderConfig.maxPtScattering = vm["seed-max-ptscattering"].template as<double>() * Acts::UnitConstants::GeV;
 
-      seedingCfg.seedFinderConfig.collisionRegionMin = -250._mm;
+      seedingCfg.seedFinderConfig.collisionRegionMin = -250_mm;
       seedingCfg.seedFinderConfig.collisionRegionMax = 250._mm;
 
       seedingCfg.gridConfig.zMin = -500._mm;
@@ -278,7 +279,7 @@ int main(int argc, char* argv[]) {
     tfPerfCfg.inputMeasurementParticlesMap =
         STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
     //tfPerfCfg.filePath = outputDir + "/muon_performance_seeding_trees.root";
-    tfPerfCfg.filePath = outputDir + "/performance_seeding_trees20w.root";
+    tfPerfCfg.filePath = outputDir + "/pipijpsiBKG_seeding_trees.root";
     sequencer.addWriter(
         std::make_shared<TrackFinderPerformanceWriter>(tfPerfCfg, logLevel));
 
@@ -288,7 +289,7 @@ int main(int argc, char* argv[]) {
     seedPerfCfg.inputMeasurementParticlesMap =
         STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
     //seedPerfCfg.filePath = outputDir + "/muon_performance_seeding_hists.root";
-    seedPerfCfg.filePath = outputDir + "/performance_seeding_hists20w.root";
+    seedPerfCfg.filePath = outputDir + "/pipijpsiBKG_seeding_hists.root";
     seedPerfCfg.effPlotToolConfig.varBinning["Eta"] =
         PlotHelpers::Binning("#eta", etaRange[0], etaRange[1], etaRange[2]);
     seedPerfCfg.effPlotToolConfig.varBinning["Pt"] =
@@ -383,7 +384,7 @@ int main(int argc, char* argv[]) {
   trackSummaryWriter.inputMeasurementParticlesMap =
       STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
   //trackSummaryWriter.filePath = outputDir + "/muon_tracksummary_ckf.root";
-  trackSummaryWriter.filePath = outputDir + "/tracksummary_ckf20w.root";
+  trackSummaryWriter.filePath = outputDir + "/pipijpsiBKG_tracksummary_ckf.root";
   trackSummaryWriter.treeName = "tracksummary";
   sequencer.addWriter(std::make_shared<RootTrajectorySummaryWriter>(
       trackSummaryWriter, logLevel));
@@ -417,7 +418,7 @@ int main(int argc, char* argv[]) {
   perfWriterCfg.trackSummaryPlotToolConfig.varBinning["Num"] =
       PlotHelpers::Binning("N", 60, -0.5, 59.5);
   //perfWriterCfg.filePath = outputDir + "/muon_performance_ckf.root";
-  perfWriterCfg.filePath = outputDir + "/performance_ckf20w.root";
+  perfWriterCfg.filePath = outputDir + "/pipijpsiBKG_ckf.root";
   sequencer.addWriter(
       std::make_shared<CKFPerformanceWriter>(perfWriterCfg, logLevel));
 
