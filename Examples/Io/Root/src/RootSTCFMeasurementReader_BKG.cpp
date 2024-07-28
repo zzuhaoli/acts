@@ -433,7 +433,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
             // 0 * Acts::UnitConstants::GeV,
             (*MDCdriftDistance)[i] * Acts::UnitConstants::mm,
         };
-
+        std::cout<<"MDCdriftDistance is :"<<(*MDCdriftDistance)[i]<<std::endl;
         // The last parameter is not simHitIdx?
         ActsFatras::Hit hit(geoId, particleId, pos4, mom4, mom4 + delta4,
                             particleHitIdx[particleId], isNoiseHit);
