@@ -126,8 +126,8 @@ ActsExamples::ProcessCode ActsExamples::SeedingPerformanceWriter::writeT(
   int nDuplicatedParticles = 0;
   // Fill the effeciency and fake rate plots
   for (const auto& particle : particles) {
-    //if (std::abs(particle.pdg()!=2212)){continue;   }
-    if (std::abs(particle.pdg()!=211)){  continue;   }
+    // if (std::abs(particle.pdg()!=2212)){continue;   }
+    // if (std::abs(particle.pdg()!=211)){  continue;   }
     const auto it1 = truthCount.find(particle.particleId());
     bool isMatched = false;
     int nMatchedSeedsForParticle = 0;

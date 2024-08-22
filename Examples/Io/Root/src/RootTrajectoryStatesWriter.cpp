@@ -327,8 +327,8 @@ ActsExamples::ProcessCode ActsExamples::RootTrajectoryStatesWriter::writeT(
         const auto& sl =
             static_cast<const IndexSourceLink&>(state.uncalibrated());
         const auto hitIdx = sl.index();
-        m_measurementIndex.push_back(hitIdx); 
-	auto indices = makeRange(hitSimHitsMap.equal_range(hitIdx));
+        m_measurementIndex.push_back(hitIdx);
+        auto indices = makeRange(hitSimHitsMap.equal_range(hitIdx));
         auto [truthLocal, truthPos4, truthUnitDir] =
             averageSimHits(ctx.geoContext, surface, simHits, indices);
         // momemtum averaging makes even less sense than averaging position and

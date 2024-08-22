@@ -101,25 +101,25 @@ class RootTrajectoryStatesWriter final : public WriterT<TrajectoriesContainer> {
   std::vector<float> m_t_eQOP;    ///< truth parameter eQOP
   std::vector<float> m_t_eT;      ///< truth parameter eT
 
-  unsigned int m_nStates{0};        ///< number of all states
-  unsigned int m_nMeasurements{0};  ///< number of states with measurements
-  std::vector<int> m_volumeID;      ///< volume identifier
-  std::vector<int> m_layerID;       ///< layer identifier
-  std::vector<int> m_moduleID;      ///< surface identifier
-  std::vector<int> m_measurementIndex;      ///< surface identifier
-  std::vector<float> m_pathLength;  ///< path length
-  std::vector<float> m_lx_hit;      ///< uncalibrated measurement local x
-  std::vector<float> m_ly_hit;      ///< uncalibrated measurement local y
-  std::vector<float> m_x_hit;       ///< uncalibrated measurement global x
-  std::vector<float> m_y_hit;       ///< uncalibrated measurement global y
-  std::vector<float> m_z_hit;       ///< uncalibrated measurement global z
-  std::vector<float> m_res_x_hit;   ///< hit residual x
-  std::vector<float> m_res_y_hit;   ///< hit residual y
-  std::vector<float> m_err_x_hit;   ///< hit err x
-  std::vector<float> m_err_y_hit;   ///< hit err y
-  std::vector<float> m_pull_x_hit;  ///< hit pull x
-  std::vector<float> m_pull_y_hit;  ///< hit pull y
-  std::vector<int> m_dim_hit;       ///< dimension of measurement
+  unsigned int m_nStates{0};            ///< number of all states
+  unsigned int m_nMeasurements{0};      ///< number of states with measurements
+  std::vector<int> m_volumeID;          ///< volume identifier
+  std::vector<int> m_layerID;           ///< layer identifier
+  std::vector<int> m_moduleID;          ///< surface identifier
+  std::vector<int> m_measurementIndex;  ///< surface identifier
+  std::vector<float> m_pathLength;      ///< path length
+  std::vector<float> m_lx_hit;          ///< uncalibrated measurement local x
+  std::vector<float> m_ly_hit;          ///< uncalibrated measurement local y
+  std::vector<float> m_x_hit;           ///< uncalibrated measurement global x
+  std::vector<float> m_y_hit;           ///< uncalibrated measurement global y
+  std::vector<float> m_z_hit;           ///< uncalibrated measurement global z
+  std::vector<float> m_res_x_hit;       ///< hit residual x
+  std::vector<float> m_res_y_hit;       ///< hit residual y
+  std::vector<float> m_err_x_hit;       ///< hit err x
+  std::vector<float> m_err_y_hit;       ///< hit err y
+  std::vector<float> m_pull_x_hit;      ///< hit pull x
+  std::vector<float> m_pull_y_hit;      ///< hit pull y
+  std::vector<int> m_dim_hit;           ///< dimension of measurement
 
   std::array<int, 3> m_nParams;  ///< number of states which have
                                  ///< filtered/predicted/smoothed parameters

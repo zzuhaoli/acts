@@ -32,8 +32,8 @@ class TruthTrackFinder final : public BareAlgorithm {
     std::string inputMeasurementSimHitsMap;
     /// The output proto tracks collection.
     std::string outputProtoTracks;
-    /// Remove hits from another loop 
-    bool removeHitsFromLoops = false; 
+    /// Remove hits from another loop
+    bool removeHitsFromLoops = false;
   };
 
   TruthTrackFinder(const Config& config, Acts::Logging::Level level);

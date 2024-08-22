@@ -205,13 +205,16 @@ ActsExamples::ProcessCode ActsExamples::SeedingAlgorithm::execute(
                                group.middle(), group.top(), rRangeSPExtent);
   }
 
-  if(not seeds.empty()){
-    std::sort(seeds.begin(),seeds.end(), [](const auto& seed0, const auto& seed1){ return seed0.seedQuality() > seed1.seedQuality();});
-    for(int i=0;i <std::min(m_cfg.maxSeeds, static_cast<int>(seeds.size())); ++i){
+  if (not seeds.empty()) {
+    std::sort(seeds.begin(), seeds.end(),
+              [](const auto& seed0, const auto& seed1) {
+                return seed0.seedQuality() > seed1.seedQuality();
+              });
+    for (int i = 0;
+         i < std::min(m_cfg.maxSeeds, static_cast<int>(seeds.size())); ++i) {
       seedsFiltered.push_back(seeds[i]);
     }
   }
-
 
   // extract proto tracks, i.e. groups of measurement indices, from tracks seeds
   size_t nSeeds = seedsFiltered.size();
@@ -222,12 +225,14 @@ ActsExamples::ProcessCode ActsExamples::SeedingAlgorithm::execute(
   for (const auto& seed : seedsFiltered) {
     ProtoTrack& protoTrack = protoTracks.emplace_back();
     protoTrack.reserve(seed.sp().size());
-    std::cout<<"Seed " << std::endl;
+    std::cout << "Seed " << std::endl;
     for (auto spacePointPtr : seed.sp()) {
-       std::cout<<"sp from measurement " << spacePointPtr->measurementIndex() << " : " << spacePointPtr->x() << ", " << spacePointPtr->y() << ", " << spacePointPtr->z() << std::endl; 
-       protoTrack.push_back(spacePointPtr->measurementIndex());
+      std::cout << "sp from measurement " << spacePointPtr->measurementIndex()
+                << " : " << spacePointPtr->x() << ", " << spacePointPtr->y()
+                << ", " << spacePointPtr->z() << std::endl;
+      protoTrack.push_back(spacePointPtr->measurementIndex());
     }
-    std::cout<<std::endl;
+    std::cout << std::endl;
   }
 
   ACTS_DEBUG("Created " << seedsFiltered.size() << " track seeds from "

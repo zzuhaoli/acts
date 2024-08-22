@@ -60,7 +60,7 @@ ActsExamples::CKFPerformanceWriter::~CKFPerformanceWriter() {
   m_fakeRatePlotTool.clear(m_fakeRatePlotCache);
   m_duplicationPlotTool.clear(m_duplicationPlotCache);
   m_trackSummaryPlotTool.clear(m_trackSummaryPlotCache);
-  delete m_perfSummary; 
+  delete m_perfSummary;
   if (m_outputFile != nullptr) {
     m_outputFile->Close();
   }
@@ -73,7 +73,7 @@ ActsExamples::ProcessCode ActsExamples::CKFPerformanceWriter::endRun() {
     m_fakeRatePlotTool.write(m_fakeRatePlotCache);
     m_duplicationPlotTool.write(m_duplicationPlotCache);
     m_trackSummaryPlotTool.write(m_trackSummaryPlotCache);
-    m_perfSummary->Write(); 
+    m_perfSummary->Write();
     ACTS_INFO("Wrote performance plots to '" << m_outputFile->GetPath() << "'");
   }
   return ProcessCode::SUCCESS;
@@ -222,13 +222,13 @@ ActsExamples::ProcessCode ActsExamples::CKFPerformanceWriter::writeT(
 
   // Loop over all truth particle seeds for efficiency plots and reco details.
   // These are filled w.r.t. truth particle seed info
-  for(const auto& particle : particles) {
+  for (const auto& particle : particles) {
     if (particle.transverseMomentum() < m_cfg.ptMin) {
       continue;
     }
     ///*****
-    //if (abs(particle.pdg()) != 211 && (abs(particle.pdg()) != 2212 )) {
-      //continue;
+    // if (abs(particle.pdg()) != 211 && (abs(particle.pdg()) != 2212 )) {
+    // continue;
     //}
     ///*****
     auto particleId = particle.particleId();

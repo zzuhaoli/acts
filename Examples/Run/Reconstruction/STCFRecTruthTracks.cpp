@@ -15,14 +15,19 @@
 #include "ActsExamples/Io/Csv/CsvOptionsReader.hpp"
 #include "ActsExamples/Io/Csv/CsvParticleReader.hpp"
 #include "ActsExamples/Io/Csv/CsvSimHitReader.hpp"
-#include "ActsExamples/Io/Root/RootSTCFMeasurementReader.hpp"
 #include "ActsExamples/Io/Performance/TrackFinderPerformanceWriter.hpp"
 #include "ActsExamples/Io/Performance/TrackFitterPerformanceWriter.hpp"
+#include "ActsExamples/Io/Root/RootSTCFMeasurementReader.hpp"
 #include "ActsExamples/Io/Root/RootTrajectoryStatesWriter.hpp"
 #include "ActsExamples/Io/Root/RootTrajectorySummaryWriter.hpp"
 #include "ActsExamples/MagneticField/MagneticFieldOptions.hpp"
 #include "ActsExamples/Options/CommonOptions.hpp"
 #include "ActsExamples/Reconstruction/ReconstructionBase.hpp"
+#include "ActsExamples/TGeoDetector/TGeoDetector.hpp"
+#include "ActsExamples/TrackFinding/SeedingAlgorithm.hpp"
+#include "ActsExamples/TrackFinding/SpacePointMaker.hpp"
+#include "ActsExamples/TrackFinding/SpacePointMakerOptions.hpp"
+#include "ActsExamples/TrackFinding/TrackParamsEstimationAlgorithm.hpp"
 #include "ActsExamples/TrackFitting/SurfaceSortingAlgorithm.hpp"
 #include "ActsExamples/TrackFitting/TrackFittingAlgorithm.hpp"
 #include "ActsExamples/TrackFitting/TrackFittingOptions.hpp"
@@ -30,18 +35,11 @@
 #include "ActsExamples/TruthTracking/TruthTrackFinder.hpp"
 #include "ActsExamples/Utilities/Options.hpp"
 #include "ActsExamples/Utilities/Paths.hpp"
-#include "ActsExamples/TGeoDetector/TGeoDetector.hpp"
-#include "ActsExamples/TrackFinding/SpacePointMaker.hpp"
-#include "ActsExamples/TrackFinding/SpacePointMakerOptions.hpp"
-#include "ActsExamples/TrackFinding/SeedingAlgorithm.hpp"
-#include "ActsExamples/TrackFinding/TrackParamsEstimationAlgorithm.hpp"
-
 
 #include <memory>
 
 using namespace Acts::UnitLiterals;
 using namespace ActsExamples;
-
 
 int main(int argc, char* argv[]) {
   auto detector = std::make_shared<ActsExamples::TGeoDetector>();
@@ -64,7 +62,6 @@ int main(int argc, char* argv[]) {
   Options::addSpacePointMakerOptions(desc);
   TruthSeedSelector::addOptions(desc);
 
-
   auto vm = Options::parse(desc, argc, argv);
   if (vm.empty()) {
     return EXIT_FAILURE;
@@ -85,9 +82,7 @@ int main(int argc, char* argv[]) {
   auto rnd = std::make_shared<const ActsExamples::RandomNumbers>(
       Options::readRandomNumbersConfig(vm));
   auto dirNav = vm["fit-directed-navigation"].as<bool>();
-  bool truthEstimatedSeeded =
-      vm["fit-truth-estimated-seeds"].as<bool>();
-
+  bool truthEstimatedSeeded = vm["fit-truth-estimated-seeds"].as<bool>();
 
   // Setup detector geometry
   auto geometry = Geometry::build(vm, *detector);
@@ -99,7 +94,7 @@ int main(int argc, char* argv[]) {
   // Setup the magnetic field
   auto magneticField = Options::readMagneticField(vm);
 
-    // Read truth hits from CSV files
+  // Read truth hits from CSV files
   RootSTCFMeasurementReader::Config STCFMeasurementReaderCfg;
   STCFMeasurementReaderCfg.filePath = inputDir + "/" + inputfiles.front();
   STCFMeasurementReaderCfg.outputSimHits = "hits";
@@ -108,7 +103,7 @@ int main(int argc, char* argv[]) {
   STCFMeasurementReaderCfg.randomNumbers = rnd;
   sequencer.addReader(std::make_shared<RootSTCFMeasurementReader>(
       STCFMeasurementReaderCfg, logLevel));
-  
+
   // Run the particle selection
   // The pre-selection will select truth particles satisfying provided criteria
   // from all particles read in by particle reader for further processing. It
@@ -142,15 +137,14 @@ int main(int argc, char* argv[]) {
   trackFinderCfg.inputMeasurementSimHitsMap =
       STCFMeasurementReaderCfg.outputMeasurementSimHitsMap;
   trackFinderCfg.inputSimulatedHits = STCFMeasurementReaderCfg.outputSimHits;
-  trackFinderCfg.removeHitsFromLoops = true; 
+  trackFinderCfg.removeHitsFromLoops = true;
   trackFinderCfg.outputProtoTracks = "prototracks";
   sequencer.addAlgorithm(
       std::make_shared<TruthTrackFinder>(trackFinderCfg, logLevel));
 
   std::string outputTrackParameters;
- 
-  if(truthEstimatedSeeded)
-  {
+
+  if (truthEstimatedSeeded) {
     // Create space points
     SpacePointMaker::Config spCfg = Options::readSpacePointMakerConfig(vm);
     spCfg.inputSourceLinks = STCFMeasurementReaderCfg.outputSourceLinks;
@@ -193,13 +187,12 @@ int main(int argc, char* argv[]) {
     outputTrackParameters = particleSmearingCfg.outputTrackParameters;
   }
 
-
-
   SurfaceSortingAlgorithm::Config sorterCfg;
   // Setup the surface sorter if running direct navigator
   sorterCfg.inputProtoTracks = trackFinderCfg.outputProtoTracks;
   sorterCfg.inputSimulatedHits = STCFMeasurementReaderCfg.outputSimHits;
-  sorterCfg.inputMeasurementSimHitsMap = STCFMeasurementReaderCfg.outputMeasurementSimHitsMap;
+  sorterCfg.inputMeasurementSimHitsMap =
+      STCFMeasurementReaderCfg.outputMeasurementSimHitsMap;
   sorterCfg.outputProtoTracks = "sortedprototracks";
   if (dirNav) {
     sequencer.addAlgorithm(
@@ -215,8 +208,7 @@ int main(int argc, char* argv[]) {
   if (dirNav) {
     fitter.inputProtoTracks = sorterCfg.outputProtoTracks;
   }
-  fitter.inputInitialTrackParameters =
-      outputTrackParameters;
+  fitter.inputInitialTrackParameters = outputTrackParameters;
   fitter.outputTrajectories = "trajectories";
   fitter.directNavigation = dirNav;
   fitter.pickTrack = vm["fit-pick-track"].as<int>();
@@ -224,14 +216,14 @@ int main(int argc, char* argv[]) {
   fitter.dFit = TrackFittingAlgorithm::makeKalmanFitterFunction(
       magneticField, vm["fit-multiple-scattering-correction"].as<bool>(),
       vm["fit-energy-loss-correction"].as<bool>(), reverseFilteringMomThreshold,
-      vm["fit-chi2-cut"].as<double>(), 
+      vm["fit-chi2-cut"].as<double>(),
       Acts::FreeToBoundCorrection(
           vm["fit-ftob-nonlinear-correction"].as<bool>()));
   fitter.fit = TrackFittingAlgorithm::makeKalmanFitterFunction(
       trackingGeometry, magneticField,
       vm["fit-multiple-scattering-correction"].as<bool>(),
       vm["fit-energy-loss-correction"].as<bool>(), reverseFilteringMomThreshold,
-      vm["fit-chi2-cut"].as<double>(), 
+      vm["fit-chi2-cut"].as<double>(),
       Acts::FreeToBoundCorrection(
           vm["fit-ftob-nonlinear-correction"].as<bool>()));
   sequencer.addAlgorithm(

@@ -18,6 +18,7 @@
 #include "ActsExamples/Io/Performance/CKFPerformanceWriter.hpp"
 #include "ActsExamples/Io/Performance/SeedingPerformanceWriter.hpp"
 #include "ActsExamples/Io/Performance/TrackFinderPerformanceWriter.hpp"
+#include "ActsExamples/Io/Root/RootHoughCanTracksReader.hpp"
 #include "ActsExamples/Io/Root/RootSTCFMeasurementReader.hpp"
 #include "ActsExamples/Io/Root/RootTrajectoryStatesWriter.hpp"
 #include "ActsExamples/Io/Root/RootTrajectorySummaryWriter.hpp"
@@ -40,9 +41,8 @@
 #include <Acts/Definitions/Units.hpp>
 
 #include <memory>
-#include <boost/filesystem.hpp>
 
-#include "ActsExamples/Io/Root/RootHoughCanTracksReader.hpp"
+#include <boost/filesystem.hpp>
 
 using namespace Acts::UnitLiterals;
 using namespace ActsExamples;
@@ -68,28 +68,28 @@ void addRecCKFOptions(ActsExamples::Options::Description& desc) {
       value<ActsExamples::Options::Reals<3>>()->default_value({{20, 0.0, 2.0}}),
       "pT bins, min and max for plotting the performance, must be "
       "of form i:j.");
- opt("ckf-prop-steps", value<int>()->default_value(10000),
-                    "The max propagation steps during ckf.");
- opt("seed-sigma-scattering", value<double>()->default_value(200),
-                    "The seeding sigma scattering.");
- opt("seed-rad-length-per-seed", value<double>()->default_value(0.1),
-                    "The seeding radLengthPerSeed.");
- opt("seed-max-ptscattering", value<double>()->default_value(10),
-                    "The seeding maxPtScattering.");
- opt("seed-impact-max", value<double>()->default_value(10),
-                    "The seeding2impactMax.");
- opt("seed-deltar-max", value<double>()->default_value(80),
-                    "The seeding deltaRMax.");
- opt("seed-deltar-min", value<double>()->default_value(20),
-                    "The seeding deltaRMin.");
- opt("seed-cottheta-max", value<double>()->default_value(2.74),
-                    "The seeding cotThetaMax.");
- opt("seed-max-seeds", value<int>()->default_value(2),
-                    "The maximum number of seeds per event");
- opt("ckf-prop-tolerance", value<double>()->default_value(0.0001),
-                    "The stepper tolerance during ckf.");
- opt("ckf-prop-mass", value<double>()->default_value(139.57018),
-                    "The particle mass during ckf.");
+  opt("ckf-prop-steps", value<int>()->default_value(10000),
+      "The max propagation steps during ckf.");
+  opt("seed-sigma-scattering", value<double>()->default_value(200),
+      "The seeding sigma scattering.");
+  opt("seed-rad-length-per-seed", value<double>()->default_value(0.1),
+      "The seeding radLengthPerSeed.");
+  opt("seed-max-ptscattering", value<double>()->default_value(10),
+      "The seeding maxPtScattering.");
+  opt("seed-impact-max", value<double>()->default_value(10),
+      "The seeding2impactMax.");
+  opt("seed-deltar-max", value<double>()->default_value(80),
+      "The seeding deltaRMax.");
+  opt("seed-deltar-min", value<double>()->default_value(20),
+      "The seeding deltaRMin.");
+  opt("seed-cottheta-max", value<double>()->default_value(2.74),
+      "The seeding cotThetaMax.");
+  opt("seed-max-seeds", value<int>()->default_value(2),
+      "The maximum number of seeds per event");
+  opt("ckf-prop-tolerance", value<double>()->default_value(0.0001),
+      "The stepper tolerance during ckf.");
+  opt("ckf-prop-mass", value<double>()->default_value(139.57018),
+      "The particle mass during ckf.");
 }
 
 int main(int argc, char* argv[]) {
@@ -126,7 +126,8 @@ int main(int argc, char* argv[]) {
   //*****************************************************************
   auto inputfiles = vm["input-files"].template as<std::vector<std::string>>();
   if (inputfiles.size() > 2) {
-    throw std::invalid_argument("Sorry, only two input files are possible here");
+    throw std::invalid_argument(
+        "Sorry, only two input files are possible here");
   } else if (inputfiles.size() < 2) {
     throw std::invalid_argument("Sorry, please provide two input files");
   }
@@ -152,8 +153,9 @@ int main(int argc, char* argv[]) {
   //****************************************************
   // Read seed after houghtransform from CSV files
   RootHoughCanTracksReader::Config RootHoughCanTracksReaderCfg;
-  RootHoughCanTracksReaderCfg.outputcantrackparameters="initialtracks_parameters";
-  RootHoughCanTracksReaderCfg.filePath=inputDir + "/" + inputfiles.at(1);
+  RootHoughCanTracksReaderCfg.outputcantrackparameters =
+      "initialtracks_parameters";
+  RootHoughCanTracksReaderCfg.filePath = inputDir + "/" + inputfiles.at(1);
   RootHoughCanTracksReaderCfg.randomNumbers = rnd;
   sequencer.addReader(std::make_shared<RootHoughCanTracksReader>(
       RootHoughCanTracksReaderCfg, logLevel));
@@ -167,9 +169,9 @@ int main(int argc, char* argv[]) {
   STCFMeasurementReaderCfg.randomNumbers = rnd;
   sequencer.addReader(std::make_shared<RootSTCFMeasurementReader>(
       STCFMeasurementReaderCfg, logLevel));
-  
+
   //****************************************************
-  
+
   // Run the particle selection
   // The pre-selection will select truth particles satisfying provided criteria
   // from all particles read in by particle reader for further processing. It
@@ -194,7 +196,10 @@ int main(int argc, char* argv[]) {
   trackFindingCfg.inputMeasurements =
       STCFMeasurementReaderCfg.outputMeasurements;
   trackFindingCfg.inputSourceLinks = STCFMeasurementReaderCfg.outputSourceLinks;
-  trackFindingCfg.inputInitialTrackParameters = RootHoughCanTracksReaderCfg.outputcantrackparameters;//initialtracks_parameters from houghtransform
+  trackFindingCfg.inputInitialTrackParameters =
+      RootHoughCanTracksReaderCfg
+          .outputcantrackparameters;  // initialtracks_parameters from
+                                      // houghtransform
   trackFindingCfg.outputTrajectories = "trajectories";
   trackFindingCfg.outputTrackParameters = "parameters";
   trackFindingCfg.computeSharedHits = true;
@@ -208,25 +213,25 @@ int main(int argc, char* argv[]) {
 
   std::cout << "Added CKF " << std::endl;
 
-/*
-  // write track states from CKF
-  RootTrajectoryStatesWriter::Config trackStatesWriter;
-  trackStatesWriter.inputTrajectories = trackFindingCfg.outputTrajectories;
-  // @note The full particles collection is used here to avoid lots of warnings
-  // since the unselected CKF track might have a majority particle not in the
-  // filtered particle collection. This could be avoided when a seperate track
-  // selection algorithm is used.
-  trackStatesWriter.inputParticles = STCFMeasurementReaderCfg.outputParticles;
-  trackStatesWriter.inputSimHits = STCFMeasurementReaderCfg.outputSimHits;
-  trackStatesWriter.inputMeasurementParticlesMap =
-      STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
-  trackStatesWriter.inputMeasurementSimHitsMap =
-      STCFMeasurementReaderCfg.outputMeasurementSimHitsMap;
-  trackStatesWriter.filePath = outputDir + "/trackstates_ckf.root";
-  trackStatesWriter.treeName = "trackstates";
-  sequencer.addWriter(std::make_shared<RootTrajectoryStatesWriter>(
-      trackStatesWriter, logLevel));
-*/
+  /*
+    // write track states from CKF
+    RootTrajectoryStatesWriter::Config trackStatesWriter;
+    trackStatesWriter.inputTrajectories = trackFindingCfg.outputTrajectories;
+    // @note The full particles collection is used here to avoid lots of warnings
+    // since the unselected CKF track might have a majority particle not in the
+    // filtered particle collection. This could be avoided when a seperate track
+    // selection algorithm is used.
+    trackStatesWriter.inputParticles = STCFMeasurementReaderCfg.outputParticles;
+    trackStatesWriter.inputSimHits = STCFMeasurementReaderCfg.outputSimHits;
+    trackStatesWriter.inputMeasurementParticlesMap =
+        STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
+    trackStatesWriter.inputMeasurementSimHitsMap =
+        STCFMeasurementReaderCfg.outputMeasurementSimHitsMap;
+    trackStatesWriter.filePath = outputDir + "/trackstates_ckf.root";
+    trackStatesWriter.treeName = "trackstates";
+    sequencer.addWriter(std::make_shared<RootTrajectoryStatesWriter>(
+        trackStatesWriter, logLevel));
+  */
 
   // write track summary from CKF
   RootTrajectorySummaryWriter::Config trackSummaryWriter;
@@ -235,11 +240,13 @@ int main(int argc, char* argv[]) {
   // since the unselected CKF track might have a majority particle not in the
   // filtered particle collection. This could be avoided when a seperate track
   // selection algorithm is used.
-  trackSummaryWriter.inputParticles = inputParticles;//after particleSelect
+  trackSummaryWriter.inputParticles = inputParticles;  // after particleSelect
   trackSummaryWriter.inputMeasurementParticlesMap =
       STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
-  //trackSummaryWriter.filePath = outputDir + "/muon_tracksummary_ckf_houghseed.root";
-  trackSummaryWriter.filePath = outputDir + "/tracksummary_ckf_houghseed20w.root";
+  // trackSummaryWriter.filePath = outputDir +
+  // "/muon_tracksummary_ckf_houghseed.root";
+  trackSummaryWriter.filePath =
+      outputDir + "/tracksummary_ckf_houghseed20w.root";
   trackSummaryWriter.treeName = "tracksummary";
   sequencer.addWriter(std::make_shared<RootTrajectorySummaryWriter>(
       trackSummaryWriter, logLevel));
@@ -272,7 +279,8 @@ int main(int argc, char* argv[]) {
       PlotHelpers::Binning("pT [GeV/c]", ptRange[0], ptRange[1], ptRange[2]);
   perfWriterCfg.trackSummaryPlotToolConfig.varBinning["Num"] =
       PlotHelpers::Binning("N", 60, -0.5, 59.5);
-  //perfWriterCfg.filePath = outputDir + "/muon_performance_ckf_houghseed.root";
+  // perfWriterCfg.filePath = outputDir +
+  // "/muon_performance_ckf_houghseed.root";
   perfWriterCfg.filePath = outputDir + "/performance_ckf_houghseed20w.root";
   sequencer.addWriter(
       std::make_shared<CKFPerformanceWriter>(perfWriterCfg, logLevel));
@@ -290,8 +298,3 @@ int main(int argc, char* argv[]) {
 
   return sequencer.run();
 }
-
-
-
-
-

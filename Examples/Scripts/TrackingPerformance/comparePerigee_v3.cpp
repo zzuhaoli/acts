@@ -31,8 +31,6 @@
 
 using namespace ROOT;
 
-
-
 template <typename T>
 void setThisHistStyle(T* hist, short color = 1, short marker = 20,
                       float xTitleSize = 0.05, float yTitleSize = 0.05,
@@ -52,9 +50,9 @@ void setThisHistStyle(T* hist, short color = 1, short marker = 20,
   hist->SetLineWidth(2);
   hist->SetTitle("");
   hist->SetLineColor(color);
-  //hist->SetLineColor(0);
-  //hist->SetLineColorAlpha(0, 1); 
-  //hist->SetLineStyle(0); 
+  // hist->SetLineColor(0);
+  // hist->SetLineColorAlpha(0, 1);
+  // hist->SetLineStyle(0);
   hist->SetMarkerColor(color);
 }
 
@@ -80,62 +78,67 @@ void setYRange(TH1F* hist, double yMinScale = 0.5, double yMaxScale = 1.5) {
 }
 
 void anaHisto(TH1F* inputHist, int j, TH1F* meanHist, TH1F* widthHist,
-              bool fit = false, double scale=1) {
+              bool fit = false, double scale = 1) {
   // evaluate mean and width via the Gauss fit
   assert(inputHist != nullptr);
   if (inputHist->GetEntries() > 0) {
     if (fit) {
-      //TFitResultPtr r = inputHist->Fit("gaus", "QS0");
+      // TFitResultPtr r = inputHist->Fit("gaus", "QS0");
       TFitResultPtr r = inputHist->Fit("gaus", "QS0");
       r = inputHist->Fit("gaus", "QS0");
       if (r.Get() and ((r->Status() % 1000) == 0)) {
-      //if (r.Get()) {
-        // fill the mean and width into 'j'th bin of the meanHist and widthHist,
-        // respectively
+        // if (r.Get()) {
+        //  fill the mean and width into 'j'th bin of the meanHist and
+        //  widthHist, respectively
         meanHist->SetBinContent(j, r->Parameter(1));
         meanHist->SetBinError(j, r->ParError(1));
-        widthHist->SetBinContent(j, r->Parameter(2)*scale);
+        widthHist->SetBinContent(j, r->Parameter(2) * scale);
         widthHist->SetBinError(j, r->ParError(2));
-        if(scale!=1) 
-	  std::cout<<"hist "<<widthHist->GetName() <<" width = "<< r->Parameter(2)*scale << std::endl; 
-        }else {
-         std::cout<<"Fitting failed " << std::endl;	
-	}
+        if (scale != 1)
+          std::cout << "hist " << widthHist->GetName()
+                    << " width = " << r->Parameter(2) * scale << std::endl;
+      } else {
+        std::cout << "Fitting failed " << std::endl;
+      }
     } else {
       meanHist->SetBinContent(j, inputHist->GetMean());
       meanHist->SetBinError(j, inputHist->GetMeanError());
       // meanHist->SetBinError(j, inputHist->GetRMS());
 
-      widthHist->SetBinContent(j, inputHist->GetRMS()*scale);
+      widthHist->SetBinContent(j, inputHist->GetRMS() * scale);
       widthHist->SetBinError(j, inputHist->GetRMSError());
     }
   }
 }
 
-
 void comparePerigee_v3(
-       std::string inputPath = "/nfs/xiaocong/acts_workspace/scan/CKF.estimated.chi2Cut15.maxPropSteps330.NoStepAjustError.maxSeeds2",
-       std::string particle = "mu-",
-       std::vector<std::string> degs = {"90","60","30"},
-       //std::vector<std::string> degs = {"90"},
-       //in GeV
-       bool usePt = true, 
-       std::vector<double> ps = {0.1, 0.125, 0.15, 0.175, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8},
-       //std::vector<double> ps = {0.175, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8},
-       bool savePlot  = false, 
-    double absEtaMin = 0, double absEtaMax = 1.75, double ptMin = 0.05,
-    double ptMax = 1.8, bool saveAs = false, bool showEta = false,
-    bool showPt = true, bool fit = true, bool plotResidual = true,
+    std::string inputPath =
+        "/nfs/xiaocong/acts_workspace/scan/"
+        "CKF.estimated.chi2Cut15.maxPropSteps330.NoStepAjustError.maxSeeds2",
+    std::string particle = "mu-",
+    std::vector<std::string> degs = {"90", "60", "30"},
+    // std::vector<std::string> degs = {"90"},
+    // in GeV
+    bool usePt = true,
+    std::vector<double> ps = {0.1, 0.125, 0.15, 0.175, 0.2, 0.25, 0.3, 0.35,
+                              0.4, 0.45, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8},
+    // std::vector<double> ps = {0.175, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6,
+    // 0.8, 1.0, 1.2, 1.4, 1.6, 1.8},
+    bool savePlot = false, double absEtaMin = 0, double absEtaMax = 1.75,
+    double ptMin = 0.05, double ptMax = 1.8, bool saveAs = false,
+    bool showEta = false, bool showPt = true, bool fit = true,
+    bool plotResidual = true,
     // plotType 0: mean,   1:width,   2: mean and width
     int plotType = 1, bool plotResidualRatio = false, bool absEta = true,
-    bool variablePtBin = true, 
-    std::map<std::string, std::string> tags = {
-     {"90","|cos#theta|=0"},
-     {"60","|cos#theta|=0.5"},
-     {"30","|cos#theta|=0.87"},
-    },
-    std::vector<int> colors = {872, 866, 854, 896}, std::vector<int> markers ={24, 26, 20, 22}) {
- 
+    bool variablePtBin = true,
+    std::map<std::string, std::string> tags =
+        {
+            {"90", "|cos#theta|=0"},
+            {"60", "|cos#theta|=0.5"},
+            {"30", "|cos#theta|=0.87"},
+        },
+    std::vector<int> colors = {872, 866, 854, 896},
+    std::vector<int> markers = {24, 26, 20, 22}) {
   gStyle->SetOptFit(0000);
   gStyle->SetOptStat(0000);
   gStyle->SetPadLeftMargin(0.20);
@@ -146,7 +149,7 @@ void comparePerigee_v3(
   gStyle->SetPadTickX(1);
   gStyle->SetPadTickY(1);
 
-  std::string saveTag ="STCF_" + particle + "_res"; 
+  std::string saveTag = "STCF_" + particle + "_res";
 
   if (plotType == 2 or not plotResidual)
     plotResidualRatio = false;
@@ -156,21 +159,20 @@ void comparePerigee_v3(
   }
 
   std::vector<double> ptbins;
-  double plow; 
-  double pup; 
-  for(int j=0; j < ps.size(); ++j){
-    if(j==0)  {
-	    plow = ps[0] - (ps[1]-ps[0])/2; 
-	    pup = ps[0] + (ps[1]-ps[0])/2; 
-    } else{
-            plow = pup;
-            pup = ps[j]*2 - plow;	    
-    } 
-   
-    ptbins.push_back(plow); 
-  }
-  ptbins.push_back(pup); 
+  double plow;
+  double pup;
+  for (int j = 0; j < ps.size(); ++j) {
+    if (j == 0) {
+      plow = ps[0] - (ps[1] - ps[0]) / 2;
+      pup = ps[0] + (ps[1] - ps[0]) / 2;
+    } else {
+      plow = pup;
+      pup = ps[j] * 2 - plow;
+    }
 
+    ptbins.push_back(plow);
+  }
+  ptbins.push_back(pup);
 
   int etaMinT = static_cast<int>(absEtaMin * 10);
   int etaMaxT = static_cast<int>(absEtaMax * 10);
@@ -189,7 +191,6 @@ void comparePerigee_v3(
   if (plotResidualRatio and plotType == 1 and plotResidual) {
     ratioTag = "_ratio";
   }
-
 
   double xTitleSize = 0.05;
   double yTitleSize = 0.05;
@@ -214,49 +215,55 @@ void comparePerigee_v3(
 
   std::pair<double, double> pullRange = {-5, 5};
   std::vector<std::pair<double, double>> resRanges = {
-      {-4, 4},     {-4, 4},   {-0.02, 0.02},
-      {-0.02, 0.02}, {-0.2, 0.2}, {-3.5, 3.5},
+      {-4, 4}, {-4, 4}, {-0.02, 0.02}, {-0.02, 0.02}, {-0.2, 0.2}, {-3.5, 3.5},
   };
-  
-  //For each deg, a few ps
+
+  // For each deg, a few ps
   std::map<std::string, std::vector<TChain*>> chains;
-  // For each deg, nParams hists 
+  // For each deg, nParams hists
   std::map<std::string, std::vector<TH1F*>> means;
-  std::map<std::string, std::vector<TH1F*>> widths; 
-  for(int i=0; i<degs.size(); ++i){
-    for(int j=0; j<ps.size(); ++j){
+  std::map<std::string, std::vector<TH1F*>> widths;
+  for (int i = 0; i < degs.size(); ++i) {
+    for (int j = 0; j < ps.size(); ++j) {
       // Load the tree chain
       TChain* treeChain = new TChain("tracksummary");
-      std::string psstring = std::to_string(static_cast<int>(ps[j]*1000));
-      std::string ptUnit = (usePt)? "Pt":"";
-      std::string inFile = inputPath + "/" + particle + "/absThetaDeg_" + degs[i] + "_" + degs[i] + "_momentum" + ptUnit + "Mev_" + psstring + "_" + psstring + "/tracksummary_ckf.root";
-      std::cout<<"Reading file " << inFile << std::endl; 
-      treeChain->Add(inFile.c_str()); 
-  
+      std::string psstring = std::to_string(static_cast<int>(ps[j] * 1000));
+      std::string ptUnit = (usePt) ? "Pt" : "";
+      std::string inFile = inputPath + "/" + particle + "/absThetaDeg_" +
+                           degs[i] + "_" + degs[i] + "_momentum" + ptUnit +
+                           "Mev_" + psstring + "_" + psstring +
+                           "/tracksummary_ckf.root";
+      std::cout << "Reading file " << inFile << std::endl;
+      treeChain->Add(inFile.c_str());
+
       if (treeChain->GetEntries() == 0) {
         std::cout << "[x] No entries found ... " << std::endl;
         return -1;
-       }
-      
-      chains[degs[i]].push_back(treeChain); 
+      }
+
+      chains[degs[i]].push_back(treeChain);
     }
   }
-   
 
   std::vector<std::string> names = {"l0", "l1", "phi", "theta", "qop", "t"};
-  std::vector<std::string> stores = {"eLOC0", "eLOC1", "ePHI", "eTHETA", "eQOP", "eT"};
+  std::vector<std::string> stores = {"eLOC0",  "eLOC1", "ePHI",
+                                     "eTHETA", "eQOP",  "eT"};
 
-  for(int i=0; i<degs.size(); ++i){
-    for(int j=0; j<names.size(); ++j){
-      means[degs[i]].push_back(new TH1F(Form("%s_%s_mean", names[j].c_str(), degs[i].c_str()), "", ptbins.size()-1, ptbins.data() )); 
-      widths[degs[i]].push_back(new TH1F(Form("%s_%s_width", names[j].c_str(), degs[i].c_str()), "", ptbins.size()-1, ptbins.data() )); 
+  for (int i = 0; i < degs.size(); ++i) {
+    for (int j = 0; j < names.size(); ++j) {
+      means[degs[i]].push_back(
+          new TH1F(Form("%s_%s_mean", names[j].c_str(), degs[i].c_str()), "",
+                   ptbins.size() - 1, ptbins.data()));
+      widths[degs[i]].push_back(
+          new TH1F(Form("%s_%s_width", names[j].c_str(), degs[i].c_str()), "",
+                   ptbins.size() - 1, ptbins.data()));
     }
-    means[degs[i]].push_back(new TH1F(Form("pt_%s_mean", degs[i].c_str()), "", ptbins.size()-1, ptbins.data() )); 
-    widths[degs[i]].push_back(new TH1F(Form("pt_%s_width", degs[i].c_str()), "", ptbins.size()-1, ptbins.data() )); 
+    means[degs[i]].push_back(new TH1F(Form("pt_%s_mean", degs[i].c_str()), "",
+                                      ptbins.size() - 1, ptbins.data()));
+    widths[degs[i]].push_back(new TH1F(Form("pt_%s_width", degs[i].c_str()), "",
+                                       ptbins.size() - 1, ptbins.data()));
   }
 
-
-  
   std::vector<std::pair<double, double>> yRange_resmean_vs_eta;
   std::vector<std::pair<double, double>> yRange_resmean_vs_pt;
   std::vector<std::pair<double, double>> yRange_reswidth_vs_eta;
@@ -266,7 +273,6 @@ void comparePerigee_v3(
   std::vector<std::pair<double, double>> yRange_pullwidth_vs_eta;
   std::vector<std::pair<double, double>> yRange_pullwidth_vs_pt;
 
-  
   std::vector<std::string> pullTitles = {
       "(#frac{d_{0}^{fit} - d_{0}^{truth}}{#sigma(d_{0})})",
       "(#frac{z_{0}^{fit} - z_{0}^{truth}}{#sigma(z_{0})})",
@@ -291,7 +297,6 @@ void comparePerigee_v3(
       "(#phi^{fit} - #phi^{truth})",   "(#theta^{fit} - #theta^{truth})",
       "((q/p)^{fit} - (q/p)^{truth})", "(t^{fit} - t^{truth})",
   };
-
 
   // y axis range of resmean_vs_eta plots
   yRange_resmean_vs_eta = {
@@ -319,8 +324,7 @@ void comparePerigee_v3(
   };
   // y axis range of reswidth_vs_pt plots
   yRange_reswidth_vs_pt = {
-      {0.0, 0.5},        {0.25, 0.6},    {0.0, 0.015},
-      {0, 0.015}, {0, 0.02}, {0.95, 1.1},
+      {0.0, 0.5}, {0.25, 0.6}, {0.0, 0.015}, {0, 0.015}, {0, 0.02}, {0.95, 1.1},
   };
 
   //================================================================================
@@ -353,147 +357,151 @@ void comparePerigee_v3(
   };
 
   // book hists
-  for(const auto& [deg, cs] : chains){
-    for (int i = 0;i < cs.size(); ++i) {
-       auto& chain = cs[i];
-       
-       double degVal;
-       if(deg=="90"){
-         degVal= 90./180*M_PI;
-       } else if(deg=="60"){
-         degVal= 60./180*M_PI;
-       } else if (deg=="30"){
-         degVal= 30./180*M_PI;
-       }
-       double p_;
-       if(usePt){
-          p_ = ps[i]/sin(degVal);
-       } else {
-          p_ = ps[i];
-       }
-       
-       std::string prefix = plotResidual?"res_":"pull_";
+  for (const auto& [deg, cs] : chains) {
+    for (int i = 0; i < cs.size(); ++i) {
+      auto& chain = cs[i];
 
-       for (int j = 0;j < names.size(); ++j) {
-         const auto& name = names[j];
+      double degVal;
+      if (deg == "90") {
+        degVal = 90. / 180 * M_PI;
+      } else if (deg == "60") {
+        degVal = 60. / 180 * M_PI;
+      } else if (deg == "30") {
+        degVal = 30. / 180 * M_PI;
+      }
+      double p_;
+      if (usePt) {
+        p_ = ps[i] / sin(degVal);
+      } else {
+        p_ = ps[i];
+      }
 
-         // The hist y range
-         std::pair<double, double> yRange = pullRange;
-         if (plotResidual) {
-           yRange = resRanges[j];
-         }
+      std::string prefix = plotResidual ? "res_" : "pull_";
 
-	 if(name=="qop" and ps[i] < 0.13){
-           yRange = {-0.5, 0.5};
-	 }
-	 //if(name=="qop"){
-         //  std::cout<<yRange.first  << std::endl;
-         //}
+      for (int j = 0; j < names.size(); ++j) {
+        const auto& name = names[j];
 
+        // The hist y range
+        std::pair<double, double> yRange = pullRange;
+        if (plotResidual) {
+          yRange = resRanges[j];
+        }
 
-         std::string draw = prefix + stores[j] + "_fit";
-         
-         //TH1F* temp = new TH1F(Form("%s_ptbin%i_%s", deg.c_str(), i, name.c_str()), "", 100, yRange.first, yRange.second);
-         //cs[i]->Draw(Form("%s>>temp(200,%f,%f)", draw.c_str(), yRange.first, yRange.second),"nMeasurements>=5&&nHoles<=1");
-         cs[i]->Draw(Form("%s>>temp(200,%f,%f)", draw.c_str(), yRange.first, yRange.second),"nMeasurements>=5");
-         TH1F* temp = (TH1F*)gDirectory->Get("temp"); 
+        if (name == "qop" and ps[i] < 0.13) {
+          yRange = {-0.5, 0.5};
+        }
+        // if(name=="qop"){
+        //   std::cout<<yRange.first  << std::endl;
+        // }
 
-	 double scale = (name!="qop")? 1 : p_*100; 
-         anaHisto(temp, i+1, means[deg][j], widths[deg][j], fit, scale);
+        std::string draw = prefix + stores[j] + "_fit";
+
+        // TH1F* temp = new TH1F(Form("%s_ptbin%i_%s", deg.c_str(), i,
+        // name.c_str()), "", 100, yRange.first, yRange.second);
+        // cs[i]->Draw(Form("%s>>temp(200,%f,%f)", draw.c_str(), yRange.first,
+        // yRange.second),"nMeasurements>=5&&nHoles<=1");
+        cs[i]->Draw(Form("%s>>temp(200,%f,%f)", draw.c_str(), yRange.first,
+                         yRange.second),
+                    "nMeasurements>=5");
+        TH1F* temp = (TH1F*)gDirectory->Get("temp");
+
+        double scale = (name != "qop") ? 1 : p_ * 100;
+        anaHisto(temp, i + 1, means[deg][j], widths[deg][j], fit, scale);
       }
 
       {
-        std::string draw_ = "abs(1./eQOP_fit)*sin(eTHETA_fit) - t_p*sin(t_theta)";
+        std::string draw_ =
+            "abs(1./eQOP_fit)*sin(eTHETA_fit) - t_p*sin(t_theta)";
         std::pair<double, double> yRange_ = {-0.01, 0.01};
-        if(ps[i]>0.13) yRange_ = {-0.03, 0.03};	
-         std::cout<<yRange_.first  << std::endl;
-        cs[i]->Draw(Form("%s>>temp_(100,%f,%f)", draw_.c_str(), yRange_.first, yRange_.second),"nMeasurements>=5");
+        if (ps[i] > 0.13)
+          yRange_ = {-0.03, 0.03};
+        std::cout << yRange_.first << std::endl;
+        cs[i]->Draw(Form("%s>>temp_(100,%f,%f)", draw_.c_str(), yRange_.first,
+                         yRange_.second),
+                    "nMeasurements>=5");
         TH1F* temp_ = (TH1F*)gDirectory->Get("temp_");
-	double scale_ = (usePt)? 100./ps[i] : 100./(ps[i]*sin(degVal));
-	anaHisto(temp_, i+1, means[deg][6], widths[deg][6], fit, scale_);
+        double scale_ = (usePt) ? 100. / ps[i] : 100. / (ps[i] * sin(degVal));
+        anaHisto(temp_, i + 1, means[deg][6], widths[deg][6], fit, scale_);
       }
     }
   }
 
-
   std::vector<TLegend*> legs;
-  for(int i=0; i<names.size()+1; ++i){
-   legs.push_back(new TLegend(0.3, 0.7, 0.6, 0.85));
-   legs[i]->SetLineStyle(0);
-   legs[i]->SetBorderSize(0);
-   //legs[i]->SetFillStyle(0);
+  for (int i = 0; i < names.size() + 1; ++i) {
+    legs.push_back(new TLegend(0.3, 0.7, 0.6, 0.85));
+    legs[i]->SetLineStyle(0);
+    legs[i]->SetBorderSize(0);
+    // legs[i]->SetFillStyle(0);
   }
 
-  std::string xAxisTitle = (usePt)? "p_{T} [GeV]" :  "p [GeV]";
-  std::string plotName = (usePt)? "pt":"p";
+  std::string xAxisTitle = (usePt) ? "p_{T} [GeV]" : "p [GeV]";
+  std::string plotName = (usePt) ? "pt" : "p";
 
-  TCanvas *c1 = new TCanvas("c1", "", 600, 500); 
-  c1->SetGrid();  
-  int i=0; 
-  for(const auto& [deg, hists] : widths){
+  TCanvas* c1 = new TCanvas("c1", "", 600, 500);
+  c1->SetGrid();
+  int i = 0;
+  for (const auto& [deg, hists] : widths) {
     hists[0]->Draw("EsameX0");
     setThisHistStyle(hists[0], colors[i], markers[i], xTitleSize, yTitleSize,
-                         xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
-    hists[0]->GetXaxis()->SetTitle(xAxisTitle.c_str()); 
+                     xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
+    hists[0]->GetXaxis()->SetTitle(xAxisTitle.c_str());
     hists[0]->GetYaxis()->SetTitle("#sigma(d_{0}) [mm]");
-    hists[0]->GetYaxis()->SetRangeUser(0, 1.4); 
-    legs[0]->AddEntry(hists[0],tags[deg].c_str(), "APL"); 
-    i++; 
+    hists[0]->GetYaxis()->SetRangeUser(0, 1.4);
+    legs[0]->AddEntry(hists[0], tags[deg].c_str(), "APL");
+    i++;
   }
   legs[0]->Draw();
-  if(savePlot) 
-  c1->SaveAs(Form("%s_d0_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
+  if (savePlot)
+    c1->SaveAs(Form("%s_d0_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
 
-  i=0; 
-  TCanvas *c2 = new TCanvas("c2", "", 600, 500); 
-  c2->SetGrid();  
-  for(const auto& [deg, hists] : widths){
+  i = 0;
+  TCanvas* c2 = new TCanvas("c2", "", 600, 500);
+  c2->SetGrid();
+  for (const auto& [deg, hists] : widths) {
     hists[1]->Draw("EsameX0");
     setThisHistStyle(hists[1], colors[i], markers[i], xTitleSize, yTitleSize,
-                         xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
-    hists[1]->GetXaxis()->SetTitle(xAxisTitle.c_str()); 
+                     xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
+    hists[1]->GetXaxis()->SetTitle(xAxisTitle.c_str());
     hists[1]->GetYaxis()->SetTitle("#sigma(z_{0}) [mm]");
-    hists[1]->GetYaxis()->SetRangeUser(0.2, 2.0); 
-    legs[1]->AddEntry(hists[1],tags[deg].c_str(), "APL"); 
-    i++; 
+    hists[1]->GetYaxis()->SetRangeUser(0.2, 2.0);
+    legs[1]->AddEntry(hists[1], tags[deg].c_str(), "APL");
+    i++;
   }
   legs[1]->Draw();
-  if(savePlot) 
-  c2->SaveAs(Form("%s_z0_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
+  if (savePlot)
+    c2->SaveAs(Form("%s_z0_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
 
-  i=0;
-  TCanvas *c3 = new TCanvas("c3", "", 600, 500);
-  c3->SetGrid();  
-  for(const auto& [deg, hists] : widths){
+  i = 0;
+  TCanvas* c3 = new TCanvas("c3", "", 600, 500);
+  c3->SetGrid();
+  for (const auto& [deg, hists] : widths) {
     hists[4]->Draw("EsameX0");
     setThisHistStyle(hists[4], colors[i], markers[i], xTitleSize, yTitleSize,
-                         xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
+                     xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
     hists[4]->GetXaxis()->SetTitle(xAxisTitle.c_str());
     hists[4]->GetYaxis()->SetTitle("#sigma(p)/p [%]");
     hists[4]->GetYaxis()->SetRangeUser(0.2, 1.6);
-    legs[4]->AddEntry(hists[4],tags[deg].c_str(), "APL");
+    legs[4]->AddEntry(hists[4], tags[deg].c_str(), "APL");
     i++;
   }
   legs[4]->Draw();
-  if(savePlot) 
-  c3->SaveAs(Form("%s_p_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
+  if (savePlot)
+    c3->SaveAs(Form("%s_p_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
 
-  i=0;
-  TCanvas *c4 = new TCanvas("c4", "", 600, 500);
+  i = 0;
+  TCanvas* c4 = new TCanvas("c4", "", 600, 500);
   c4->SetGrid();
-  for(const auto& [deg, hists] : widths){
+  for (const auto& [deg, hists] : widths) {
     hists[6]->Draw("EsameX0");
     setThisHistStyle(hists[6], colors[i], markers[i], xTitleSize, yTitleSize,
-                         xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
+                     xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
     hists[6]->GetXaxis()->SetTitle(xAxisTitle.c_str());
     hists[6]->GetYaxis()->SetTitle("#sigma(p_{T})/p_{T} [%]");
     hists[6]->GetYaxis()->SetRangeUser(0.2, 1.6);
-    legs[6]->AddEntry(hists[4],tags[deg].c_str(), "APL");
+    legs[6]->AddEntry(hists[4], tags[deg].c_str(), "APL");
     i++;
   }
   legs[6]->Draw();
-  if(savePlot) 
-  c4->SaveAs(Form("%s_pt_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
-
-
+  if (savePlot)
+    c4->SaveAs(Form("%s_pt_vs_%s.pdf", saveTag.c_str(), plotName.c_str()));
 }

@@ -73,14 +73,11 @@ ActsExamples::ProcessCode ActsExamples::TrackFittingAlgorithm::execute(
   // fit-function-object
   ActsExamples::MeasurementCalibrator calibrator(measurements);
   auto pOptions = Acts::PropagatorPlainOptions();
-  pOptions.maxSteps = 10000; 
+  pOptions.maxSteps = 10000;
 
-  GeneralFitterOptions options{ctx.geoContext,
-                               ctx.magFieldContext,
-                               ctx.calibContext,
-                               calibrator,
-                               &(*pSurface),
-                               Acts::LoggerWrapper{logger()},
+  GeneralFitterOptions options{ctx.geoContext,   ctx.magFieldContext,
+                               ctx.calibContext, calibrator,
+                               &(*pSurface),     Acts::LoggerWrapper{logger()},
                                pOptions};
 
   // Perform the fit for each input track

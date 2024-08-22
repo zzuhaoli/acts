@@ -67,28 +67,28 @@ void addRecCKFOptions(ActsExamples::Options::Description& desc) {
       value<ActsExamples::Options::Reals<3>>()->default_value({{20, 0.0, 2.0}}),
       "pT bins, min and max for plotting the performance, must be "
       "of form i:j.");
- opt("ckf-prop-steps", value<int>()->default_value(10000),
-                    "The max propagation steps during ckf.");
- opt("seed-sigma-scattering", value<double>()->default_value(200),
-                    "The seeding sigma scattering.");
- opt("seed-rad-length-per-seed", value<double>()->default_value(0.1),
-                    "The seeding radLengthPerSeed.");
- opt("seed-max-ptscattering", value<double>()->default_value(10),
-                    "The seeding maxPtScattering.");
- opt("seed-impact-max", value<double>()->default_value(10),
-                    "The seeding2impactMax.");
- opt("seed-deltar-max", value<double>()->default_value(80),
-                    "The seeding deltaRMax.");
- opt("seed-deltar-min", value<double>()->default_value(20),
-                    "The seeding deltaRMin.");
- opt("seed-cottheta-max", value<double>()->default_value(2.74),
-                    "The seeding cotThetaMax.");
- opt("seed-max-seeds", value<int>()->default_value(2),
-                    "The maximum number of seeds per event");
- opt("ckf-prop-tolerance", value<double>()->default_value(0.0001),
-                    "The stepper tolerance during ckf.");
- opt("ckf-prop-mass", value<double>()->default_value(139.57018),
-                    "The particle mass during ckf.");
+  opt("ckf-prop-steps", value<int>()->default_value(10000),
+      "The max propagation steps during ckf.");
+  opt("seed-sigma-scattering", value<double>()->default_value(200),
+      "The seeding sigma scattering.");
+  opt("seed-rad-length-per-seed", value<double>()->default_value(0.1),
+      "The seeding radLengthPerSeed.");
+  opt("seed-max-ptscattering", value<double>()->default_value(10),
+      "The seeding maxPtScattering.");
+  opt("seed-impact-max", value<double>()->default_value(10),
+      "The seeding2impactMax.");
+  opt("seed-deltar-max", value<double>()->default_value(80),
+      "The seeding deltaRMax.");
+  opt("seed-deltar-min", value<double>()->default_value(20),
+      "The seeding deltaRMin.");
+  opt("seed-cottheta-max", value<double>()->default_value(2.74),
+      "The seeding cotThetaMax.");
+  opt("seed-max-seeds", value<int>()->default_value(2),
+      "The maximum number of seeds per event");
+  opt("ckf-prop-tolerance", value<double>()->default_value(0.0001),
+      "The stepper tolerance during ckf.");
+  opt("ckf-prop-mass", value<double>()->default_value(139.57018),
+      "The particle mass during ckf.");
 }
 
 int main(int argc, char* argv[]) {
@@ -202,9 +202,10 @@ int main(int argc, char* argv[]) {
       trackFinderCfg.inputMeasurementParticlesMap =
           STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
       trackFinderCfg.inputMeasurementSimHitsMap =
-      STCFMeasurementReaderCfg.outputMeasurementSimHitsMap;
-      trackFinderCfg.inputSimulatedHits = STCFMeasurementReaderCfg.outputSimHits;
- 
+          STCFMeasurementReaderCfg.outputMeasurementSimHitsMap;
+      trackFinderCfg.inputSimulatedHits =
+          STCFMeasurementReaderCfg.outputSimHits;
+
       trackFinderCfg.outputProtoTracks = "prototracks";
       sequencer.addAlgorithm(
           std::make_shared<TruthTrackFinder>(trackFinderCfg, logLevel));
@@ -221,15 +222,19 @@ int main(int argc, char* argv[]) {
       seedingCfg.gridConfig.rMax = 200._mm;
       seedingCfg.seedFinderConfig.rMax = seedingCfg.gridConfig.rMax;
 
-      seedingCfg.seedFilterConfig.deltaRMin = 1._mm*vm["seed-deltar-min"].template as<double>();
+      seedingCfg.seedFilterConfig.deltaRMin =
+          1._mm * vm["seed-deltar-min"].template as<double>();
       seedingCfg.seedFinderConfig.deltaRMin =
           seedingCfg.seedFilterConfig.deltaRMin;
       // seedingCfg.seedFinderConfig.deltaZMax = 20_mm;
 
-      seedingCfg.gridConfig.deltaRMax = 1._mm*vm["seed-deltar-max"].template as<double>();
+      seedingCfg.gridConfig.deltaRMax =
+          1._mm * vm["seed-deltar-max"].template as<double>();
       seedingCfg.seedFinderConfig.deltaRMax = seedingCfg.gridConfig.deltaRMax;
-      
-      seedingCfg.seedFinderConfig.maxPtScattering = vm["seed-max-ptscattering"].template as<double>() * Acts::UnitConstants::GeV;
+
+      seedingCfg.seedFinderConfig.maxPtScattering =
+          vm["seed-max-ptscattering"].template as<double>() *
+          Acts::UnitConstants::GeV;
 
       seedingCfg.seedFinderConfig.collisionRegionMin = -250._mm;
       seedingCfg.seedFinderConfig.collisionRegionMax = 250._mm;
@@ -243,16 +248,20 @@ int main(int argc, char* argv[]) {
       seedingCfg.seedFinderConfig.maxSeedsPerSpM =
           seedingCfg.seedFilterConfig.maxSeedsPerSpM;
 
-      seedingCfg.gridConfig.cotThetaMax = vm["seed-cottheta-max"].template as<double>();  // 1.75 eta
+      seedingCfg.gridConfig.cotThetaMax =
+          vm["seed-cottheta-max"].template as<double>();  // 1.75 eta
       seedingCfg.seedFinderConfig.cotThetaMax =
           seedingCfg.gridConfig.cotThetaMax;
 
-       seedingCfg.seedFinderConfig.sigmaScattering = vm["seed-sigma-scattering"].template as<double>();
-      //seedingCfg.seedFinderConfig.sigmaScattering = 10;
-      //seedingCfg.seedFinderConfig.sigmaScattering = 2; // 2 for 75 and 100 mev
-      seedingCfg.seedFinderConfig.radLengthPerSeed = vm["seed-rad-length-per-seed"].template as<double>();
+      seedingCfg.seedFinderConfig.sigmaScattering =
+          vm["seed-sigma-scattering"].template as<double>();
+      // seedingCfg.seedFinderConfig.sigmaScattering = 10;
+      // seedingCfg.seedFinderConfig.sigmaScattering = 2; // 2 for 75 and 100
+      // mev
+      seedingCfg.seedFinderConfig.radLengthPerSeed =
+          vm["seed-rad-length-per-seed"].template as<double>();
       seedingCfg.maxSeeds = vm["seed-max-seeds"].template as<int>();
-      
+
       seedingCfg.gridConfig.minPt = 40._MeV;
       seedingCfg.seedFinderConfig.minPt = seedingCfg.gridConfig.minPt;
 
@@ -262,7 +271,8 @@ int main(int argc, char* argv[]) {
       seedingCfg.seedFinderConfig.beamPos = {0_mm, 0_mm};
 
       // seedingCfg.seedFinderConfig.impactMax = 3._mm;
-      seedingCfg.seedFinderConfig.impactMax = vm["seed-impact-max"].template as<double>()*1._mm;
+      seedingCfg.seedFinderConfig.impactMax =
+          vm["seed-impact-max"].template as<double>() * 1._mm;
 
       sequencer.addAlgorithm(
           std::make_shared<SeedingAlgorithm>(seedingCfg, logLevel));
@@ -277,7 +287,7 @@ int main(int argc, char* argv[]) {
     tfPerfCfg.inputParticles = inputParticles;
     tfPerfCfg.inputMeasurementParticlesMap =
         STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
-    //tfPerfCfg.filePath = outputDir + "/muon_performance_seeding_trees.root";
+    // tfPerfCfg.filePath = outputDir + "/muon_performance_seeding_trees.root";
     tfPerfCfg.filePath = outputDir + "/performance_seeding_trees20w.root";
     sequencer.addWriter(
         std::make_shared<TrackFinderPerformanceWriter>(tfPerfCfg, logLevel));
@@ -287,7 +297,8 @@ int main(int argc, char* argv[]) {
     seedPerfCfg.inputParticles = inputParticles;
     seedPerfCfg.inputMeasurementParticlesMap =
         STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
-    //seedPerfCfg.filePath = outputDir + "/muon_performance_seeding_hists.root";
+    // seedPerfCfg.filePath = outputDir +
+    // "/muon_performance_seeding_hists.root";
     seedPerfCfg.filePath = outputDir + "/performance_seeding_hists20w.root";
     seedPerfCfg.effPlotToolConfig.varBinning["Eta"] =
         PlotHelpers::Binning("#eta", etaRange[0], etaRange[1], etaRange[2]);
@@ -342,9 +353,9 @@ int main(int argc, char* argv[]) {
   trackFindingCfg.outputTrajectories = "trajectories";
   trackFindingCfg.outputTrackParameters = "parameters";
   trackFindingCfg.computeSharedHits = true;
-  trackFindingCfg.maxPropSteps = vm["ckf-prop-steps"].template as<int>(); 
-  trackFindingCfg.tolerance = vm["ckf-prop-tolerance"].template as<double>(); 
-  trackFindingCfg.mass = vm["ckf-prop-mass"].template as<double>(); 
+  trackFindingCfg.maxPropSteps = vm["ckf-prop-steps"].template as<int>();
+  trackFindingCfg.tolerance = vm["ckf-prop-tolerance"].template as<double>();
+  trackFindingCfg.mass = vm["ckf-prop-mass"].template as<double>();
   trackFindingCfg.findTracks = TrackFindingAlgorithm::makeTrackFinderFunction(
       trackingGeometry, magneticField);
   sequencer.addAlgorithm(
@@ -352,25 +363,25 @@ int main(int argc, char* argv[]) {
 
   std::cout << "Added CKF " << std::endl;
 
-/*生成的trackststes_ckf文件
-  // write track states from CKF
-  RootTrajectoryStatesWriter::Config trackStatesWriter;
-  trackStatesWriter.inputTrajectories = trackFindingCfg.outputTrajectories;
-  // @note The full particles collection is used here to avoid lots of warnings
-  // since the unselected CKF track might have a majority particle not in the
-  // filtered particle collection. This could be avoided when a seperate track
-  // selection algorithm is used.
-  trackStatesWriter.inputParticles = STCFMeasurementReaderCfg.outputParticles;
-  trackStatesWriter.inputSimHits = STCFMeasurementReaderCfg.outputSimHits;
-  trackStatesWriter.inputMeasurementParticlesMap =
-      STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
-  trackStatesWriter.inputMeasurementSimHitsMap =
-      STCFMeasurementReaderCfg.outputMeasurementSimHitsMap;
-  trackStatesWriter.filePath = outputDir + "/trackstates_ckf.root";
-  trackStatesWriter.treeName = "trackstates";
-  sequencer.addWriter(std::make_shared<RootTrajectoryStatesWriter>(
-      trackStatesWriter, logLevel));
-*/
+  /*生成的trackststes_ckf文件
+    // write track states from CKF
+    RootTrajectoryStatesWriter::Config trackStatesWriter;
+    trackStatesWriter.inputTrajectories = trackFindingCfg.outputTrajectories;
+    // @note The full particles collection is used here to avoid lots of warnings
+    // since the unselected CKF track might have a majority particle not in the
+    // filtered particle collection. This could be avoided when a seperate track
+    // selection algorithm is used.
+    trackStatesWriter.inputParticles = STCFMeasurementReaderCfg.outputParticles;
+    trackStatesWriter.inputSimHits = STCFMeasurementReaderCfg.outputSimHits;
+    trackStatesWriter.inputMeasurementParticlesMap =
+        STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
+    trackStatesWriter.inputMeasurementSimHitsMap =
+        STCFMeasurementReaderCfg.outputMeasurementSimHitsMap;
+    trackStatesWriter.filePath = outputDir + "/trackstates_ckf.root";
+    trackStatesWriter.treeName = "trackstates";
+    sequencer.addWriter(std::make_shared<RootTrajectoryStatesWriter>(
+        trackStatesWriter, logLevel));
+  */
 
   // write track summary from CKF
   RootTrajectorySummaryWriter::Config trackSummaryWriter;
@@ -382,7 +393,7 @@ int main(int argc, char* argv[]) {
   trackSummaryWriter.inputParticles = STCFMeasurementReaderCfg.outputParticles;
   trackSummaryWriter.inputMeasurementParticlesMap =
       STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
-  //trackSummaryWriter.filePath = outputDir + "/muon_tracksummary_ckf.root";
+  // trackSummaryWriter.filePath = outputDir + "/muon_tracksummary_ckf.root";
   trackSummaryWriter.filePath = outputDir + "/tracksummary_ckf20w.root";
   trackSummaryWriter.treeName = "tracksummary";
   sequencer.addWriter(std::make_shared<RootTrajectorySummaryWriter>(
@@ -390,7 +401,7 @@ int main(int argc, char* argv[]) {
 
   // Write CKF performance data
   CKFPerformanceWriter::Config perfWriterCfg;
-  perfWriterCfg.inputParticles = inputParticles;//after select
+  perfWriterCfg.inputParticles = inputParticles;  // after select
   perfWriterCfg.inputTrajectories = trackFindingCfg.outputTrajectories;
   perfWriterCfg.inputMeasurementParticlesMap =
       STCFMeasurementReaderCfg.outputMeasurementParticlesMap;
@@ -416,7 +427,7 @@ int main(int argc, char* argv[]) {
       PlotHelpers::Binning("pT [GeV/c]", ptRange[0], ptRange[1], ptRange[2]);
   perfWriterCfg.trackSummaryPlotToolConfig.varBinning["Num"] =
       PlotHelpers::Binning("N", 60, -0.5, 59.5);
-  //perfWriterCfg.filePath = outputDir + "/muon_performance_ckf.root";
+  // perfWriterCfg.filePath = outputDir + "/muon_performance_ckf.root";
   perfWriterCfg.filePath = outputDir + "/performance_ckf20w.root";
   sequencer.addWriter(
       std::make_shared<CKFPerformanceWriter>(perfWriterCfg, logLevel));

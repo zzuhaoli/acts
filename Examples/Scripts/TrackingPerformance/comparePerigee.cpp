@@ -78,7 +78,8 @@ void anaHisto(TH1F* inputHist, int j, TH1F* meanHist, TH1F* widthHist,
               bool fit = false) {
   // evaluate mean and width via the Gauss fit
   assert(inputHist != nullptr);
-  std::cout<<"Histo " << inputHist->GetName() << " has " << inputHist->GetEntries()  << " entries " << std::endl; 
+  std::cout << "Histo " << inputHist->GetName() << " has "
+            << inputHist->GetEntries() << " entries " << std::endl;
   if (inputHist->GetEntries() > 0) {
     if (fit) {
       TFitResultPtr r = inputHist->Fit("gaus", "QS0");
@@ -101,18 +102,30 @@ void anaHisto(TH1F* inputHist, int j, TH1F* meanHist, TH1F* widthHist,
   }
 }
 
-
-void comparePerigee(
-        std::string inFile1 = "/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/tracksummary_ckf.root",
-        std::string inFile2 = "/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/tracksummary_ckf.root",
-        std::string inFile3 = "/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/tracksummary_ckf.root",
-        std::string inFile4 = "/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/tracksummary_ckf.root",
-		double absEtaMin = 0, double absEtaMax = 1.75, double ptMin = 0.2,
-    double ptMax = 2, bool saveAs = false, bool showEta = false,
-    bool showPt = true, bool fit = false, bool plotResidual = true,
-    // plotType 0: mean,   1:width,   2: mean and width
-    int plotType = 1, bool plotResidualRatio = false, bool absEta = true,
-    bool variablePtBin = true, bool statOverflows = false) {
+void comparePerigee(std::string inFile1 =
+                        "/home/xiaocong/Software/Oscar/acts/build/bin/data/"
+                        "reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/"
+                        "tracksummary_ckf.root",
+                    std::string inFile2 =
+                        "/home/xiaocong/Software/Oscar/acts/build/bin/data/"
+                        "reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/"
+                        "tracksummary_ckf.root",
+                    std::string inFile3 =
+                        "/home/xiaocong/Software/Oscar/acts/build/bin/data/"
+                        "reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/"
+                        "tracksummary_ckf.root",
+                    std::string inFile4 =
+                        "/home/xiaocong/Software/Oscar/acts/build/bin/data/"
+                        "reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/"
+                        "tracksummary_ckf.root",
+                    double absEtaMin = 0, double absEtaMax = 1.75,
+                    double ptMin = 0.2, double ptMax = 2, bool saveAs = false,
+                    bool showEta = false, bool showPt = true, bool fit = false,
+                    bool plotResidual = true,
+                    // plotType 0: mean,   1:width,   2: mean and width
+                    int plotType = 1, bool plotResidualRatio = false,
+                    bool absEta = true, bool variablePtBin = true,
+                    bool statOverflows = false) {
   gStyle->SetOptFit(0000);
   gStyle->SetOptStat(0000);
   gStyle->SetPadLeftMargin(0.20);
@@ -275,8 +288,7 @@ void comparePerigee(
 
   std::pair<double, double> pullRange = {-5, 5};
   std::vector<std::pair<double, double>> resRanges = {
-      {-1, 1},         {-1, 1},       {-0.02, 0.02},
-      {-0.02, 0.02}, {-1, 1}, {-3.5, 3.5},
+      {-1, 1}, {-1, 1}, {-0.02, 0.02}, {-0.02, 0.02}, {-1, 1}, {-3.5, 3.5},
   };
 
   std::vector<std::string> legs = {
@@ -346,7 +358,7 @@ void comparePerigee(
     };
     // y axis range of reswidth_vs_pt plots
     yRange_reswidth_vs_pt = {
-        {0.0, 0.5},        {0.0, 0.5},    {0.0, 0.0015},
+        {0.0, 0.5},         {0.0, 0.5},     {0.0, 0.0015},
         {-0.00015, 0.0012}, {-0.003, 0.02}, {0.95, 1.1},
     };
 

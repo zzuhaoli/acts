@@ -205,15 +205,14 @@ ActsExamples::ProcessCode ActsExamples::RootTrajectorySummaryWriter::writeT(
       m_measurementChi2.push_back(trajState.measurementChi2);
       m_outlierChi2.push_back(trajState.measurementChi2);
 
-
       // collect the index of the measurement
-      std::vector<double> sls; 
+      std::vector<double> sls;
       mj.visitBackwards(trackTip, [&](const auto& state) {
         auto typeFlags = state.typeFlags();
         if (typeFlags.test(Acts::TrackStateFlag::MeasurementFlag)) {
-            auto sl = dynamic_cast<const IndexSourceLink*>(&state.uncalibrated()); 
-	    //std::cout<<"sl index " << sl->index() << std::endl; 
-	    sls.push_back(sl->index());
+          auto sl = dynamic_cast<const IndexSourceLink*>(&state.uncalibrated());
+          // std::cout<<"sl index " << sl->index() << std::endl;
+          sls.push_back(sl->index());
         }
         return true;
       });
@@ -275,8 +274,8 @@ ActsExamples::ProcessCode ActsExamples::RootTrajectorySummaryWriter::writeT(
           const auto& particle = *ip;
           ACTS_DEBUG(
               "Find the truth particle with barcode = " << majorityParticleId);
-          majorityParticlePdg = particle.pdg();  
-	  // Get the truth particle info at vertex
+          majorityParticlePdg = particle.pdg();
+          // Get the truth particle info at vertex
           t_p = particle.absoluteMomentum();
           t_charge = particle.charge();
           t_time = particle.time();

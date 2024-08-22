@@ -75,10 +75,10 @@ void setYRange(TH1F* hist, double yMinScale = 0.5, double yMaxScale = 1.5) {
 }
 
 void anaHisto(TH1D* inputHist, int j, TH1F* meanHist, TH1F* widthHist,
-              bool fit = false, double scale=1) {
+              bool fit = false, double scale = 1) {
   // evaluate mean and width via the Gauss fit
   assert(inputHist != nullptr);
-  std::cout<<"anaHisto for " << inputHist->GetName() << std::endl; 
+  std::cout << "anaHisto for " << inputHist->GetName() << std::endl;
   if (inputHist->GetEntries() > 0) {
     if (fit) {
       TFitResultPtr r = inputHist->Fit("gaus", "QS0");
@@ -87,7 +87,7 @@ void anaHisto(TH1D* inputHist, int j, TH1F* meanHist, TH1F* widthHist,
         // respectively
         meanHist->SetBinContent(j, r->Parameter(1));
         meanHist->SetBinError(j, r->ParError(1));
-        widthHist->SetBinContent(j, r->Parameter(2)*scale);
+        widthHist->SetBinContent(j, r->Parameter(2) * scale);
         widthHist->SetBinError(j, r->ParError(2));
       }
     } else {
@@ -95,31 +95,45 @@ void anaHisto(TH1D* inputHist, int j, TH1F* meanHist, TH1F* widthHist,
       meanHist->SetBinError(j, inputHist->GetMeanError());
       // meanHist->SetBinError(j, inputHist->GetRMS());
 
-      widthHist->SetBinContent(j, inputHist->GetRMS()*scale);
+      widthHist->SetBinContent(j, inputHist->GetRMS() * scale);
       widthHist->SetBinError(j, inputHist->GetRMSError());
     }
   }
 }
 
-
-void comparePerigee_v1(
-	std::string inFile1 = "/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_90deg/tracksummary_ckf.root",
-	std::string inFile2 = "/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/muon_30deg/tracksummary_ckf.root",
-	std::string inFile3 = "/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_90deg/tracksummary_ckf.root",
-	std::string inFile4 = "/home/xiaocong/Software/Oscar/acts/build/bin/data/reco_STCF_OscarSim_reco_seeds/landauLoss/pion_30deg/tracksummary_ckf.root",
-    double absEtaMin = 0, double absEtaMax = 1.75, double ptMin = 0.05,
-    double ptMax = 1.8, bool saveAs = false, bool showEta = false,
-    bool showPt = true, bool fit = true, bool plotResidual = true,
-    // plotType 0: mean,   1:width,   2: mean and width
-    int plotType = 1, bool plotResidualRatio = false, bool absEta = true,
-    bool variablePtBin = true, 
-    std::vector<std::string> legs = {
-        "muon (#theta=90 deg)",
-        "muon (#theta=30 deg)",
-        "pion (#theta=90 deg)",
-        "pion (#theta=30 deg)",
-    },
-    std::vector<int> colors = {872, 866, 854, 896}, std::vector<int> markers ={24, 26, 20, 22}) {
+void comparePerigee_v1(std::string inFile1 =
+                           "/home/xiaocong/Software/Oscar/acts/build/bin/data/"
+                           "reco_STCF_OscarSim_reco_seeds/landauLoss/"
+                           "muon_90deg/tracksummary_ckf.root",
+                       std::string inFile2 =
+                           "/home/xiaocong/Software/Oscar/acts/build/bin/data/"
+                           "reco_STCF_OscarSim_reco_seeds/landauLoss/"
+                           "muon_30deg/tracksummary_ckf.root",
+                       std::string inFile3 =
+                           "/home/xiaocong/Software/Oscar/acts/build/bin/data/"
+                           "reco_STCF_OscarSim_reco_seeds/landauLoss/"
+                           "pion_90deg/tracksummary_ckf.root",
+                       std::string inFile4 =
+                           "/home/xiaocong/Software/Oscar/acts/build/bin/data/"
+                           "reco_STCF_OscarSim_reco_seeds/landauLoss/"
+                           "pion_30deg/tracksummary_ckf.root",
+                       double absEtaMin = 0, double absEtaMax = 1.75,
+                       double ptMin = 0.05, double ptMax = 1.8,
+                       bool saveAs = false, bool showEta = false,
+                       bool showPt = true, bool fit = true,
+                       bool plotResidual = true,
+                       // plotType 0: mean,   1:width,   2: mean and width
+                       int plotType = 1, bool plotResidualRatio = false,
+                       bool absEta = true, bool variablePtBin = true,
+                       std::vector<std::string> legs =
+                           {
+                               "muon (#theta=90 deg)",
+                               "muon (#theta=30 deg)",
+                               "pion (#theta=90 deg)",
+                               "pion (#theta=30 deg)",
+                           },
+                       std::vector<int> colors = {872, 866, 854, 896},
+                       std::vector<int> markers = {24, 26, 20, 22}) {
   gStyle->SetOptFit(0000);
   gStyle->SetOptStat(0000);
   gStyle->SetPadLeftMargin(0.20);
@@ -277,19 +291,19 @@ void comparePerigee_v1(
 
   double etaRange = 3.;
   int etaBins = 12;
-  //std::vector<double> pts = {0.05, 0.1, 0.15, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 2.0};
+  // std::vector<double> pts = {0.05, 0.1, 0.15, 0.2, 0.4, 0.6,
+  // 0.8, 1.0, 1.5, 2.0};
   std::vector<double> pts = {0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0};
   std::vector<double> ps;
   std::vector<double> ps_;
-  for(int i=0; i<pts.size()-1; ++i){
-      ps.push_back((pts[i] + pts[i+1])/2);
-      ps_.push_back((pts[i] + pts[i+1])/2/sin(30.0/180*M_PI));
+  for (int i = 0; i < pts.size() - 1; ++i) {
+    ps.push_back((pts[i] + pts[i + 1]) / 2);
+    ps_.push_back((pts[i] + pts[i + 1]) / 2 / sin(30.0 / 180 * M_PI));
   }
 
   std::pair<double, double> pullRange = {-5, 5};
   std::vector<std::pair<double, double>> resRanges = {
-      {-1, 1},     {-1, 1},   {-0.02, 0.02},
-      {-0.02, 0.02}, {-0.1, 0.1}, {-3.5, 3.5},
+      {-1, 1}, {-1, 1}, {-0.02, 0.02}, {-0.02, 0.02}, {-0.1, 0.1}, {-3.5, 3.5},
   };
 
   std::vector<std::string> names = {"l0", "l1", "phi", "theta", "qop", "t"};
@@ -354,8 +368,8 @@ void comparePerigee_v1(
     };
     // y axis range of reswidth_vs_pt plots
     yRange_reswidth_vs_pt = {
-        {0.0, 0.5},        {0.25, 0.6},    {0.0, 0.015},
-        {0, 0.015}, {0, 0.02}, {0.95, 1.1},
+        {0.0, 0.5}, {0.25, 0.6}, {0.0, 0.015},
+        {0, 0.015}, {0, 0.02},   {0.95, 1.1},
     };
 
     //================================================================================
@@ -752,12 +766,12 @@ void comparePerigee_v1(
                                       tracks.res_eTHETA_fit->at(it));
               etaHists["qop"]->Fill(tracks.t_eta->at(it),
                                     tracks.res_eQOP_fit->at(it));
-                                    //tracks.res_eQOP_fit->at(it)*tracks.t_p->at(it));
+              // tracks.res_eQOP_fit->at(it)*tracks.t_p->at(it));
               etaHists["t"]->Fill(tracks.t_eta->at(it),
                                   timeInns(tracks.res_eT_fit->at(it)));
             }
 
-	    //if (withinEta) {
+            // if (withinEta) {
             if (1) {
               ptHists["l0"]->Fill(tracks.t_pT->at(it),
                                   tracks.res_eLOC0_fit->at(it));
@@ -769,7 +783,7 @@ void comparePerigee_v1(
                                      tracks.res_eTHETA_fit->at(it));
               ptHists["qop"]->Fill(tracks.t_pT->at(it),
                                    tracks.res_eQOP_fit->at(it));
-                                   //tracks.res_eQOP_fit->at(it)*tracks.t_p->at(it));
+              // tracks.res_eQOP_fit->at(it)*tracks.t_p->at(it));
               ptHists["t"]->Fill(tracks.t_pT->at(it),
                                  timeInns(tracks.res_eT_fit->at(it)));
             }
@@ -789,7 +803,7 @@ void comparePerigee_v1(
                                   tracks.pull_eT_fit->at(it));
             }
 
-            //if (withinEta) {
+            // if (withinEta) {
             if (1) {
               ptHists["l0"]->Fill(tracks.t_pT->at(it),
                                   tracks.pull_eLOC0_fit->at(it));
@@ -823,54 +837,66 @@ void comparePerigee_v1(
     for (int j = 1; j <= ref1mean_vs_eta["l0"]->GetNbinsX(); ++j) {
       TH1D* temp = ref1_vs_eta[name]->ProjectionY(
           Form("%s_projy_bin%d", "Pull_vs_eta_Histo", j), j, j);
-      anaHisto(temp, j, ref1mean_vs_eta.at(name), ref1width_vs_eta.at(name), fit);
+      anaHisto(temp, j, ref1mean_vs_eta.at(name), ref1width_vs_eta.at(name),
+               fit);
     }
     for (int j = 1; j <= val1mean_vs_eta["l0"]->GetNbinsX(); ++j) {
       TH1D* temp = val1_vs_eta[name]->ProjectionY(
           Form("%s_projy_bin%d", "Pull_vs_eta_Histo", j), j, j);
-      anaHisto(temp, j, val1mean_vs_eta.at(name), val1width_vs_eta.at(name), fit);
+      anaHisto(temp, j, val1mean_vs_eta.at(name), val1width_vs_eta.at(name),
+               fit);
     }
     for (int j = 1; j <= ref2mean_vs_eta["l0"]->GetNbinsX(); ++j) {
       TH1D* temp = ref2_vs_eta[name]->ProjectionY(
           Form("%s_projy_bin%d", "Pull_vs_eta_Histo", j), j, j);
-      anaHisto(temp, j, ref2mean_vs_eta.at(name), ref2width_vs_eta.at(name), fit);
+      anaHisto(temp, j, ref2mean_vs_eta.at(name), ref2width_vs_eta.at(name),
+               fit);
     }
     for (int j = 1; j <= val2mean_vs_eta["l0"]->GetNbinsX(); ++j) {
       TH1D* temp = val2_vs_eta[name]->ProjectionY(
           Form("%s_projy_bin%d", "Pull_vs_eta_Histo", j), j, j);
-      anaHisto(temp, j, val2mean_vs_eta.at(name), val2width_vs_eta.at(name), fit);
+      anaHisto(temp, j, val2mean_vs_eta.at(name), val2width_vs_eta.at(name),
+               fit);
     }
 
     // mean and width vs. pt
     std::cout << "There are " << ref1mean_vs_pt["l0"]->GetNbinsX() << " pt bins"
               << std::endl;
     for (int j = 1; j <= ref1mean_vs_pt["l0"]->GetNbinsX(); ++j) {
-      double scale=1;
-      if(name=="qop") scale = ps[j-1]; 
+      double scale = 1;
+      if (name == "qop")
+        scale = ps[j - 1];
       TH1D* temp = ref1_vs_pt[name]->ProjectionY(
           Form("%s_projy_bin%d", "Pull_vs_pt_Histo", j), j, j);
-      anaHisto(temp, j, ref1mean_vs_pt.at(name), ref1width_vs_pt.at(name), fit, scale);
+      anaHisto(temp, j, ref1mean_vs_pt.at(name), ref1width_vs_pt.at(name), fit,
+               scale);
     }
     for (int j = 1; j <= val1mean_vs_pt["l0"]->GetNbinsX(); ++j) {
-      double scale=1;
-      if(name=="qop") scale = ps_[j-1]; 
+      double scale = 1;
+      if (name == "qop")
+        scale = ps_[j - 1];
       TH1D* temp = val1_vs_pt[name]->ProjectionY(
           Form("%s_projy_bin%d", "Pull_vs_pt_Histo", j), j, j);
-      anaHisto(temp, j, val1mean_vs_pt.at(name), val1width_vs_pt.at(name), fit, scale);
+      anaHisto(temp, j, val1mean_vs_pt.at(name), val1width_vs_pt.at(name), fit,
+               scale);
     }
     for (int j = 1; j <= ref2mean_vs_pt["l0"]->GetNbinsX(); ++j) {
-      double scale=1;
-      if(name=="qop") scale = ps[j-1]; 
+      double scale = 1;
+      if (name == "qop")
+        scale = ps[j - 1];
       TH1D* temp = ref2_vs_pt[name]->ProjectionY(
           Form("%s_projy_bin%d", "Pull_vs_pt_Histo", j), j, j);
-      anaHisto(temp, j, ref2mean_vs_pt.at(name), ref2width_vs_pt.at(name), fit, scale);
+      anaHisto(temp, j, ref2mean_vs_pt.at(name), ref2width_vs_pt.at(name), fit,
+               scale);
     }
     for (int j = 1; j <= val2mean_vs_pt["l0"]->GetNbinsX(); ++j) {
-      double scale=1;
-      if(name=="qop") scale = ps_[j-1]; 
+      double scale = 1;
+      if (name == "qop")
+        scale = ps_[j - 1];
       TH1D* temp = val2_vs_pt[name]->ProjectionY(
           Form("%s_projy_bin%d", "Pull_vs_pt_Histo", j), j, j);
-      anaHisto(temp, j, val2mean_vs_pt.at(name), val2width_vs_pt.at(name), fit, scale);
+      anaHisto(temp, j, val2mean_vs_pt.at(name), val2width_vs_pt.at(name), fit,
+               scale);
     }
   }
 
@@ -1015,14 +1041,10 @@ void comparePerigee_v1(
           val2Hists[names[i]]->GetYaxis()->SetTitle(
               Form("#sigma%s", leg.c_str()));
         } else if (plotMean) {
-          ref1Hists[names[i]]->GetYaxis()->SetTitle(
-              Form("#mu%s", leg.c_str()));
-          val1Hists[names[i]]->GetYaxis()->SetTitle(
-              Form("#mu%s", leg.c_str()));
-          ref2Hists[names[i]]->GetYaxis()->SetTitle(
-              Form("#mu%s", leg.c_str()));
-          val2Hists[names[i]]->GetYaxis()->SetTitle(
-              Form("#mu%s", leg.c_str()));
+          ref1Hists[names[i]]->GetYaxis()->SetTitle(Form("#mu%s", leg.c_str()));
+          val1Hists[names[i]]->GetYaxis()->SetTitle(Form("#mu%s", leg.c_str()));
+          ref2Hists[names[i]]->GetYaxis()->SetTitle(Form("#mu%s", leg.c_str()));
+          val2Hists[names[i]]->GetYaxis()->SetTitle(Form("#mu%s", leg.c_str()));
         }
       } else {
         if (not plotMean) {
@@ -1087,42 +1109,46 @@ void comparePerigee_v1(
       }
 
       if (labelSize == 0) {
-        setThisHistStyle(ref1Hists[names[i]], colors[0], markers[0], xTitleSize, yTitleSize,
-                         xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
-        setThisHistStyle(val1Hists[names[i]], colors[1], markers[1], xTitleSize, yTitleSize,
-                         xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
-        setThisHistStyle(ref2Hists[names[i]], colors[2], markers[2], xTitleSize, yTitleSize,
-                         xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
-        setThisHistStyle(val2Hists[names[i]], colors[3], markers[3], xTitleSize, yTitleSize,
-                         xLabelSize, yLabelSize, xTitleOffset, yTitleOffset);
+        setThisHistStyle(ref1Hists[names[i]], colors[0], markers[0], xTitleSize,
+                         yTitleSize, xLabelSize, yLabelSize, xTitleOffset,
+                         yTitleOffset);
+        setThisHistStyle(val1Hists[names[i]], colors[1], markers[1], xTitleSize,
+                         yTitleSize, xLabelSize, yLabelSize, xTitleOffset,
+                         yTitleOffset);
+        setThisHistStyle(ref2Hists[names[i]], colors[2], markers[2], xTitleSize,
+                         yTitleSize, xLabelSize, yLabelSize, xTitleOffset,
+                         yTitleOffset);
+        setThisHistStyle(val2Hists[names[i]], colors[3], markers[3], xTitleSize,
+                         yTitleSize, xLabelSize, yLabelSize, xTitleOffset,
+                         yTitleOffset);
 
       } else if (labelSize == 1) {
-        setThisHistStyle(ref1Hists[names[i]], colors[0], markers[0], topXTitleSize,
-                         topYTitleSize, topXLabelSize, topYLabelSize,
-                         topXTitleOffset, topYTitleOffset, 505);
-        setThisHistStyle(val1Hists[names[i]], colors[1], markers[1], topXTitleSize,
-                         topYTitleSize, topXLabelSize, topYLabelSize,
-                         topXTitleOffset, topYTitleOffset, 505);
-        setThisHistStyle(ref2Hists[names[i]], colors[2], markers[2], topXTitleSize,
-                         topYTitleSize, topXLabelSize, topYLabelSize,
-                         topXTitleOffset, topYTitleOffset, 505);
-        setThisHistStyle(val2Hists[names[i]], colors[3], markers[3], topXTitleSize,
-                         topYTitleSize, topXLabelSize, topYLabelSize,
-                         topXTitleOffset, topYTitleOffset, 505);
+        setThisHistStyle(ref1Hists[names[i]], colors[0], markers[0],
+                         topXTitleSize, topYTitleSize, topXLabelSize,
+                         topYLabelSize, topXTitleOffset, topYTitleOffset, 505);
+        setThisHistStyle(val1Hists[names[i]], colors[1], markers[1],
+                         topXTitleSize, topYTitleSize, topXLabelSize,
+                         topYLabelSize, topXTitleOffset, topYTitleOffset, 505);
+        setThisHistStyle(ref2Hists[names[i]], colors[2], markers[2],
+                         topXTitleSize, topYTitleSize, topXLabelSize,
+                         topYLabelSize, topXTitleOffset, topYTitleOffset, 505);
+        setThisHistStyle(val2Hists[names[i]], colors[3], markers[3],
+                         topXTitleSize, topYTitleSize, topXLabelSize,
+                         topYLabelSize, topXTitleOffset, topYTitleOffset, 505);
 
       } else if (labelSize == 2) {
-        setThisHistStyle(ref1Hists[names[i]], colors[0], markers[0], botXTitleSize,
-                         botYTitleSize, botXLabelSize, botYLabelSize,
-                         botXTitleOffset, botYTitleOffset, 505);
-        setThisHistStyle(val1Hists[names[i]], colors[1], markers[1], botXTitleSize,
-                         botYTitleSize, botXLabelSize, botYLabelSize,
-                         botXTitleOffset, botYTitleOffset, 505);
-        setThisHistStyle(ref2Hists[names[i]], colors[2], markers[2], botXTitleSize,
-                         botYTitleSize, botXLabelSize, botYLabelSize,
-                         botXTitleOffset, botYTitleOffset, 505);
-        setThisHistStyle(val2Hists[names[i]], colors[3], markers[3], botXTitleSize,
-                         botYTitleSize, botXLabelSize, botYLabelSize,
-                         botXTitleOffset, botYTitleOffset, 505);
+        setThisHistStyle(ref1Hists[names[i]], colors[0], markers[0],
+                         botXTitleSize, botYTitleSize, botXLabelSize,
+                         botYLabelSize, botXTitleOffset, botYTitleOffset, 505);
+        setThisHistStyle(val1Hists[names[i]], colors[1], markers[1],
+                         botXTitleSize, botYTitleSize, botXLabelSize,
+                         botYLabelSize, botXTitleOffset, botYTitleOffset, 505);
+        setThisHistStyle(ref2Hists[names[i]], colors[2], markers[2],
+                         botXTitleSize, botYTitleSize, botXLabelSize,
+                         botYLabelSize, botXTitleOffset, botYTitleOffset, 505);
+        setThisHistStyle(val2Hists[names[i]], colors[3], markers[3],
+                         botXTitleSize, botYTitleSize, botXLabelSize,
+                         botYLabelSize, botXTitleOffset, botYTitleOffset, 505);
       }
 
       if (plotEta) {
@@ -1174,10 +1200,8 @@ void comparePerigee_v1(
       if (addEntry) {
         if (plotEta) {
           if (plotResidualRatio) {
-            legs_eta[i]->AddEntry(val1Hists[names[i]],
-                                  "val1 tag", "lep");
-            legs_eta[i]->AddEntry(val2Hists[names[i]], "val2 tag",
-                                  "lep");
+            legs_eta[i]->AddEntry(val1Hists[names[i]], "val1 tag", "lep");
+            legs_eta[i]->AddEntry(val2Hists[names[i]], "val2 tag", "lep");
           } else {
             legs_eta[i]->AddEntry(ref2Hists[names[i]], legs[2].c_str(), "lep");
             legs_eta[i]->AddEntry(val2Hists[names[i]], legs[3].c_str(), "lep");
@@ -1186,10 +1210,8 @@ void comparePerigee_v1(
 
         } else {
           if (plotResidualRatio) {
-            legs_pt[i]->AddEntry(val1Hists[names[i]],
-                                 "val1 tag", "lep");
-            legs_pt[i]->AddEntry(val2Hists[names[i]], "val2 tag",
-                                 "lep");
+            legs_pt[i]->AddEntry(val1Hists[names[i]], "val1 tag", "lep");
+            legs_pt[i]->AddEntry(val2Hists[names[i]], "val2 tag", "lep");
           } else {
             legs_pt[i]->AddEntry(ref1Hists[names[i]], legs[0].c_str(), "lep");
             legs_pt[i]->AddEntry(val1Hists[names[i]], legs[1].c_str(), "lep");

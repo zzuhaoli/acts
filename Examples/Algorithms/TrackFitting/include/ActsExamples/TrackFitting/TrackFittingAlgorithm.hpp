@@ -125,16 +125,14 @@ class TrackFittingAlgorithm final : public BareAlgorithm {
       std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry,
       std::shared_ptr<const Acts::MagneticFieldProvider> magneticField,
       bool multipleScattering = true, bool energyLoss = true,
-      double reverseFilteringMomThreshold = 0.0,
-      double chi2Cut = 15,
+      double reverseFilteringMomThreshold = 0.0, double chi2Cut = 15,
       Acts::FreeToBoundCorrection freeToBoundCorrection =
           Acts::FreeToBoundCorrection());
 
   static std::shared_ptr<DirectedTrackFitterFunction> makeKalmanFitterFunction(
       std::shared_ptr<const Acts::MagneticFieldProvider> magneticField,
       bool multipleScattering = true, bool energyLoss = true,
-      double reverseFilteringMomThreshold = 0.0,
-      double chi2Cut = 15,
+      double reverseFilteringMomThreshold = 0.0, double chi2Cut = 15,
       Acts::FreeToBoundCorrection freeToBoundCorrection =
           Acts::FreeToBoundCorrection());
 

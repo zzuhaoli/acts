@@ -67,7 +67,8 @@ ActsExamples::ProcessCode ActsExamples::SurfaceSortingAlgorithm::execute(
     for (auto const& [time, hit] : trackHitList) {
       sortedProtoTrack.emplace_back(hit);
     }
-    std::cout<<"proto track has " << sortedProtoTrack.size() << " hits "<< std::endl;
+    std::cout << "proto track has " << sortedProtoTrack.size() << " hits "
+              << std::endl;
 
     sortedTracks.emplace_back(std::move(sortedProtoTrack));
   }

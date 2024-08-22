@@ -8,26 +8,26 @@
 
 #pragma once
 
+#include "Acts/Geometry/TrackingGeometry.hpp"
+#include "Acts/Surfaces/CylinderSurface.hpp"
+#include "ActsExamples/EventData/Measurement.hpp"
 #include "ActsExamples/Framework/IReader.hpp"
 #include "ActsExamples/Framework/IService.hpp"
 #include "ActsExamples/Framework/ProcessCode.hpp"
-#include "ActsExamples/EventData/Measurement.hpp"
+#include "ActsExamples/Framework/RandomNumbers.hpp"
 #include <Acts/Definitions/Algebra.hpp>
 #include <Acts/Propagator/MaterialInteractor.hpp>
 #include <Acts/Utilities/Logger.hpp>
-#include "Acts/Geometry/TrackingGeometry.hpp"
-#include "ActsExamples/Framework/RandomNumbers.hpp"
-#include "Acts/Surfaces/CylinderSurface.hpp"
+
+#include <mutex>
+#include <vector>
 
 #include <TTreeReader.h>
 #include <TTreeReaderArray.h>
 #include <TTreeReaderValue.h>
 
-#include <mutex>
-#include <vector>
-
 class TTreeReader;
-//class TTreeReaderArray;
+// class TTreeReaderArray;
 
 namespace ActsExamples {
 
@@ -55,9 +55,9 @@ class RootSTCFMeasurementReader : public IReader {
     std::shared_ptr<const Acts::TrackingGeometry> trackingGeometry = nullptr;
     /// Random numbers service.
     std::shared_ptr<const RandomNumbers> randomNumbers = nullptr;
-    
+
     std::string treeName = "events";  ///< name of the input tree
-    std::string filePath;                   ///< The name of the input file
+    std::string filePath;             ///< The name of the input file
 
     /// Whether the events are ordered or not
     bool orderedEvents = true;
@@ -72,7 +72,9 @@ class RootSTCFMeasurementReader : public IReader {
   ~RootSTCFMeasurementReader();
 
   /// Framework name() method
-  std::string name() const final override { return "RootSTCFMeasurementReader"; }
+  std::string name() const final override {
+    return "RootSTCFMeasurementReader";
+  }
 
   /// Return the available events range.
   std::pair<size_t, size_t> availableEvents() const final override;
@@ -102,27 +104,30 @@ class RootSTCFMeasurementReader : public IReader {
   /// The number of events
   size_t m_events = 0;
 
-  std::array<int, 48> m_MDCnCells = {128, 128, 128, 128, 128, 128, 160, 160, 160, 160, 160, 160, 192, 192, 192, 192, 192, 192, 224, 224, 224, 224, 224, 224, 256, 256, 256, 256, 256, 256, 288, 288, 288, 288, 288, 288, 320, 320, 320, 320, 320, 320, 352, 352, 352, 352, 352, 352};
+  std::array<int, 48> m_MDCnCells = {
+      128, 128, 128, 128, 128, 128, 160, 160, 160, 160, 160, 160,
+      192, 192, 192, 192, 192, 192, 224, 224, 224, 224, 224, 224,
+      256, 256, 256, 256, 256, 256, 288, 288, 288, 288, 288, 288,
+      320, 320, 320, 320, 320, 320, 352, 352, 352, 352, 352, 352};
 
-  std::array<int, 48> m_MDCsCells = { 0,128,256,384,512,640,
-  768,928,1088,1248,1408,1568,
-  1728,1920,2112,2304,2496,2688,
-  2880,3104,3328,3552,3776,4000,
-  4224,4480,4736,4992,5248,5504,
-  5760,6048,6336,6624,6912,7200,
-  7488,7808,8128,8448,8768,9088,
-  9408,9760,10112,10464,10816,11168};
+  std::array<int, 48> m_MDCsCells = {
+      0,    128,  256,  384,  512,   640,   768,   928,  1088, 1248,
+      1408, 1568, 1728, 1920, 2112,  2304,  2496,  2688, 2880, 3104,
+      3328, 3552, 3776, 4000, 4224,  4480,  4736,  4992, 5248, 5504,
+      5760, 6048, 6336, 6624, 6912,  7200,  7488,  7808, 8128, 8448,
+      8768, 9088, 9408, 9760, 10112, 10464, 10816, 11168};
 
-  std::array<int, 2> m_volumeIDs = {9,11};
-  //std::array<Acts::ActsScalar, 3> m_ITKRadius = {65.2276,115.228,165.228};
-  std::array<Acts::ActsScalar, 3> m_ITKRadius = {65.1125,115.113,165.112};
-//  std::map<int, std::pair<Acts::ActsScalar, Acts::ActsScalar>> m_ITKVariances = {
-//	  {0, {}}, 
-//	  {1, {}},
-//	  {2, {}},
-//  };
+  std::array<int, 2> m_volumeIDs = {9, 11};
+  // std::array<Acts::ActsScalar, 3> m_ITKRadius = {65.2276,115.228,165.228};
+  std::array<Acts::ActsScalar, 3> m_ITKRadius = {65.1125, 115.113, 165.112};
+  //  std::map<int, std::pair<Acts::ActsScalar, Acts::ActsScalar>>
+  //  m_ITKVariances = {
+  //	  {0, {}},
+  //	  {1, {}},
+  //	  {2, {}},
+  //  };
 
-  size_t m_evtCounter =0;
+  size_t m_evtCounter = 0;
 
   /// The input tree name
   TTreeReader* m_treeReader = nullptr;
@@ -138,7 +143,6 @@ class RootSTCFMeasurementReader : public IReader {
   TTreeReaderArray<float>* particleMomentumY = nullptr;
   TTreeReaderArray<float>* particleMomentumZ = nullptr;
 
-
   TTreeReaderArray<int>* ITKlayerID = nullptr;
   TTreeReaderArray<int>* ITKparentID = nullptr;
   TTreeReaderArray<int>* ITKparticleId = nullptr;
@@ -150,7 +154,7 @@ class RootSTCFMeasurementReader : public IReader {
   TTreeReaderArray<Acts::ActsScalar>* ITKmomentumZ = nullptr;
   TTreeReaderArray<Acts::ActsScalar>* ITKtime = nullptr;
   TTreeReaderArray<double>* ITKmass = nullptr;
-  
+
   TTreeReaderArray<int>* MDCcellID = nullptr;
   TTreeReaderArray<int>* MDClayerID = nullptr;
   TTreeReaderArray<int>* MDCparentID = nullptr;

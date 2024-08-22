@@ -344,8 +344,10 @@ std::shared_ptr<const Acts::TrackingGeometry> buildTGeoDetector(
   // check the trackingGeometry geometryId
   trackingGeometry->visitSurfaces([&](const Acts::Surface* surface) {
     std::cout << "surface geometryId " << surface->geometryId() << std::endl;
-    auto center = surface->center(context);  
-    std::cout<<"center = " << center.transpose() <<" with r " << std::hypot(center.x(), center.y()) <<", phi = " << std::atan2(center.y(), center.x()) << std::endl; 
+    auto center = surface->center(context);
+    std::cout<<"center = " << center.transpose() <<" with r " <<
+  std::hypot(center.x(), center.y()) <<", phi = " << std::atan2(center.y(),
+  center.x()) << std::endl;
   });
 */
 
