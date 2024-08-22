@@ -269,14 +269,18 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // 1) Reading ITK hits
       /////////////////////////////////////////////////////////////////////////////////////////////////
-      for (size_t i = 0; i < ITKpositionX->GetSize(); ++i) {
+      //for (size_t i = 0; i < ITKpositionX->GetSize(); ++i) {
+      for (size_t i = 0; i < ITKtype->GetSize(); ++i) {
         int parentID = (*ITKparentID)[i];
         if (parentID != 0){
           continue;
 	}
         int type = (*ITKtype)[i];
-        // std::cout<<"ITK type is :"<<type<<std::endl;
-        if(m_cfg.ignoreNoiseHits and type == -1) {
+	// std::cout<<"ITK type is :"<<type<<std::endl;
+        int particleId = (*ITKparticleId)[i];
+        //bool isNoiseHit = ((*ITKmomentumX)[i] ==0 and (*ITKmomentumY)[i]==0 and (*ITKmomentumZ)[i] == 0); 
+        bool isNoiseHit = (type == -1); 
+        if(m_cfg.ignoreNoiseHits and isNoiseHit) {
 	  continue;
 	}
         nITKHits++;
@@ -297,7 +301,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
             m_cfg.trackingGeometry->findSurface(geoId);
 
         Acts::Vector3 posUpdated = pos;
-        if (type == 1) {
+        if (not isNoiseHit) {
           auto intersection = surfacePtr->intersect(context.geoContext, pos,
                                                     mom.normalized(), true);
           posUpdated = intersection.intersection.position;
@@ -313,8 +317,6 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
           auto values = bounds.values();
           // std::cout<<"ITK surface r = "<< values[0] << std::endl;
         }
-
-        int particleId = (*ITKparticleId)[i];
 
         ActsFatras::Hit::Vector4 pos4{
             posUpdated.x() * Acts::UnitConstants::mm,
@@ -345,7 +347,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
 
         particleHitIdx[particleId]++;
         particleITKAllHitIdx[particleId]++;
-        if (type != -1) {
+        if (not isNoiseHit) {
           particleITKSigHitIdx[particleId]++;
         }
         particleITKLayer[particleId].push_back(layerID);
@@ -361,7 +363,10 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
 	}
         int type = (*MDCtype)[i];
         // std::cout<<"MDC type is :"<<type<<std::endl;
-        if(m_cfg.ignoreNoiseHits and type == -1) {
+        int particleId = (*MDCparticleId)[i];
+	//bool isNoiseHit = ((*MDCmomentumX)[i]==0 and (*MDCmomentumY)[i]==0 and (*MDCmomentumZ)[i]==0);
+	bool isNoiseHit = (type == -1);
+        if(m_cfg.ignoreNoiseHits and isNoiseHit) {
 	  continue;
 	}
         nMDCHits++;
@@ -383,7 +388,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
             m_cfg.trackingGeometry->findSurface(geoId);
 
         Acts::Vector3 posUpdated = pos;
-        if (type == 1) {
+        if (not isNoiseHit) {
           // Only update the position if the MDC hit is not a noise
           auto intersection = surfacePtr->intersect(context.geoContext, pos,
                                                     mom.normalized(), true);
@@ -400,7 +405,6 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
           // localPos.y() " << lPosition[1] << std::endl;
         }
 
-        int particleId = (*MDCparticleId)[i];
 
         ActsFatras::Hit::Vector4 pos4{
             posUpdated.x() * Acts::UnitConstants::mm,
