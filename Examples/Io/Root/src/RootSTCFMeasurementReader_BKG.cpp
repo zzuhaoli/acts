@@ -79,7 +79,8 @@ ActsExamples::RootSTCFMeasurementReader_BKG::RootSTCFMeasurementReader_BKG(
   particleMomentumZ  = new TTreeReaderArray<float>(*m_particle_treeReader,"MCParticleCol.momentum.z"); 
   particleTrackID  = new TTreeReaderArray<int>(*m_particle_treeReader,"MCParticleCol.trackID"); 
   //particleTime  = new TTreeReaderArray<int>(*m_treeReader,"MCParticleCol.time"); 
-  
+ 
+  //The ITKhitcol_mcParticleIndex means the "i"th particle in the particle collection above 
   ITKtype = new TTreeReaderArray<int>(*m_simhit_treeReader,"ITKhitcol_type");  
   ITKlayerID = new TTreeReaderArray<int>(*m_simhit_treeReader,"ITKhitcol_layerId");
   ITKparentID = new TTreeReaderArray<int>(*m_simhit_treeReader,"ITKhitcol_parentId");
@@ -93,6 +94,7 @@ ActsExamples::RootSTCFMeasurementReader_BKG::RootSTCFMeasurementReader_BKG(
   ITKtime = new TTreeReaderArray<Acts::ActsScalar>(*m_simhit_treeReader,"ITKhitcol_time");
   ITKmass = new TTreeReaderArray<double>(*m_simhit_treeReader,"ITKhitcol_mass");
   
+  //The MDChitcol_mcParticleIndex means the "i"th particle in the particle collection above 
   MDCtype = new TTreeReaderArray<int>(*m_simhit_treeReader,"MDChitcol_type");
   MDCcellID = new TTreeReaderArray<int>(*m_simhit_treeReader,"MDChitcol_cellId");
   MDClayerID = new TTreeReaderArray<int>(*m_simhit_treeReader,"MDChitcol_layerId");
@@ -204,7 +206,8 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
     // lock the mutex
     std::lock_guard<std::mutex> lock(m_read_mutex);
     std::map<int, std::vector<int>> particleITKLayer;
-    std::map<int, int> particleITKHitIdx;
+    std::map<int, int> particleITKAllHitIdx;
+    std::map<int, int> particleITKSigHitIdx;
     std::map<int, int> particleHitIdx;  
     // now read
      if(m_simhit_treeReader->Next()){
@@ -213,16 +216,19 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
       int nITKHits = 0;
       int nMDCHits = 0;
       // The index of the sim hit among all the sim hits from this particle 
-      particleITKHitIdx.clear();
+      particleITKAllHitIdx.clear();
+      particleITKSigHitIdx.clear();
       particleITKLayer.clear();
       particleHitIdx.clear();
 
+      /////////////////////////////////////////////////////////////////////////////////////////////////
       //Reading ITK hits
+      /////////////////////////////////////////////////////////////////////////////////////////////////
       for(size_t i=0; i< ITKpositionX->GetSize(); ++i){
         int parentID = (*ITKparentID)[i]; 
         if(parentID!=0) continue;
         int type = (*ITKtype)[i];
-	std::cout<<"ITK type is :"<<type<<std::endl;
+	//std::cout<<"ITK type is :"<<type<<std::endl;
 	//if(type == -1) continue;
         nITKHits++;
         std::cout<<"ITK hits"<<nITKHits<<std::endl;
@@ -232,11 +238,14 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
 	//std::cout<<"r = " << std::hypot((*ITKpositionX)[i], (*ITKpositionY)[i]) <<", phi = " << std::atan2((*ITKpositionY)[i], (*ITKpositionX)[i]) << std::endl; 
         int layerID = (*ITKlayerID)[i]; 
 	Acts::GeometryIdentifier geoId = Acts::GeometryIdentifier().setVolume(m_volumeIDs[0]).setLayer(2*(layerID+1)).setSensitive(1);  
-      
         const Acts::Surface* surfacePtr =
         m_cfg.trackingGeometry->findSurface(geoId);
-	auto intersection = surfacePtr->intersect(context.geoContext,pos, mom.normalized(), true);
-        Acts::Vector3 posUpdated = intersection.intersection.position;
+      
+        Acts::Vector3 posUpdated = pos;
+	if(type == 1){
+	  auto intersection = surfacePtr->intersect(context.geoContext,pos, mom.normalized(), true);
+          posUpdated = intersection.intersection.position;
+        }
 
 	auto cylinderSurface = dynamic_cast<const Acts::CylinderSurface*>(surfacePtr);
         if(cylinderSurface==nullptr){
@@ -275,16 +284,21 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
         unordered_hits.push_back(std::move(hit));
 	
         particleHitIdx[particleId]++;	
-        particleITKHitIdx[particleId]++;
-        particleITKLayer[particleId].push_back(layerID);	
+        particleITKAllHitIdx[particleId]++;
+        if(type != -1) {
+	   particleITKSigHitIdx[particleId]++;		
+	}	
+	particleITKLayer[particleId].push_back(layerID);	
       } 
 
+      /////////////////////////////////////////////////////////////////////////////////////////////////
       //Reading MDC hits 
+      /////////////////////////////////////////////////////////////////////////////////////////////////
       for(size_t i=0; i< MDCcellID->GetSize(); ++i){
         int parentID = (*MDCparentID)[i]; 
         if(parentID!=0) continue; 
 	int type = (*MDCtype)[i];
-	 std::cout<<"MDC type is :"<<type<<std::endl;
+	//std::cout<<"MDC type is :"<<type<<std::endl;
         //if(type == -1) continue;
         nMDCHits++;
 	
@@ -294,18 +308,24 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
 	//double dang = 2*M_PI/m_MDCnCells[(*MDClayerID)[i]];
 	int layerID = (*MDClayerID)[i]; 
 	int cellID = (*MDCcellID)[i] - m_MDCsCells[(*MDClayerID)[i]];	
+
 	Acts::GeometryIdentifier geoId = Acts::GeometryIdentifier().setVolume(m_volumeIDs[1]).setLayer((layerID+1)*2).setSensitive(cellID+1);  
         const Acts::Surface* surfacePtr =
-        m_cfg.trackingGeometry->findSurface(geoId);
-	auto intersection = surfacePtr->intersect(context.geoContext,pos, mom.normalized(), true);
-        Acts::Vector3 posUpdated = intersection.intersection.position;
-        auto lpResult = surfacePtr->globalToLocal(context.geoContext, posUpdated, mom.normalized());
-        if (not lpResult.ok()) {
-          ACTS_FATAL("Global to local transformation did not succeed.");
-          return ProcessCode::ABORT;
+          m_cfg.trackingGeometry->findSurface(geoId);
+        
+        Acts::Vector3 posUpdated = pos; 
+	if(type ==1 ){	
+	  //Only update the position if the MDC hit is not a noise	
+	  auto intersection = surfacePtr->intersect(context.geoContext, pos, mom.normalized(), true);
+          posUpdated = intersection.intersection.position;
+          auto lpResult = surfacePtr->globalToLocal(context.geoContext, posUpdated, mom.normalized());
+          if (not lpResult.ok()) {
+            ACTS_FATAL("Global to local transformation did not succeed.");
+            return ProcessCode::ABORT;
+          }
+          //auto lPosition = lpResult.value();
+          //std::cout<<"MDC " << geoId <<" has drift distance = " << (*MDCdriftDistance)[i] << ", local Pos x = " << lPosition[0] <<", localPos.y() " << lPosition[1] << std::endl;
         }
-        //auto lPosition = lpResult.value();
-        //std::cout<<"MDC " << geoId <<" has drift distance = " << (*MDCdriftDistance)[i] << ", local Pos x = " << lPosition[0] <<", localPos.y() " << lPosition[1] << std::endl;
 
 	int particleId = (*MDCparticleId)[i];
 
@@ -344,7 +364,9 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
       measurementParticlesMap.reserve(simHits.size());
       measurementSimHitsMap.reserve(simHits.size());
 
-      
+      /////////////////////////////////////////////////////////////////////////////////////////////////
+      // Smear truth hits to emulate measurements 
+      /////////////////////////////////////////////////////////////////////////////////////////////////
       ACTS_DEBUG("Starting loop over modules ...");
       for (auto simHitsGroup : groupByModule(simHits)) {
         // Manual pair unpacking instead of using
@@ -371,6 +393,13 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
           auto pos = simHit.position(); 
           auto dir = simHit.unitDirection();
           auto particleId = simHit.particleId();
+          
+	  //This is used to decide whether this hit is a noise (noise hit have zero momentum) 
+	  auto momBefore = simHit.momentum4Before();
+          bool isNoise = false;
+	  if(momBefore[0]==0 and momBefore[1] ==0 and momBefore[2] ==0) {
+	    isNoise = true; 
+          }
 
           Index measurementIdx = measurements.size();
           sourceLinkStorage.emplace_back(moduleGeoId, measurementIdx);
@@ -380,23 +409,37 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
           if(surfacePtr->type()== Acts::Surface::SurfaceType::Cylinder){
             std::array<Acts::BoundIndices, 2> indices = { Acts::eBoundLoc0, Acts::eBoundLoc1};
              
-            Acts::ActsVector<2> par{m_ITKRadius[moduleGeoId.layer()/2-1]*Acts::VectorHelpers::phi(pos) + 0.1*stdNormal(rng), pos.z() + 0.4*stdNormal(rng)};
             Acts::ActsSymMatrix<2> cov = Acts::ActsSymMatrix<2>::Identity();
             cov(0,0) = 0.1*0.1;	
             cov(1,1) = 0.4*0.4;	
-            
-            measurements.emplace_back(Acts::Measurement<Acts::BoundIndices, 2>(sourceLink, indices, par, cov));  
+           
+	    // Don't smear noise 
+	    if(not isNoise){
+              Acts::ActsVector<2> par{m_ITKRadius[moduleGeoId.layer()/2-1]*Acts::VectorHelpers::phi(pos) + 0.1*stdNormal(rng), pos.z() + 0.4*stdNormal(rng)};
+	      std::cout<<"signal ITK measurement = "<< par << std::endl; 
+              measurements.emplace_back(Acts::Measurement<Acts::BoundIndices, 2>(sourceLink, indices, par, cov));  
+            } else {
+              Acts::ActsVector<2> par{m_ITKRadius[moduleGeoId.layer()/2-1]*Acts::VectorHelpers::phi(pos), pos.z()};
+	      std::cout<<"noise ITK measurement = "<< par << std::endl; 
+              measurements.emplace_back(Acts::Measurement<Acts::BoundIndices, 2>(sourceLink, indices, par, cov));  
+	    } 
           } else if(surfacePtr->type()== Acts::Surface::SurfaceType::Straw){
-            //std::array<Acts::BoundIndices, 2> indices = {Acts::eBoundLoc0, Acts::eBoundLoc1}; 
+            // The truth deposit energy 
+	    double driftDistance = simHit.depositedEnergy(); 
             std::array<Acts::BoundIndices, 1> indices = {Acts::eBoundLoc0}; 
-            auto lpResult = surfacePtr->globalToLocal(context.geoContext, pos, dir);
-            if (not lpResult.ok()) {
-              ACTS_FATAL("Global to local transformation did not succeed.");
-              return ProcessCode::ABORT;
-            }
-            auto lPosition = lpResult.value();
-            //auto driftDistance = std::copysign(simHit.fourPosition()[3], lPosition[0]);
-            auto driftDistance = std::copysign(simHit.depositedEnergy(), lPosition[0]);
+
+	    // Gives the drift distance a sign if it's not noise
+	    if(not isNoise){ 
+              auto lpResult = surfacePtr->globalToLocal(context.geoContext, pos, dir);
+              if (not lpResult.ok()) {
+                ACTS_FATAL("Global to local transformation did not succeed.");
+                return ProcessCode::ABORT;
+              }
+              auto lPosition = lpResult.value();
+              //auto driftDistance = std::copysign(simHit.fourPosition()[3], lPosition[0]);
+              driftDistance = std::copysign(simHit.depositedEnergy(), lPosition[0]);
+            } 
+            
 
 	    double sigma=0.125; 
             //std::uniform_real_distribution<double> uniform(0,1); 
@@ -406,15 +449,15 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
             //  sigma = 0.24;
 	    //} 
 
-	    Acts::ActsVector<1> par{ driftDistance + sigma* stdNormal(rng)};
             Acts::ActsSymMatrix<1> cov = Acts::ActsSymMatrix<1>::Identity();
-	    //Acts::ActsVector<2> par{ driftDistance + sigma* stdNormal(rng), lPosition[1] + 5*stdNormal(rng)};
-            //Acts::ActsSymMatrix<2> cov = Acts::ActsSymMatrix<2>::Identity();
             cov(0,0) = sigma*sigma;	
-            //cov(1,1) = 5*5;	
-            measurements.emplace_back(Acts::Measurement<Acts::BoundIndices, 1>(sourceLink, indices, par, cov));  
-            //measurements.emplace_back(Acts::Measurement<Acts::BoundIndices, 2>(sourceLink, indices, par, cov));  
-
+	    if(not isNoise){ 
+	      Acts::ActsVector<1> par{ driftDistance + sigma* stdNormal(rng)};
+              measurements.emplace_back(Acts::Measurement<Acts::BoundIndices, 1>(sourceLink, indices, par, cov));  
+            } else {
+	      Acts::ActsVector<1> par{ driftDistance};
+              measurements.emplace_back(Acts::Measurement<Acts::BoundIndices, 1>(sourceLink, indices, par, cov));  
+	    }
           } else {
             ACTS_ERROR("The surface type must be Cylinder or Straw");
             return ProcessCode::ABORT;
@@ -435,12 +478,15 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
       }
       std::cout<<"nITKHits = " << nITKHits <<", nMDCHits = " << nMDCHits <<std::endl;
     }
-    int nParticles = 0;     
+    int nParticles = 0;    
+    for(const auto& [particleIndex, nHits ] : particleITKSigHitIdx){
+       std::cout<<"particle " << particleIndex <<" has " << nHits << std::endl; 
+    } 
     if(m_particle_treeReader->Next()){
-          //std::cout << "Reading event " << m_evtCounter++ << std::endl;
+      //std::cout << "Reading event " << m_evtCounter++ << std::endl;
       //Reading truth particles
       for(size_t i=0; i< particlePDG->GetSize(); ++i){
-        if(particleITKHitIdx[i]<3){
+        if(particleITKSigHitIdx[i]<3){
           continue;	
        	};
         nParticles++;
@@ -449,7 +495,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
 	int thirdlayer = 0;
 	int particleITKnum = 0;
         auto particleITKlayer = particleITKLayer[i];
-	for(int j=0;j<particleITKlayer.size();j++)
+	for(size_t j=0;j<particleITKlayer.size();j++)
 	{
 	    if(particleITKlayer[j]==0)
 	    {
@@ -504,7 +550,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
       }
 
       for(const auto& [ particleIndex, nHits ] : particleHitIdx){
-        std::cout<<"particle " << particleIndex  <<" has " << nHits << " nHits"<< ", nITKHits = " << particleITKHitIdx[particleIndex] << std::endl;
+        std::cout<<"particle " << particleIndex  <<" has " << nHits << " nHits"<< ", nITKHits = " << particleITKSigHitIdx[particleIndex] << std::endl;
       }
       std::cout<<"nParticles = " << nParticles << std::endl;
    }    
