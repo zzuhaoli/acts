@@ -46,10 +46,11 @@ class Hit {
   /// position on the given surface.
   Hit(Acts::GeometryIdentifier geometryId, Barcode particleId,
       const Vector4& pos4, const Vector4& before4, const Vector4& after4,
-      int32_t index_ = -1)
+      int32_t index_ = -1, bool isNoise_ = false)
       : m_geometryId(geometryId),
         m_particleId(particleId),
         m_index(index_),
+        m_isNoise(isNoise_),
         m_pos4(pos4),
         m_before4(before4),
         m_after4(after4) {}
@@ -66,6 +67,9 @@ class Hit {
   ///
   /// @retval negative if the hit index is undefined.
   constexpr int32_t index() const { return m_index; }
+
+  /// Added by xiaocong. Whether this is a noise
+  bool isNoise() const { return m_isNoise; }
 
   /// Space-time position four-vector.
   const Vector4& fourPosition() const { return m_pos4; }
@@ -113,6 +117,8 @@ class Hit {
   Vector4 m_before4 = Vector4::Zero();
   /// Global particle energy-momentum four-vector after the hit.
   Vector4 m_after4 = Vector4::Zero();
+  /// Whether the hit is a noise
+  bool m_isNoise = false;
 };
 
 }  // namespace ActsFatras

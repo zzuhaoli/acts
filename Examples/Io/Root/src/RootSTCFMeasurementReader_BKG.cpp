@@ -251,7 +251,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
     std::map<int, int> particleITKAllHitIdx;
     std::map<int, int> particleITKSigHitIdx;
     std::map<int, int> particleHitIdx;
-    
+
     /////////////////////////////////////////////////////////////////////////////////////////////////
     // I. read sim hits
     /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -269,20 +269,23 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
       /////////////////////////////////////////////////////////////////////////////////////////////////
       // 1) Reading ITK hits
       /////////////////////////////////////////////////////////////////////////////////////////////////
-      //for (size_t i = 0; i < ITKpositionX->GetSize(); ++i) {
+      // for (size_t i = 0; i < ITKpositionX->GetSize(); ++i) {
       for (size_t i = 0; i < ITKtype->GetSize(); ++i) {
         int parentID = (*ITKparentID)[i];
-        if (parentID != 0){
+        if (parentID != 0) {
           continue;
-	}
+        }
         int type = (*ITKtype)[i];
-	// std::cout<<"ITK type is :"<<type<<std::endl;
+        // std::cout<<"ITK type is :"<<type<<std::endl;
         int particleId = (*ITKparticleId)[i];
-        //bool isNoiseHit = ((*ITKmomentumX)[i] ==0 and (*ITKmomentumY)[i]==0 and (*ITKmomentumZ)[i] == 0); 
-        bool isNoiseHit = (type == -1); 
-        if(m_cfg.ignoreNoiseHits and isNoiseHit) {
-	  continue;
-	}
+        bool isNoiseHit = (type == -1);
+        // Reset the noise particle index to -1
+        if (isNoiseHit) {
+          particleId = -1;
+        }
+        if (m_cfg.ignoreNoiseHits and isNoiseHit) {
+          continue;
+        }
         nITKHits++;
         Acts::Vector3 pos((*ITKpositionX)[i], (*ITKpositionY)[i],
                           (*ITKpositionZ)[i]);
@@ -342,7 +345,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
 
         // The last parameter could be incorrect!!!
         ActsFatras::Hit hit(geoId, particleId, pos4, mom4, mom4 + delta4,
-                            particleHitIdx[particleId]);
+                            particleHitIdx[particleId], isNoiseHit);
         unordered_hits.push_back(std::move(hit));
 
         particleHitIdx[particleId]++;
@@ -358,17 +361,20 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
       /////////////////////////////////////////////////////////////////////////////////////////////////
       for (size_t i = 0; i < MDCcellID->GetSize(); ++i) {
         int parentID = (*MDCparentID)[i];
-        if (parentID != 0){
+        if (parentID != 0) {
           continue;
-	}
+        }
         int type = (*MDCtype)[i];
         // std::cout<<"MDC type is :"<<type<<std::endl;
         int particleId = (*MDCparticleId)[i];
-	//bool isNoiseHit = ((*MDCmomentumX)[i]==0 and (*MDCmomentumY)[i]==0 and (*MDCmomentumZ)[i]==0);
-	bool isNoiseHit = (type == -1);
-        if(m_cfg.ignoreNoiseHits and isNoiseHit) {
-	  continue;
-	}
+        bool isNoiseHit = (type == -1);
+        // Reset the noise particle index to -1
+        if (isNoiseHit) {
+          particleId = -1;
+        }
+        if (m_cfg.ignoreNoiseHits and isNoiseHit) {
+          continue;
+        }
         nMDCHits++;
 
         Acts::Vector3 pos((*MDCpositionX)[i], (*MDCpositionY)[i],
@@ -405,7 +411,6 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
           // localPos.y() " << lPosition[1] << std::endl;
         }
 
-
         ActsFatras::Hit::Vector4 pos4{
             posUpdated.x() * Acts::UnitConstants::mm,
             posUpdated.y() * Acts::UnitConstants::mm,
@@ -431,7 +436,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
 
         // The last parameter is not simHitIdx?
         ActsFatras::Hit hit(geoId, particleId, pos4, mom4, mom4 + delta4,
-                            particleHitIdx[particleId]);
+                            particleHitIdx[particleId], isNoiseHit);
         unordered_hits.push_back(std::move(hit));
         particleHitIdx[particleId]++;
       }
@@ -472,14 +477,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
           auto pos = simHit.position();
           auto dir = simHit.unitDirection();
           auto particleId = simHit.particleId();
-
-          // This is used to decide whether this hit is a noise (noise hit have
-          // zero momentum)
-          auto momBefore = simHit.momentum4Before();
-          bool isNoise = false;
-          if (momBefore[0] == 0 and momBefore[1] == 0 and momBefore[2] == 0) {
-            isNoise = true;
-          }
+          bool isNoiseHit = simHit.isNoise();
 
           Index measurementIdx = measurements.size();
           sourceLinkStorage.emplace_back(moduleGeoId, measurementIdx);
@@ -495,7 +493,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
             cov(1, 1) = 0.4 * 0.4;
 
             // Don't smear noise
-            if (not isNoise) {
+            if (not isNoiseHit) {
               Acts::ActsVector<2> par{m_ITKRadius[moduleGeoId.layer() / 2 - 1] *
                                               Acts::VectorHelpers::phi(pos) +
                                           0.1 * stdNormal(rng),
@@ -517,7 +515,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
             std::array<Acts::BoundIndices, 1> indices = {Acts::eBoundLoc0};
 
             // Gives the drift distance a sign if it's not noise
-            if (not isNoise) {
+            if (not isNoiseHit) {
               auto lpResult =
                   surfacePtr->globalToLocal(context.geoContext, pos, dir);
               if (not lpResult.ok()) {
@@ -541,7 +539,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
 
             Acts::ActsSymMatrix<1> cov = Acts::ActsSymMatrix<1>::Identity();
             cov(0, 0) = sigma * sigma;
-            if (not isNoise) {
+            if (not isNoiseHit) {
               Acts::ActsVector<1> par{driftDistance + sigma * stdNormal(rng)};
               measurements.emplace_back(
                   Acts::Measurement<Acts::BoundIndices, 1>(sourceLink, indices,
@@ -569,9 +567,8 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
       }
       std::cout << "nITKHits = " << nITKHits << ", nMDCHits = " << nMDCHits
                 << std::endl;
-    } // Finish reading sim hits and transform them into measurements
-    
-    
+    }  // Finish reading sim hits and transform them into measurements
+
     /////////////////////////////////////////////////////////////////////////////////////////////////
     // II. now read particles
     /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -648,7 +645,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
       }
       std::cout << "nParticles = " << nParticles << std::endl;
     }
-    
+
     // Write the collections to the EventStore
     context.eventStore.add(m_cfg.outputSourceLinks, std::move(sourceLinks));
     context.eventStore.add(m_cfg.outputSourceLinks + "__storage",

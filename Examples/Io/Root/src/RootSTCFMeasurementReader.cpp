@@ -258,9 +258,9 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
       // Reading ITK hits
       for (size_t i = 0; i < ITKpositionX->GetSize(); ++i) {
         int parentID = (*ITKparentID)[i];
-        if (parentID != 0){
+        if (parentID != 0) {
           continue;
-	}
+        }
         nITKHits++;
 
         Acts::Vector3 pos((*ITKpositionX)[i], (*ITKpositionY)[i],
@@ -331,9 +331,9 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
       // Reading MDC hits
       for (size_t i = 0; i < MDCcellID->GetSize(); ++i) {
         int parentID = (*MDCparentID)[i];
-        if (parentID != 0){
+        if (parentID != 0) {
           continue;
-	}
+        }
         nMDCHits++;
 
         Acts::Vector3 pos((*MDCpositionX)[i], (*MDCpositionY)[i],

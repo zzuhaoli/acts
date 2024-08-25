@@ -115,7 +115,9 @@ class Particle {
   Particle &setCharge(Scalar charge) { return m_charge = charge, *this; }
 
   ///**************set the particle ITKHits
-  Particle &setITKHits(int ITKHits) { return m_ITKHits = ITKHits, *this; }///***
+  Particle &setITKHits(int ITKHits) {
+    return m_ITKHits = ITKHits, *this;
+  }  ///***
 
   /// Change the energy by the given amount.
   ///
@@ -131,8 +133,8 @@ class Particle {
     }
     return *this;
   }
-  ///***********get  particle ITKHits 
-  constexpr int particleITKHits() const { return m_ITKHits; }/////***
+  ///***********get  particle ITKHits
+  constexpr int particleITKHits() const { return m_ITKHits; }  /////***
   /////**************
   /// Particle identifier within an event.
   constexpr Barcode particleId() const { return m_particleId; }
@@ -224,7 +226,7 @@ class Particle {
   Scalar m_pathInX0 = Scalar(0);
   Scalar m_pathInL0 = Scalar(0);
   ///*******particle  ITKHits
-  int m_ITKHits;///************
+  int m_ITKHits;  ///************
 };
 
 std::ostream &operator<<(std::ostream &os, const Particle &particle);

@@ -55,7 +55,7 @@ struct SimpleOutlierFinder {
     if (not state.hasCalibrated() or not state.hasPredicted()) {
       return false;
     }
-    //const size_t measdim = state.calibratedSize();
+    // const size_t measdim = state.calibratedSize();
 
     // auto geoId = state.referenceSurface().geometryId();
 

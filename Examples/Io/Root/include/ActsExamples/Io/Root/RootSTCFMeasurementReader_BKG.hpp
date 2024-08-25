@@ -64,7 +64,7 @@ class RootSTCFMeasurementReader_BKG : public IReader {
     /// Whether the events are ordered or not
     bool orderedEvents = true;
     /// Whether ignore noise hits when reading
-    bool ignoreNoiseHits = false; 
+    bool ignoreNoiseHits = false;
   };
 
   /// Constructor

@@ -54,8 +54,7 @@ void addRecCKFOptions(ActsExamples::Options::Description& desc) {
   using boost::program_options::value;
 
   auto opt = desc.add_options();
-  opt("reco-ignore-noise", bool_switch(),
-      "Don't read noise hits");
+  opt("reco-ignore-noise", bool_switch(), "Don't read noise hits");
   opt("ckf-truth-smeared-seeds", bool_switch(),
       "Use track parameters smeared from truth particles for steering CKF");
   opt("ckf-truth-estimated-seeds", bool_switch(),
