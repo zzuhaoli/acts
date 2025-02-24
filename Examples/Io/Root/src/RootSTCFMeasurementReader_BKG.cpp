@@ -343,6 +343,7 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_BKG::read(
             0 * Acts::UnitConstants::GeV,
         };
 
+
         // The last parameter could be incorrect!!!
         ActsFatras::Hit hit(geoId, particleId, pos4, mom4, mom4 + delta4,
                             particleHitIdx[particleId], isNoiseHit);
