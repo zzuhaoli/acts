@@ -54,6 +54,37 @@ target_link_libraries(
   PRIVATE
     ActsExamplesRecTracksCommon 
     ActsExamplesDetectorGeneric)
+###################################
+# CKF reco for STCF detector with ITKM
+add_executable(
+	ActsExampleCKFTracksSTCF_ITKM
+	STCFRecCKFTracks_ITKM.cpp)
+target_link_libraries(
+	ActsExampleCKFTracksSTCF_ITKM
+  PRIVATE
+    ActsExamplesDetectorTGeo
+    ActsExamplesFramework
+    ActsExamplesCommon
+    ActsExamplesMagneticField
+    ActsExamplesIoPerformance
+    )
+##################################
+
+###################################
+# CKF+Hough reco for STCF detector with ITKM
+add_executable(
+        ActsExampleCKFTracksSTCF_ITKM_houghseed
+        STCFRecCKFTracks_ITKM_houghseed.cpp)
+target_link_libraries(
+        ActsExampleCKFTracksSTCF_ITKM_houghseed
+  PRIVATE
+    ActsExamplesDetectorTGeo
+    ActsExamplesFramework
+    ActsExamplesCommon
+    ActsExamplesMagneticField
+    ActsExamplesIoPerformance
+    )
+##################################
 
 # CKF reco for STCF detector 
 add_executable(

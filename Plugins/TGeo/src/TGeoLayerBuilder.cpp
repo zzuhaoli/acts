@@ -305,7 +305,14 @@ void Acts::TGeoLayerBuilder::buildLayers(const GeometryContext& gctx,
         ACTS_DEBUG("- splitting into " << protoLayers.size() << " layers.");
         std::cout << "The TGeoDetectorElements are then splitted into "
                   << protoLayers.size() << " layers." << std::endl;
-
+         
+	if(layerSurfaces.front()->type() != Acts::Surface::SurfaceType::Straw and
+			 layerSurfaces.front()->type() != Acts::Surface::SurfaceType::Cylinder ){
+             protoLayers = m_cfg.protoLayerHelper->protoLayers(
+             gctx, unpack_shared_vector(layerSurfaces),
+             layerCfg.splitConfigs);
+             std::cout<<"using protoLayerHelper to split all the surfaces into layers" << std::endl;
+         }
         // Number of options mismatch and has not been configured for
         // auto-binning
         const bool is_loc0_n_config =

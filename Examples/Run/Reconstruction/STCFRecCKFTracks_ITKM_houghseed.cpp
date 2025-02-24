@@ -19,7 +19,7 @@
 #include "ActsExamples/Io/Performance/SeedingPerformanceWriter.hpp"
 #include "ActsExamples/Io/Performance/TrackFinderPerformanceWriter.hpp"
 #include "ActsExamples/Io/Root/RootHoughCanTracksReader.hpp"
-#include "ActsExamples/Io/Root/RootSTCFMeasurementReader.hpp"
+#include "ActsExamples/Io/Root/RootSTCFMeasurementReader_ITKM.hpp"
 #include "ActsExamples/Io/Root/RootTrajectoryStatesWriter.hpp"
 #include "ActsExamples/Io/Root/RootTrajectorySummaryWriter.hpp"
 #include "ActsExamples/MagneticField/MagneticFieldOptions.hpp"
@@ -163,13 +163,13 @@ int main(int argc, char* argv[]) {
       RootHoughCanTracksReaderCfg, logLevel));
   //*****************************************************
   // Read truth hits from CSV files
-  RootSTCFMeasurementReader::Config STCFMeasurementReaderCfg;
+  RootSTCFMeasurementReader_ITKM::Config STCFMeasurementReaderCfg;
   STCFMeasurementReaderCfg.filePath = inputDir + "/" + inputfiles.front();
   STCFMeasurementReaderCfg.outputSimHits = "hits";
   STCFMeasurementReaderCfg.outputParticles = "particles";
   STCFMeasurementReaderCfg.trackingGeometry = trackingGeometry;
   STCFMeasurementReaderCfg.randomNumbers = rnd;
-  sequencer.addReader(std::make_shared<RootSTCFMeasurementReader>(
+  sequencer.addReader(std::make_shared<RootSTCFMeasurementReader_ITKM>(
       STCFMeasurementReaderCfg, logLevel));
 
   //****************************************************

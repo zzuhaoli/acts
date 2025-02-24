@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "ActsExamples/Io/Root/RootSTCFMeasurementReader.hpp"
+#include "ActsExamples/Io/Root/RootSTCFMeasurementReader_ITKM.hpp"
 
 #include "Acts/EventData/TrackParameters.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
@@ -23,8 +23,8 @@
 #include <TFile.h>
 #include <TMath.h>
 
-ActsExamples::RootSTCFMeasurementReader::RootSTCFMeasurementReader(
-    const ActsExamples::RootSTCFMeasurementReader::Config& config,
+ActsExamples::RootSTCFMeasurementReader_ITKM::RootSTCFMeasurementReader_ITKM(
+    const ActsExamples::RootSTCFMeasurementReader_ITKM::Config& config,
     Acts::Logging::Level level)
     : ActsExamples::IReader(),
       m_logger{Acts::getDefaultLogger(name(), level)},
@@ -86,8 +86,10 @@ ActsExamples::RootSTCFMeasurementReader::RootSTCFMeasurementReader(
       new TTreeReaderArray<int>(*m_treeReader, "MCParticleCol.trackID");
   // particleTime  = new
   // TTreeReaderArray<int>(*m_treeReader,"MCParticleCol.time");
-
+  
   ITKlayerID = new TTreeReaderArray<int>(*m_treeReader, "ITKHitCol.layerID");
+  ITKladderID = new TTreeReaderArray<int>(*m_treeReader,"ITKHitCol.ladderID");
+  ITKsectorID = new TTreeReaderArray<int>(*m_treeReader,"ITKHitCol.sectorID");
   ITKparentID = new TTreeReaderArray<int>(*m_treeReader, "ITKHitCol.parentID");
   ITKparticleId =
       new TTreeReaderArray<int>(*m_treeReader, "ITKHitCol.mcParticleIndex");
@@ -150,11 +152,11 @@ ActsExamples::RootSTCFMeasurementReader::RootSTCFMeasurementReader(
 }
 
 std::pair<size_t, size_t>
-ActsExamples::RootSTCFMeasurementReader::availableEvents() const {
+ActsExamples::RootSTCFMeasurementReader_ITKM::availableEvents() const {
   return {0u, m_events};
 }
 
-ActsExamples::RootSTCFMeasurementReader::~RootSTCFMeasurementReader() {
+ActsExamples::RootSTCFMeasurementReader_ITKM::~RootSTCFMeasurementReader_ITKM() {
   delete particlePDG;
   delete particleCharge;
   delete particleMass;
@@ -167,6 +169,8 @@ ActsExamples::RootSTCFMeasurementReader::~RootSTCFMeasurementReader() {
   delete particleMomentumZ;
 
   delete ITKlayerID;
+  delete ITKladderID;
+  delete ITKsectorID;
   delete ITKparentID;
   delete ITKparticleId;
   delete ITKpositionX;
@@ -199,7 +203,7 @@ ActsExamples::RootSTCFMeasurementReader::~RootSTCFMeasurementReader() {
   delete MDCmass;
 }
 
-ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
+ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader_ITKM::read(
     const ActsExamples::AlgorithmContext& context) {
   ACTS_DEBUG("Trying to read STCF tracker measurements.");
 
@@ -272,10 +276,15 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
         // (*ITKpositionY)[i]) <<", phi = " << std::atan2((*ITKpositionY)[i],
         // (*ITKpositionX)[i]) << std::endl;
         int layerID = (*ITKlayerID)[i];
-        Acts::GeometryIdentifier geoId = Acts::GeometryIdentifier()
-                                             .setVolume(m_volumeIDs[0])
-                                             .setLayer(2 * (layerID + 1))
-                                             .setSensitive(1);
+	int ladderID = (*ITKladderID)[i]; 
+	int sectorID = (*ITKsectorID)[i]; 
+	int sensitiveID = ladderID*m_nSectors[layerID] + sectorID + 1;
+	Acts::GeometryIdentifier geoId = 
+		Acts::GeometryIdentifier().setVolume(m_volumeIDs[0]).setLayer(2*(layerID+1)).setSensitive(sensitiveID);
+        //Acts::GeometryIdentifier geoId = Acts::GeometryIdentifier()
+          //                                   .setVolume(m_volumeIDs[0])
+          //                                 .setLayer(2 * (layerID + 1))
+          //                                   .setSensitive(1);
 
         const Acts::Surface* surfacePtr =
             m_cfg.trackingGeometry->findSurface(geoId);
@@ -434,21 +443,22 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
           sourceLinkStorage.emplace_back(moduleGeoId, measurementIdx);
           IndexSourceLink& sourceLink = sourceLinkStorage.back();
           sourceLinks.insert(sourceLinks.end(), sourceLink);
-
-          if (surfacePtr->type() == Acts::Surface::SurfaceType::Cylinder) {
-            std::array<Acts::BoundIndices, 2> indices = {Acts::eBoundLoc0,
-                                                         Acts::eBoundLoc1};
-
-            Acts::ActsVector<2> par{m_ITKRadius[moduleGeoId.layer() / 2 - 1] *
-                                            Acts::VectorHelpers::phi(pos) +
-                                        0.1 * stdNormal(rng),
-                                    pos.z() + 0.4 * stdNormal(rng)};
+          
+	  if(surfacePtr->type()== Acts::Surface::SurfaceType::Plane){
+            std::array<Acts::BoundIndices, 2> indices = { Acts::eBoundLoc0, Acts::eBoundLoc1};
+            auto lpResult = surfacePtr->globalToLocal(context.geoContext, pos, dir);
+            if (not lpResult.ok()) {
+              ACTS_FATAL("Global to local transformation did not succeed.");
+              return ProcessCode::ABORT;
+            }
+            auto lPosition = lpResult.value();
+            Acts::ActsVector<2> par{lPosition[0] + 0.03/sqrt(2)*stdNormal(rng), lPosition[1] + 0.18*stdNormal(rng)};
             Acts::ActsSymMatrix<2> cov = Acts::ActsSymMatrix<2>::Identity();
-            cov(0, 0) = 0.1 * 0.1;
-            cov(1, 1) = 0.4 * 0.4;
+            cov(0,0) = 0.03*0.03/2;
+            cov(1,1) = 0.18*0.18;
 
-            measurements.emplace_back(Acts::Measurement<Acts::BoundIndices, 2>(
-                sourceLink, indices, par, cov));
+            measurements.emplace_back(Acts::Measurement<Acts::BoundIndices, 2>
+			    (sourceLink, indices, par, cov));
           } else if (surfacePtr->type() == Acts::Surface::SurfaceType::Straw) {
             // std::array<Acts::BoundIndices, 2> indices = {Acts::eBoundLoc0,
             // Acts::eBoundLoc1};
@@ -504,9 +514,9 @@ ActsExamples::ProcessCode ActsExamples::RootSTCFMeasurementReader::read(
 
       // Reading truth particles
       for (size_t i = 0; i < particlePDG->GetSize(); ++i) {
-         if(particleITKHitIdx[i]<3){
-         continue;
-        	};
+        // if(particleITKHitIdx[i]<3){
+        // continue;
+        //	};
         nParticles++;
         int oncelayer = 0;
         int secondlayer = 0;

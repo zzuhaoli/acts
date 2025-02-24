@@ -152,14 +152,13 @@ ActsExamples::ProcessCode ActsExamples::RootHoughCanTracksReader::read(
         params[Acts::eBoundLoc1] = 0;
         // set time=0
         params[Acts::eBoundTime] = 0;
-        // smear direction angles phi,theta ensuring correct bounds
+        // no needing smear Phi,Theta,P
         const auto [newPhi, newTheta] = Acts::detail::normalizePhiTheta(
-            phi + sigmaPhi * stdNormal(rng),
-            theta + sigmaTheta * stdNormal(rng));
+            phi,theta);
         params[Acts::eBoundPhi] = newPhi;
         params[Acts::eBoundTheta] = newTheta;
         // compute smeared absolute momentum vector
-        const double newP = std::max(0.0, p + sigmaP * stdNormal(rng));
+        const double newP = std::max(0.0, p);
         params[Acts::eBoundQOverP] = (q != 0) ? (q / newP) : (1 / newP);
         std::cout << "q_p:" << params[Acts::eBoundQOverP] << std::endl;
         // build the track covariance matrix using the smearing sigmas//
